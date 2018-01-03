@@ -1,0 +1,26 @@
+0: none
+1: Discard any number of cards, then draw that many.
+2: Draw 2 cards
+3: Reveal this and be unaffected by an attack card
+4: Look through discard pile maybe select 1 then put it ontop of deck
+5: First time a silver is played, gain +1 tempMoney
+6: Discard the top card of your deck, if its an action card, you may play it.
+7: Draw a card, gain 2 actions.
+8: Gain a card costing up to 4.
+9: put silver ontop of deck, others reveal victory card put ontop of deck, or reveal hand with no victory cards.
+10: Worth 1 vp per 10 cards in deck, rounded down.
+11: +2 tempMoney, each other player discard down to 3 cards.
+12: may trash copper from hand, if so +3
+13: Discard a card per empty Supply pile.
+14: Trash card from hand, gain card costing up to 2 more than it.
+15: may play an action card from hand twice.
+16: Gain a gold, other players reveal top 2 cards of deck, if revealed cards contain treasure not equal to Copper trash 1 of them then discard rest
+17: +4 cards, +1 buy, others draw a card.
+18: +2 actions, +1 buy +2 money
+19: +2 cards, +1 action
+20: Draw till 7 cards in hand, discard any drawn actions cards making them not count if desired.
+21: +1 card, +1 action, +1 buy, +1 tempMoney
+22: may trash Treasure card from hand, gain a treasure to hand costing up to 3 more than it.
+23: +1 card, +1 Action. Look at top 2 cards of deck. Trash and/or discard any of the two. Put the rest back in any order.
+24: +2 cards others gain a Curse
+25: Gain a card to hand costing up to 5, put a card from hand onto deck.

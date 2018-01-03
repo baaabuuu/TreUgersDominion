@@ -1,14 +1,15 @@
-package ObjectTypes;
+package cardSets;
 
 import java.util.ArrayList;
 
-public class card {
+public class Card {
 
 	
 	private ArrayList<String> types = new ArrayList<String>();
 	private ArrayList<String> dispTypes = new ArrayList<String>();
-	private String name, description;
-	private int cost, money, effectCode, victoryPoints;
+	private ArrayList<Integer> effectCode = new ArrayList<Integer>();
+	private String name, description, set;
+	private int cost, money, victoryPoints;
 	private int costMod, minCost = 0;
 	
 	/**
@@ -43,7 +44,7 @@ public class card {
 	 * Returns the effect code - the "effect" that occurs when a card is played.
 	 * @return
 	 */
-	public int getEffectCode()
+	public ArrayList<Integer> getEffectCode()
 	{
 		return effectCode;
 	}
@@ -99,5 +100,9 @@ public class card {
 	public String getName()
 	{
 		return name;
+	}
+	public String getSet()
+	{
+		return set;
 	}
 }

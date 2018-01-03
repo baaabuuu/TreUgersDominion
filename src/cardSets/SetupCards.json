@@ -1,0 +1,128 @@
+[setup :
+{
+	name : "Copper",
+	description: "",
+	set : "treasures",
+	cost : 0,
+	money : 1,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 0,
+	minCost : 0,
+	types :
+	{
+		"treasure"
+	},
+	dispTypes : 
+	{
+		"Treasure"
+	}
+},
+{
+	name : "Silver",
+	description: "",
+	set : "treasures",
+	cost : 0,
+	money : 3,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 0,
+	minCost : 0,
+	types :
+	{
+		"treasure"
+	},
+	dispTypes : 
+	{
+		"Treasure"
+	}
+},
+{
+	name : "Gold",
+	description: "",
+	set : "treasures",
+	cost : 6,
+	money : 3,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 0,
+	minCost : 0,
+	types :
+	{
+		"treasure"
+	},
+	dispTypes : 
+	{
+		"Treasure"
+	}
+},
+{
+	name : "Curse",
+	description: "",
+	set : "treasures",
+	cost : 0,
+	money : 0,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : -1,
+	minCost : 0,
+	types :
+	{
+		"curse"
+	},
+	dispTypes : 
+	{
+		"Curse"
+	}
+},
+{
+	name : "Duchy",
+	description: "",
+	set : "treasures",
+	cost : 5,
+	money : 0,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 3,
+	minCost : 0,
+	types :
+	{
+		"victory"
+	},
+	dispTypes : 
+	{
+		"Victory"
+	}
+},
+{
+	name : "Province",
+	description: "",
+	set : "treasures",
+	cost : 8,
+	money : 0,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 6,
+	minCost : 0,
+	types :
+	{
+		"victory"
+	},
+	dispTypes : 
+	{
+		"Victory"
+	}
+},
+]
