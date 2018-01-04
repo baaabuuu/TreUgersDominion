@@ -1,7 +1,7 @@
-[setup :
+[cards :
 {
 	name : "Copper",
-	description: "",
+	description: "Worth 1 coin",
 	set : "treasures",
 	cost : 0,
 	money : 1,
@@ -22,7 +22,7 @@
 },
 {
 	name : "Silver",
-	description: "",
+	description: "Worth 2 coin",
 	set : "treasures",
 	cost : 0,
 	money : 3,
@@ -43,7 +43,7 @@
 },
 {
 	name : "Gold",
-	description: "",
+	description: "Worth 3 coin",
 	set : "treasures",
 	cost : 6,
 	money : 3,
@@ -64,7 +64,7 @@
 },
 {
 	name : "Curse",
-	description: "",
+	description: "Worth -1 Victory Point",
 	set : "treasures",
 	cost : 0,
 	money : 0,
@@ -84,8 +84,29 @@
 	}
 },
 {
+	name : "Estate",
+	description: "Worth 1 Victory Point",
+	set : "treasures",
+	cost : 2,
+	money : 0,
+	effectCode :
+	{
+		0
+	},
+	victoryPoints : 1,
+	minCost : 0,
+	types :
+	{
+		"victory"
+	},
+	dispTypes : 
+	{
+		"Victory"
+	}
+},
+{
 	name : "Duchy",
-	description: "",
+	description: "Worth 3 Victory Point",
 	set : "treasures",
 	cost : 5,
 	money : 0,
@@ -106,7 +127,7 @@
 },
 {
 	name : "Province",
-	description: "",
+	description: "Worth 5 Victory Point",
 	set : "treasures",
 	cost : 8,
 	money : 0,
