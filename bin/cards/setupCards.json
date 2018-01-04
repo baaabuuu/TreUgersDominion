@@ -1,0 +1,170 @@
+[
+	{
+		name : "Copper",
+		description: "Worth 1 coin",
+		set : "treasures",
+		cost : 0,
+		money : 1,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 0,
+		minCost : 0,
+		types :
+		[
+			"treasure"
+		],
+		dispTypes : 
+		[
+			"Treasure"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Silver",
+		description: "Worth 2 coin",
+		set : "treasures",
+		cost : 0,
+		money : 3,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 0,
+		minCost : 0,
+		types :
+		[
+			"treasure"
+		],
+		dispTypes : 
+		[
+			"Treasure"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Gold",
+		description: "Worth 3 coin",
+		set : "treasures",
+		cost : 6,
+		money : 3,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 0,
+		minCost : 0,
+		types :
+		[
+			"treasure"
+		],
+		dispTypes : 
+		[
+			"Treasure"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Curse",
+		description: "Worth -1 Victory Point",
+		set : "treasures",
+		cost : 0,
+		money : 0,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : -1,
+		minCost : 0,
+		types :
+		[
+			"treasure"
+		],
+		dispTypes : 
+		[
+			"Treasure"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Estate",
+		description: "Worth 1 Victory Point",
+		set : "treasures",
+		cost : 2,
+		money : 0,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 1,
+		minCost : 0,
+		types :
+		[
+			"victory"
+		],
+		dispTypes : 
+		[
+			"Victory"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Duchy",
+		description: "Worth 3 Victory Point",
+		set : "treasures",
+		cost : 5,
+		money : 0,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 3,
+		minCost : 0,
+		types :
+		[
+			"victory"
+		],
+		dispTypes : 
+		[
+			"Victory"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	},
+	{
+		name : "Province",
+		description: "Worth 5 Victory Point",
+		set : "treasures",
+		cost : 8,
+		money : 0,
+		effectCode :
+		[
+			0
+		],
+		victoryPoints : 6,
+		minCost : 0,
+		types :
+		[
+			"victory"
+		],
+		dispTypes : 
+		[
+			"Victory"
+		],
+		"typeCount": 1,
+		"dispTypeCount": 1,
+		"effectCodeCount": 1
+	}
+]

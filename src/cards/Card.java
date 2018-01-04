@@ -1,23 +1,42 @@
-package cardSets;
+package cards;
 
 import java.util.ArrayList;
 
 public class Card {
 
-	
-	private ArrayList<String> types = new ArrayList<String>();
-	private ArrayList<String> dispTypes = new ArrayList<String>();
-	private ArrayList<Integer> effectCode = new ArrayList<Integer>();
+	private String[] types;
+	private String[] dispTypes;
+	private int[] effectCodes;
 	private String name, description, set;
 	private int cost, money, victoryPoints;
-	private int costMod, minCost = 0;
+	private int minCost, costMod, typeCount, dispTypeCount, effectCodeCount = 0;
+	
+	public Card()
+	{
+		types = new String[] {};
+		dispTypes = new String[] {};
+		effectCodes = new int[] {0};
+		typeCount = 0;
+		dispTypeCount = 0;
+		effectCodeCount = 0;
+		
+
+		name = "testCard";
+		description = "testing Purposes - not avail to players";
+		set = "base";
+		cost = 0;
+		money = 0;
+		costMod = 0;
+		victoryPoints = 0;
+		
+	}
 	
 	/**
 	 *  Returns a list of game types - not display types
 	 *  Used for things like card with a normal effect and a display effect
 	 * @return types
 	 */
-	public ArrayList<String> getTypes()
+	public String[] getTypes()
 	{
 		return types;
 	}
@@ -26,7 +45,7 @@ public class Card {
 	 * Return a list of display types - action, treasure, reaction, curse card.
 	 * @return
 	 */
-	public ArrayList<String> getDisplayTypes()
+	public String[] getDisplayTypes()
 	{
 		return dispTypes;
 	}
@@ -41,12 +60,39 @@ public class Card {
 	}
 	
 	/**
-	 * Returns the effect code - the "effect" that occurs when a card is played.
+	 * Returns the effect codes - the "effect" that occurs when a card is used depending on the type
 	 * @return
 	 */
-	public ArrayList<Integer> getEffectCode()
+	public int[] getEffectCode()
 	{
-		return effectCode;
+		return effectCodes;
+	}
+	
+	/**
+	 * Returns the effect code count.
+	 * @return
+	 */
+	public int getEffectCount()
+	{
+		return effectCodeCount;
+	}
+	
+	/**
+	 * Returns the type count.
+	 * @return
+	 */
+	public int getTypeCount()
+	{
+		return typeCount;
+	}
+	
+	/**
+	 * Returns the display type count count.
+	 * @return
+	 */
+	public int getDisplayCountCount()
+	{
+		return dispTypeCount;
 	}
 	
 	/**
@@ -83,6 +129,7 @@ public class Card {
 	{
 		costMod = mod;
 	}
+	
 	
 	/**
 	 * Returns the cost mod of an item
