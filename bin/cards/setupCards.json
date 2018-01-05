@@ -27,8 +27,8 @@
 		name : "Silver",
 		description: "Worth 2 coin",
 		set : "treasures",
-		cost : 0,
-		money : 3,
+		cost : 3,
+		money : 2,
 		effectCode :
 		[
 			0

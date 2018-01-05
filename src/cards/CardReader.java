@@ -1,15 +1,10 @@
 package cards;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -21,34 +16,16 @@ public class CardReader {
 	private static ArrayList<Card> setup = new ArrayList<Card>();
 	private static ArrayList<Card> base = new ArrayList<Card>();
 	
-	public static void main(String args[]) throws IOException
-	{
-
-		
-		//Inits the Card Reader
-		CardReader cardReader = new CardReader();
-		for (Card card : setup)
-		{
-			System.out.println(card.getDesc());
-		}
-		
-		for (Card card : base)
-		{
-			System.out.println(card.getDesc());
-		}
-		
-		
-	}
-	
 	public CardReader() throws IOException
 	{
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().create();
 		Type listType =  new TypeToken<List<Card>>() {}.getType();
 		//Read the file
 		String input = getCards("setupCards");		
 		setup = gson.fromJson(input, listType);
-		input = getCards("baseCards");		
+		input = getCards("baseCards");
 		base = gson.fromJson(input, listType);
+		
 	}
 	
 	public String getCards(String filename) throws IOException
@@ -71,7 +48,7 @@ public class CardReader {
 	 * Curse Card
 	 * @return setup
 	 */
-	public static ArrayList<Card> getSetup()
+	public ArrayList<Card> getSetup()
 	{
 		return setup;
 	}
@@ -80,7 +57,7 @@ public class CardReader {
 	 * Returns the base Game Cards
 	 * @return setup
 	 */
-	public static ArrayList<Card> getBase()
+	public ArrayList<Card> getBase()
 	{
 		return base;
 	}

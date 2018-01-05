@@ -1,21 +1,77 @@
-package Engine;
+package engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
 
 public class Player {
-	private int money;
-	private int actions;
-	private int buys;
-	private int victoryPoints;
-	private ArrayList<Card> deck;
+	private int money, actions, buys, victoryPoints;
+	//Insertion in the back and in the front in O(1) time due to linkedBlockingQueue
+	private LinkedBlockingDeque <Card> deck, discard = new LinkedBlockingDeque<Card>();
 	private ArrayList<Card> hand;
-	private ArrayList<Card> discard;
 	private ArrayList<String> effects;
-	private boolean connected = true;
 	
+	private boolean connected = true;
 	private String name = "";
+	
+	
+	/**
+	 * Draw n cards - if the deck is empty try to reshuffle, if that can't be done stop drawing.
+	 * @param n - cards to draw
+	 */
+	public void drawCard(int n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			if (deck.isEmpty())
+			{
+				if (discard.isEmpty())
+					break;
+				reshuffleDeck();
+			}
+			hand.add(deck.poll());			
+		}
+	}
+	
+	/**
+	 * Discards the card
+	 * @param card
+	 */
+	public void discardCard(Card card)
+	{
+		discard.addFirst(card);
+	}
+	
+	/**
+	 * Shuffles the players deck - does not include discard pile.
+	 */
+	public void shuffleDeck()
+	{
+		List<Card> tempList = new LinkedList<Card>();
+		for (Card card : deck)
+			tempList.add(card);
+		Collections.shuffle(tempList);
+		deck = new LinkedBlockingDeque<Card> (tempList);
+	}
+	
+	/**
+	 * Shuffles the discard pile into the deck.
+	 */
+	public void reshuffleDeck()
+	{
+		List<Card> tempList = new LinkedList<Card>();
+		for (Card card : deck)
+			tempList.add(card);
+		for (Card card : discard)
+			tempList.add(card);
+		discard = new LinkedBlockingDeque<Card>();
+		Collections.shuffle(tempList);
+		deck = new LinkedBlockingDeque<Card> (tempList);
+	}
 	
 	/**
 	 * Returns the money a player has.
@@ -36,13 +92,17 @@ public class Player {
 		return money >= cost;
 	}
 	/**
-	 * Buy the card
+	 * Buys the card triggers - buyEffects
 	 * @return
 	 */
 	public void buy(Card card, int cost)
 	{
-		money -= cost;
-		buyEffects(card);
+		if (getBuys() > 0)
+		{
+			money -= cost;
+			buyEffects(card);
+		}
+		
 	}
 	
 	/**
@@ -51,9 +111,24 @@ public class Player {
 	 */
 	private void buyEffects(Card card)
 	{
+		//Used to mark whether the buy action was affected by the placement.
+		Boolean deckPlacementEffect = false;
 		for (String effect : effects)
 		{
+			switch (effect)
+			{
+				case "BuyOnTopDeck":
+					deckPlacementEffect = true;
+					break;
+				default :
+					break;
+			}
 			
+		}
+		if (!deckPlacementEffect)
+		{
+			//Whenever a card is bought - and there is no card buying effects affected placements - its added to the top of the discard pile.
+			discardCard(card);
 		}
 	}
 
@@ -62,12 +137,9 @@ public class Player {
 		return actions;
 	}
 
-
-
 	public void setActions(int actions) {
 		this.actions = actions;
 	}
-
 
 
 	public int getVictoryPoints() {
@@ -80,19 +152,47 @@ public class Player {
 		this.victoryPoints = victoryPoints;
 	}
 
+	/**
+	 * Gets the buys for a player
+	 * @return buys
+	 */
+	public int getBuys()
+	{
+		return buys;
+	}
+	
+	/**
+	 * Reset the buys for a player to 1
+	 */
+	public void resetBuys()
+	{
+		buys = 1;
+	}
+	
+	/**
+	 * Removes a buy from the player
+	 */
+	public void removeBuy()
+	{
+		buys--;
+	}
+	
+	/**
+	 * Adds n buys to the player
+	 * @param n
+	 */
+	public void addBuys(int n)
+	{
+		buys += n;
+	}
 
-
-	public ArrayList<Card> getDeck() {
+	public LinkedBlockingDeque<Card> getDeck() {
 		return deck;
 	}
 
-
-
-	public void setDeck(ArrayList<Card> deck) {
+	public void setDeck(LinkedBlockingDeque<Card> deck) {
 		this.deck = deck;
 	}
-
-
 
 	public ArrayList<Card> getHand() {
 		return hand;
@@ -104,41 +204,32 @@ public class Player {
 		this.hand = hand;
 	}
 
-
-
-	public ArrayList<Card> getDiscard() {
+	public LinkedBlockingDeque<Card> getDiscard() {
 		return discard;
 	}
 
-
-
-	public void setDiscard(ArrayList<Card> discard) {
+	public void setDiscard(LinkedBlockingDeque<Card> discard) {
 		this.discard = discard;
 	}
-
-
 
 	public boolean isConnected() {
 		return connected;
 	}
 
-
-
 	public void setConnected(boolean connected) {
 		this.connected = connected;
 	}
-
-
 
 	public String getName() {
 		return name;
 	}
 
-
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
+	
+	public void addCardDeck(Card card)
+	{
+		deck.offer(card);
+	}
 }
