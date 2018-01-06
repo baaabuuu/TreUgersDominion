@@ -10,12 +10,15 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import cards.Card;
 import engine.Board;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BoardTest
 {	
 	@Mock
@@ -30,6 +33,8 @@ public class BoardTest
 	@Before
 	public void setupBoard()
 	{
+		MockitoAnnotations.initMocks(this);
+
 		copperMock = mock(Card.class);
 		estateMock = mock(Card.class);
 		actionMock = mock(Card.class);
@@ -37,8 +42,7 @@ public class BoardTest
 		when(copperMock.getName()).thenReturn("Copper");
 		when(estateMock.getName()).thenReturn("Estate");
 		when(actionMock.getName()).thenReturn("Action");
-        MockitoAnnotations.initMocks(this);
-
+		
 		ArrayList<Card> dummyCards = new ArrayList<Card>();
 		for (int i = 0; i < 10; i++)
 		{
@@ -101,31 +105,26 @@ public class BoardTest
 	@Test
 	public void canBuyNonExisting()
 	{
-		Card card = board.canBuy("NULL");
+		Card card = board.canBuy("HELLO WORLD");
+		board.cardRemove("HELLO WORLD");
 		assertNull("Card does not exist", card);
 	}
 	@Test
 	public void canBuy()
 	{
 		Card card = board.canBuy("testCard");
+		board.cardRemove("testCard");
 		assertNotNull("Card exists", card);
 	}
 	@Test
 	public void canBuyNoneLeft()
 	{
-		System.out.println("Setting up can buyNoneLeft");
-		for(String name : board.shop.keySet())
-			System.out.println(name);
 		Card card = board.canBuy("Action");
-		
-		
 		board.cardRemove("Action");
-		assertNotNull("card not equal to null ", card);
-		
-		for(int i = 0; i < 9; i++)
+		for(int i = 0; i < 10; i++)
 		{
 			assertNotNull("card not equal to null", card);
-			board.canBuy("Action");
+			card = board.canBuy("Action");
 			board.cardRemove("Action");
 		}
 		assertNull("Card does not exist", card);

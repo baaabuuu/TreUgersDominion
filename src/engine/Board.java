@@ -21,7 +21,6 @@ public class Board
 		for (int i = 0; i < setupCards.size(); i++)
 		{
 			card = setupCards.get(i);
-			Log.important("Is card null: " + (card == null));
 			Object[] input = {cardSize[i], card};
 			shop.put(card.getName(), input);
 			Log.log("Card name: " + card.getName() + " count: " + cardSize[i]);
