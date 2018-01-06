@@ -41,11 +41,16 @@ public void triggerEffect(int n,Player player,Card card) {
 		case 5: player.addEffect("1TempOnNextSilver");
 			break;
 		//Discard top of deck, if action card, play it.
-		case 6: DiscardTopPlayAction(player);
+		case 6: discardTopPlayAction(player);
 			break;
-		}
+		//Draw 1, get 2 actions
+		case 7: draw1Get2Actions(player);
+			break;
+		//Gain a card costing upto 4
+		case 8:
+			break;
 	}
-
+}
 private void discardNDrawN(Player player){
 	int i=0; //number of discards
 	if(player.getHandSize()==0) {
@@ -94,7 +99,7 @@ private void browseDiscard1OnTop(Player player) {
 	player.addCardDecktop(selectedCard);
 		}
 	}
-private void DiscardTopPlayAction(Player player) {
+private void discardTopPlayAction(Player player) {
 		//Assume card drawn is not action card
 	boolean discard = true;
 		//Draw card
@@ -116,5 +121,12 @@ private void DiscardTopPlayAction(Player player) {
 		player.discardCard(topCard);
 	}
 }
+private void draw1Get2Actions(Player player){
+	player.drawCard(1);
+	player.addActions(2);
+	}
 
+private void gain1MaxCost4() {
+	
+}
 }
