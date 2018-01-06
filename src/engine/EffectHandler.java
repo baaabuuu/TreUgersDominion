@@ -2,6 +2,8 @@ package engine;
 import Engine.Player;
 import cards.Card;
 
+import java.util.concurrent.LinkedBlockingDeque;
+
 import org.jspace.*;
 public class EffectHandler {
 
@@ -9,6 +11,12 @@ public class EffectHandler {
  * Creates an instance of the EffectHandler
  */
 public EffectHandler() {};
+/**
+ * 
+ * @param n - Specifies the effect code
+ * @param player - PLayer that the effect should a apply to
+ * @param card - The card that was played.
+ */
 
 public void triggerEffect(int n,Player player,Card card) {
 	switch(n) {
@@ -23,7 +31,7 @@ public void triggerEffect(int n,Player player,Card card) {
 			break;
 		case 3: //Implement reveal
 			break;
-		case 4: browseDiscard1OnTop();
+		case 4: browseDiscard1OnTop(player);
 			break;
 			
 		}
@@ -37,7 +45,14 @@ private void discardNDrawN(Player player){
 	//else draw equal to counter
 	
 }
-private void browseDiscard1OnTop() {
-	
+private void browseDiscard1OnTop(Player player) {
+	LinkedBlockingDeque<Card> discardTemp= player.getDiscard();
+	for (Card card: discardTemp) {
+		//Ui show card
+	}
+	int select;
+	//network either get number or "no"
+	//either do nothing or add
+	player.addCardDecktop(discardTemp.toArray());
 }
 }
