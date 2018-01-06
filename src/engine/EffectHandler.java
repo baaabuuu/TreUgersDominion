@@ -2,6 +2,8 @@ package engine;
 import Engine.Player;
 import cards.Card;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.jspace.*;
@@ -39,7 +41,7 @@ public void triggerEffect(int n,Player player,Card card) {
 private void discardNDrawN(Player player){
 	int i=0; 
 	if(player.getHandSize()==0) {
-		continue;
+		//Display "invalid action"
 	}
 	else {
 	//counter to determine draws
@@ -52,7 +54,7 @@ private void discardNDrawN(Player player){
 }
 private void browseDiscard1OnTop(Player player) {
 	if(player.getDiscardSize()==0) {
-		continue;
+	//Display invalid action
 	}
 	else
 	{
@@ -60,10 +62,19 @@ private void browseDiscard1OnTop(Player player) {
 	for (Card card: discardTemp) {
 		//UI show card
 	}
-	int select;
+	int select = 0; //Error suppression, does not actually need to be initialized
 	//NETWORK either get number or "no"
 	//either do nothing or add
-	player.addCardDecktop();
+	//Create temp discard pile.
+	LinkedBlockingDeque<Card> tempDiscard = player.getDiscard();
+	//Convert playerinput to Card object
+	Card selectedCard= player.select(new ArrayList<Card>(tempDiscard), select);
+	//Remove selected card fom temp discard
+	tempDiscard.remove(selectedCard);
+	//Set players discardpile to the temp pile
+	player.setDiscard(tempDiscard);
+	//Finally add the selected card on top of the deck
+	player.addCardDecktop(selectedCard);
 		}
 	}
 }
