@@ -10,7 +10,7 @@ public class Board
 	HashMap<String, Object[]> shop = new HashMap<String, Object[]>();
 	ArrayList<Card> additionalCards;
 	int playerCount = 0;
-	public Board(String[] playerNames, int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
+	public Board(int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
 	{
 		this.playerCount = playerCount;
 		Log.important("setting up buying area:");		
