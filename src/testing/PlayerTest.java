@@ -11,12 +11,44 @@ public class PlayerTest
 {	
 	
 	@Test
-	public void drawCard()
+	public void drawACard()
 	{
 		Player player = new Player();
-		player.newHand();
 		player.addCardDeckBottom(new Card());
 		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
+		player.drawCard(1);
+		assertEquals("1 cards drawn - hand size is 1", 1, player.getHandSize());
+		player.drawCard(1);
+		assertEquals("1 cards drawn - hand size is 1", 1, player.getHandSize());
+	}
+	
+	@Test
+	public void draw2Cards()
+	{
+		Player player = new Player();
+		player.addCardDeckBottom(new Card());
+		player.addCardDeckBottom(new Card());
+		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
+		player.drawCard(2);
+		assertEquals("2 cards drawn - hand size is 2", 2, player.getHandSize());
+		player.drawCard(2);
+		assertEquals("2 cards drawn - hand size is 2", 2, player.getHandSize());
+	}
+	
+	@Test
+	public void drawReshuffle()
+	{
+		Player player = new Player();
+		player.addCardDeckBottom(new Card());
+		player.discardCard(new Card());
+		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
+		player.drawCard(1);
+		assertEquals("1 cards drawn - hand size is 1", 1, player.getHandSize());
+		player.drawCard(1);
+		assertEquals("2 cards drawn - hand size is 2 - reshuffled discard pile", 2, player.getHandSize());
+		assertEquals("0 cards in discard pile - reshuffled discard pile", 0, player.getDiscard().size());
+		player.drawCard(1);
+		assertEquals("2 cards drawn - hand size is 2 - no more cards can be drawn", 2, player.getHandSize());
 	}
 
 }

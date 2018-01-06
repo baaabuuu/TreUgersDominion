@@ -11,9 +11,10 @@ import cards.Card;
 public class Player {
 	private int money, actions, buys, victoryPoints;
 	//Insertion in the back and in the front in O(1) time due to linkedBlockingQueue
-	private LinkedBlockingDeque <Card> deck, discard = new LinkedBlockingDeque<Card>();
+	private LinkedBlockingDeque <Card> deck = new LinkedBlockingDeque<Card>();
+	private LinkedBlockingDeque <Card> discard = new LinkedBlockingDeque<Card>();
 	private ArrayList<Card> hand = new ArrayList<Card>();
-	private ArrayList<String> effects = new ArrayList<String>;
+	private ArrayList<String> effects = new ArrayList<String>();
 	
 	private boolean connected = true;
 	private String name = "";
@@ -252,14 +253,6 @@ public class Player {
 	{
 		deck.offerLast(card);
 	}
-	/**
-	 * Returns the handsize of the player.
-	 * @return
-	 */
-	public int getHandSize()
-	{
-		return hand.size();
-	}
 	
 	/**
 	 * Puts a card at the top of the deck
@@ -267,5 +260,14 @@ public class Player {
 	public void addCardDecktop(Card card)
 	{
 		deck.offerFirst(card);
+	}
+	
+	/**
+	 * Returns the handsize of the player.
+	 * @return
+	 */
+	public int getHandSize()
+	{
+		return hand.size();
 	}
 }
