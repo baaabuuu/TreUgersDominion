@@ -45,6 +45,14 @@ public class Player {
 	{
 		hand.remove(index);
 	}
+	/**
+	 * Adds money to the player's money.
+	 * @param money
+	 */
+	public void addMoney(int money)
+	{
+		this.money += money;
+	}
 	
 	/**
 	 * Removes a specific card from the hand

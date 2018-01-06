@@ -63,7 +63,8 @@ public class PlayerTest
 	@Test
 	public void buyNoBuys()
 	{
-		
+		Player player = new Player();
+		player.buy(new Card(), 0);
 	}
 
 }
