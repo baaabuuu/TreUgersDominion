@@ -37,6 +37,9 @@ public class Player {
 			hand.add(deck.poll());			
 		}
 	}
+	public void addEffect(String effect) {
+		this.effects.add(effect);
+	}
 	/**
 	 * Removes a card from the hand with the selected index.
 	 * @param index
@@ -106,9 +109,12 @@ public class Player {
 	
 	public void playCard(Card card)
 	{
+		ArrayList<Card> tempHand= getHand();
 		if (canPlayAction())
 		{
 			actions--;
+			tempHand.remove(card);
+			setHand(tempHand);
 		}
 	}
 	

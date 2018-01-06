@@ -31,15 +31,23 @@ public void triggerEffect(int n,Player player,Card card) {
 		//Draw 2 cards
 		case 2: player.drawCard(2);
 			break;
+		//Reveal and become immune to an attack card
 		case 3: //Implement reveal
 			break;
+		//Look through discard and maybe put one on top of the deck
 		case 4: browseDiscard1OnTop(player);
 			break;
-			
+		//Next time a silver is played, gain +1 temp monies
+		case 5: player.addEffect("1TempOnNextSilver");
+			break;
+		//Discard top of deck, if action card, play it.
+		case 6: DiscardTopPlayAction(player);
+			break;
 		}
 	}
+
 private void discardNDrawN(Player player){
-	int i=0; 
+	int i=0; //number of discards
 	if(player.getHandSize()==0) {
 		//Display "invalid action"
 	}
@@ -50,6 +58,15 @@ private void discardNDrawN(Player player){
 	//wait for pspace with identifier
 	//if discard, then then discard+increment counter
 	//else draw equal to counter
+		
+		if(false) {
+			
+		}
+		else {
+			player.drawCard(i);
+		}
+		//condition here
+			
 	}
 }
 private void browseDiscard1OnTop(Player player) {
@@ -65,16 +82,39 @@ private void browseDiscard1OnTop(Player player) {
 	int select = 0; //Error suppression, does not actually need to be initialized
 	//NETWORK either get number or "no"
 	//either do nothing or add
-	//Create temp discard pile.
+		//Create temp discard pile.
 	LinkedBlockingDeque<Card> tempDiscard = player.getDiscard();
-	//Convert playerinput to Card object
+		//Convert playerinput to Card object
 	Card selectedCard= player.select(new ArrayList<Card>(tempDiscard), select);
-	//Remove selected card fom temp discard
+		//Remove selected card fom temp discard
 	tempDiscard.remove(selectedCard);
-	//Set players discardpile to the temp pile
+		//Set players discardpile to the temp pile
 	player.setDiscard(tempDiscard);
-	//Finally add the selected card on top of the deck
+		//Finally add the selected card on top of the deck
 	player.addCardDecktop(selectedCard);
 		}
 	}
+private void DiscardTopPlayAction(Player player) {
+		//Assume card drawn is not action card
+	boolean discard = true;
+		//Draw card
+	player.drawCard(1);
+		//Find card in hand
+	Card topCard = player.getHand().get(player.getHandSize()-1);
+		//Check if it is an action card
+	for(String type: topCard.getDisplayTypes()) {
+		if(type.equals("action")) {
+				//If action card, play it
+			player.playCard(topCard);
+				//Don't discard it
+			discard = false;
+			break;
+		}
+	}
+	if(discard) {
+			//Discard if not action card
+		player.discardCard(topCard);
+	}
+}
+
 }
