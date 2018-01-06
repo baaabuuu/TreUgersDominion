@@ -99,6 +99,19 @@ public class Player {
 		deck = new LinkedBlockingDeque<Card> (tempList);
 	}
 	
+	public boolean canPlayAction()
+	{
+		return actions > 0;
+	}
+	
+	public void playCard(Card card)
+	{
+		if (canPlayAction())
+		{
+			actions--;
+		}
+	}
+	
 	/**
 	 * Returns the money a player has.
 	 * @return
@@ -165,6 +178,11 @@ public class Player {
 
 	public void setActions(int actions) {
 		this.actions = actions;
+	}
+	
+	public void addActions(int actions) 
+	{
+		this.actions += actions;
 	}
 
 

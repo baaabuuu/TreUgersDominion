@@ -1,6 +1,7 @@
 package testing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -68,7 +69,113 @@ public class PlayerTest
 		assertEquals("Player has enough money", player.getMoney(), Integer.MAX_VALUE); 
 		assertEquals("Player has no buys", player.getBuys(), 0);
 		player.buy(new Card());
-		assertEquals("Player discard pile size: 0", player.getDiscard().size())
+		assertEquals("Player discard pile size: 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void buyNoMoney()
+	{
+		Player player = new Player();
+		player.addMoney(Integer.MIN_VALUE);
+		player.addBuys(Integer.MAX_VALUE);
+		assertEquals("Player has MIN_value money", player.getMoney(), Integer.MIN_VALUE); 
+		assertEquals("Player has MAX value buys", player.getBuys(), Integer.MAX_VALUE);
+		player.buy(new Card());
+		assertEquals("Player discard pile size: 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void buy()
+	{
+		Player player = new Player();
+		player.addMoney(Integer.MAX_VALUE);
+		player.addBuys(Integer.MAX_VALUE);
+		assertEquals("Player has MAX_value money", player.getMoney(), Integer.MAX_VALUE); 
+		assertEquals("Player has MAX value buys", player.getBuys(), Integer.MAX_VALUE);
+		player.buy(new Card());
+		assertEquals("Player discard pile size: 1", 1, player.getDiscardSize());
+	}
+	
+	@Test
+	public void shuffleDeckNoCards()
+	{
+		Player player = new Player();
+		assertEquals("Deck size = 0", 0, player.getDeckSize());
+		player.shuffleDeck();
+		assertEquals("Deck size = 0", 0, player.getDeckSize());
+	}
+	@Test
+	public void shuffleDeck()
+	{
+		Player player = new Player();
+		player.addCardDeckBottom(new Card());
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+		player.shuffleDeck();
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+	}
+	
+	@Test
+	public void reshuffleNoDiscardNoDeck()
+	{
+		Player player = new Player();
+		assertEquals("Deck size = 0", 0, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+		player.reshuffleDeck();
+		assertEquals("Deck size = 0", 0, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void reshuffleNoDiscard()
+	{
+		Player player = new Player();
+		player.addCardDeckBottom(new Card());
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+		player.reshuffleDeck();
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void reshuffleNoDeck()
+	{
+		Player player = new Player();
+		player.discardCard(new Card());
+		assertEquals("Deck size = 0", 0, player.getDeckSize());
+		assertEquals("Discard size = 1", 1, player.getDiscardSize());
+		player.reshuffleDeck();
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void reshuffle()
+	{
+		Player player = new Player();
+		player.addCardDeckBottom(new Card());
+		player.discardCard(new Card());
+		assertEquals("Deck size = 1", 1, player.getDeckSize());
+		assertEquals("Discard size = 1", 1, player.getDiscardSize());
+		player.reshuffleDeck();
+		assertEquals("Deck size = 2", 2, player.getDeckSize());
+		assertEquals("Discard size = 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void playCardNoAction()
+	{
+		Player player = new Player();
+		assertFalse(player.canPlayAction());
+	}
+	
+	@Test
+	public void playCardAction()
+	{
+		Player player = new Player();
+		player.addActions(1);
+		assertEquals("Action size = 1", 1, player.getActions());
+		assertFalse(player.canPlayAction());
 	}
 
 }
