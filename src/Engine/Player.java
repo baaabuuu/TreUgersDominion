@@ -36,9 +36,26 @@ public class Player {
 			hand.add(deck.poll());			
 		}
 	}
+	/**
+	 * Removes a card from the hand with the selected index.
+	 * @param index
+	 */
+	public void removeFromHand(int index)
+	{
+		hand.remove(index);
+	}
 	
 	/**
-	 * Discards the card
+	 * Removes a specific card from the hand
+	 * @param card
+	 */
+	public void removeFromHand(Card card)
+	{
+		hand.remove(card);
+	}
+	
+	/**
+	 * Adds the card to the discard list
 	 * @param card
 	 */
 	public void discardCard(Card card)
