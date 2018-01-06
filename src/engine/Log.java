@@ -15,7 +15,7 @@ public class Log {
 	{
 		if (debug)
 		{
-			//Not sure we need year and day for this
+			//Not sure we need year and day for this pretty I'm pretty sure.
 			//System.out.println("[" + new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss").format(new Date()) + "]: " + message);
 			System.out.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]: " + message);
 		}

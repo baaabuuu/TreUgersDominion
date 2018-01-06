@@ -9,7 +9,6 @@ import cards.CardReader;
 
 public class StartGame
 {
-	
 	private Board board;
 	private int playerCount;
 	private String[] playerNames;
@@ -19,9 +18,9 @@ public class StartGame
 	
 	public static void main(String[] args) throws IOException
 	{
-		String[] playerNames = {"Hillary Clinton", "Donald J. Trump"};
+		String[] playerNames = {"Hillary Rodham Clinton", "Donald J. Trump"};
 		ArrayList<String> expansions = new ArrayList<String>();
-		expansions.add("base");	
+		expansions.add("base");
 		new StartGame(2, playerNames, new CardReader(), expansions, new Random());
 	}
 	/**
@@ -65,6 +64,7 @@ public class StartGame
 			index = random.nextInt(unrandomized.size());
 	        card = unrandomized.get(index);
 	        unrandomized.remove(index);
+	        gameCards.add(card);
 	        Log.log(card.getName());
 		}
 		Log.important("Done selecting cards.");
