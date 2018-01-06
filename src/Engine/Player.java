@@ -121,11 +121,11 @@ public class Player {
 	 * Buys the card triggers - buyEffects
 	 * @return
 	 */
-	public void buy(Card card, int cost)
+	public void buy(Card card)
 	{
-		if (getBuys() > 0)
+		if (getBuys() > 0 && canPay(card.getCost()))
 		{
-			money -= cost;
+			money -= card.getCost();
 			buyEffects(card);
 		}
 		
@@ -224,8 +224,6 @@ public class Player {
 		return hand;
 	}
 
-
-
 	public void setHand(ArrayList<Card> hand) {
 		this.hand = hand;
 	}
@@ -277,5 +275,22 @@ public class Player {
 	public int getHandSize()
 	{
 		return hand.size();
+	}
+	
+	/**
+	 * Gets the discard stack size
+	 * @return discard.size();
+	 */
+	public int getDiscardSize()
+	{
+		return discard.size();
+	}
+	/**
+	 * Gets the deck stack size
+	 * @return deck.size();
+	 */
+	public int getDeckSize()
+	{
+		return deck.size();
 	}
 }

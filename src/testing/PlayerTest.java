@@ -64,7 +64,11 @@ public class PlayerTest
 	public void buyNoBuys()
 	{
 		Player player = new Player();
-		player.buy(new Card(), 0);
+		player.addMoney(Integer.MAX_VALUE);
+		assertEquals("Player has enough money", player.getMoney(), Integer.MAX_VALUE); 
+		assertEquals("Player has no buys", player.getBuys(), 0);
+		player.buy(new Card());
+		assertEquals("Player discard pile size: 0", player.getDiscard().size())
 	}
 
 }
