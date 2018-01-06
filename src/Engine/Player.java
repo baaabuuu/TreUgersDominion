@@ -245,8 +245,19 @@ public class Player {
 		this.name = name;
 	}
 	
-	public void addCardDeck(Card card)
+	/**
+	 * Puts a card at the bottom of the deck
+	 */
+	public void addCardDeckBottom(Card card)
 	{
-		deck.offer(card);
+		deck.offerLast(card);
+	}
+	
+	/**
+	 * Puts a card at the top of the deck
+	 */
+	public void addCardDecktop(Card card)
+	{
+		deck.offerFirst(card);
 	}
 }

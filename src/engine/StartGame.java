@@ -10,6 +10,7 @@ import cards.CardReader;
 public class StartGame
 {
 	private Board board;
+	private Game game;
 	private int playerCount;
 	private String[] playerNames;
 	private CardReader cards;
@@ -35,7 +36,8 @@ public class StartGame
 		this.cards = cards;
 		this.random = random;
 		setupRandomCards(sets);
-		board = new Board(playerNames, playerCount, gameCards, cards.getSetup());
+		board = new Board(playerCount, gameCards, cards.getSetup());
+		game = new Game(board, playerNames, playerCount);
 	}
 	
 	/**
