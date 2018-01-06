@@ -32,7 +32,43 @@ public class Board
 			shop.put(card2.getName(), input);
 			Log.log("Card name: " + card2.getName() + " count: 10");
 		}
-		
+	}
+	
+	public void cardRemove(String cardName)
+	{
+		if (shop.containsKey(cardName))
+		{
+			Object[] array = shop.get(cardName);
+			if ((int) array[0] > 0)
+			{
+				array[0] = (int) array[0] - 1;
+				shop.put(cardName, array);
+				Log.important("card: "+ cardName + " cards left: " + array[0]);
+			}
+			Log.important("Cannot remove " + cardName + " no more left");	
+		} 
+		else
+		{
+			Log.important("Cannot remove " + cardName + " card not on map");
+		}
+	}
+	
+	public Card canBuy(String cardName)
+	{
+		if (shop.containsKey(cardName))
+		{
+			Object[] array = shop.get(cardName);
+			if ((int) array[0] > 0)
+			{
+				return (Card) array[1];
+			}
+			Log.important("Cannot buy " + cardName + " no more left");	
+		} 
+		else
+		{
+			Log.important("Cannot buy " + cardName + " card not on map");
+		}
+		return null;
 	}
 
 }

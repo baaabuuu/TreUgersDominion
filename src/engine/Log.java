@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class Log {
 
-	public static final boolean debug = true;
+	public static final boolean debug = false;
 	
 	public static void log(String message)
 	{
@@ -25,6 +25,7 @@ public class Log {
 	{
 		if (debug)
 		{
+			//See log for info about date format
 			System.err.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]: " + message);
 		}
 	}
