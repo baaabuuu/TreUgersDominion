@@ -1,5 +1,11 @@
 package client;
 
-public class Networking {
+public class Networking implements Runnable {
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
