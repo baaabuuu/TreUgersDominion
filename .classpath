@@ -6,5 +6,9 @@
 	<classpathentry kind="lib" path="JAR/hamcrest-all-1.3.jar"/>
 	<classpathentry kind="lib" path="JAR/junit.jar"/>
 	<classpathentry kind="lib" path="JAR/mockito-core-2.8.53.jar"/>
+	<classpathentry kind="lib" path="JAR/byte-buddy-1.7.9.jar"/>
+	<classpathentry kind="lib" path="JAR/byte-buddy-agent-1.7.9.jar"/>
+	<classpathentry kind="lib" path="JAR/byte-buddy-dep-1.7.9.jar"/>
+	<classpathentry kind="lib" path="JAR/objenesis-2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
