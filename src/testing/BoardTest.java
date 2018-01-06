@@ -26,6 +26,7 @@ public class BoardTest
 	private Card actionMock;
 	
 	private Board board;
+	
 	@Before
 	public void setupBoard()
 	{
@@ -112,11 +113,20 @@ public class BoardTest
 	@Test
 	public void canBuyNoneLeft()
 	{
+		System.out.println("Setting up can buyNoneLeft");
+		for(String name : board.shop.keySet())
+			System.out.println(name);
 		Card card = board.canBuy("Action");
-		for(int i = 0; i < 10; i++)
+		
+		
+		board.cardRemove("Action");
+		assertNotNull("card not equal to null ", card);
+		
+		for(int i = 0; i < 9; i++)
 		{
-			assertNotNull("Card exists", card);
+			assertNotNull("card not equal to null", card);
 			board.canBuy("Action");
+			board.cardRemove("Action");
 		}
 		assertNull("Card does not exist", card);
 	}

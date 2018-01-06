@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class Log {
 
-	public static final boolean debug = false;
+	public static final boolean debug = true;
 	
 	public static void log(String message)
 	{

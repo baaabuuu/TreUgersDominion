@@ -7,9 +7,9 @@ import cards.Card;
 
 public class Board
 {
-	HashMap<String, Object[]> shop = new HashMap<String, Object[]>();
-	ArrayList<Card> additionalCards;
-	int playerCount = 0;
+	public HashMap<String, Object[]> shop = new HashMap<String, Object[]>();
+	public ArrayList<Card> additionalCards;
+	public int playerCount = 0;
 	public Board(int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
 	{
 		this.playerCount = playerCount;
@@ -21,6 +21,7 @@ public class Board
 		for (int i = 0; i < setupCards.size(); i++)
 		{
 			card = setupCards.get(i);
+			Log.important("Is card null: " + (card == null));
 			Object[] input = {cardSize[i], card};
 			shop.put(card.getName(), input);
 			Log.log("Card name: " + card.getName() + " count: " + cardSize[i]);
