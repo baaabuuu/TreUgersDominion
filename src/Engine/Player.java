@@ -293,4 +293,13 @@ public class Player {
 	{
 		return deck.size();
 	}
+	/**
+	 *  Selects a card form a list of cards
+	 * @param list - List of cards
+	 * @param index - Card to be taken
+	 */
+	public Card select(List<Card> list,int index) {
+		Card selected = list.get(index);
+		return selected ;
+	}
 }

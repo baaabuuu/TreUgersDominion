@@ -37,22 +37,33 @@ public void triggerEffect(int n,Player player,Card card) {
 		}
 	}
 private void discardNDrawN(Player player){
-	int i=0; //counter to determine draws
-	
-	//access connected space
+	int i=0; 
+	if(player.getHandSize()==0) {
+		continue;
+	}
+	else {
+	//counter to determine draws
+	//NETWORK
+	//access connected spacenetwork
 	//wait for pspace with identifier
 	//if discard, then then discard+increment counter
 	//else draw equal to counter
-	
+	}
 }
 private void browseDiscard1OnTop(Player player) {
+	if(player.getDiscardSize()==0) {
+		continue;
+	}
+	else
+	{
 	LinkedBlockingDeque<Card> discardTemp= player.getDiscard();
 	for (Card card: discardTemp) {
-		//Ui show card
+		//UI show card
 	}
 	int select;
-	//network either get number or "no"
+	//NETWORK either get number or "no"
 	//either do nothing or add
-	player.addCardDecktop(discardTemp.toArray());
-}
+	player.addCardDecktop();
+		}
+	}
 }
