@@ -4,6 +4,7 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 import client.ClientActions;
+import client.ClientActions.bState;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -24,13 +25,14 @@ public class Consumer implements Runnable {
 						new FormalField(String.class));
 				
 				if(objs[0] == "1") {
-					client.ClientActions();
+					bState board = (bState) objs[1];
+					ClientActions.updateBoard(board);
 				}
 				else if(objs[0] == "2") {
-					
+					ClientActions.takeTurn();
 				}
 				else if(objs[0] == "3") {
-					
+					ClientActions.nonTurnAction();
 				}
 				
 				
@@ -39,5 +41,6 @@ public class Consumer implements Runnable {
 			}
 		}
 	}
+	
 
 }

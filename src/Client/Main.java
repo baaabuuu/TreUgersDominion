@@ -25,26 +25,10 @@ public class Main {
 		new Thread(new Networking()).start();
 		new Thread(new Consumer(gameSpace)).start();
 		
-		
 	}
 	
 	
 	
-	public class bState {
-		public int[] shopArea;
-		public int[] handCount;
-		public int[] deckCount;
-		public int[] discardCount;
-		public int trashCount;
-		public int[] vpCount; 
-		public bState(int[] a, int[] b, int[] c, int[] d, int e, int[] f) {
-			this.shopArea = a;
-			this.handCount = b;
-			this.deckCount = c;
-			this.discardCount = d;
-			this.trashCount = e;
-			this.vpCount = f;
-		}
-	}
+	
 	
 }
