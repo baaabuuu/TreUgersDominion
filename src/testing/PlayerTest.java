@@ -59,5 +59,11 @@ public class PlayerTest
 		player.drawCard(1);
 		assertEquals("no cards drawn - hand size is 2 - no more cards can be drawn", 2, player.getHandSize());
 	}
+	
+	@Test
+	public void buyNoBuys()
+	{
+		
+	}
 
 }
