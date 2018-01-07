@@ -1,6 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +35,9 @@ public class Player {
 					break;
 				reshuffleDeck();
 			}
-			hand.add(deck.poll());			
+			Card drawn = deck.poll();
+			hand.add(drawn);
+			Log.log("[Player] " + getName() + " has drawn " + drawn.getName());
 		}
 	}
 	/**
@@ -77,6 +80,7 @@ public class Player {
 	 */
 	public void shuffleDeck()
 	{
+		Log.log("[Player] " + getName() + " just shuffled their deck.");
 		List<Card> tempList = new LinkedList<Card>();
 		for (Card card : deck)
 			tempList.add(card);
@@ -89,6 +93,7 @@ public class Player {
 	 */
 	public void reshuffleDeck()
 	{
+		Log.log("[Player] " + getName() + " just reshuffled their deck.");
 		List<Card> tempList = new LinkedList<Card>();
 		for (Card card : deck)
 			tempList.add(card);
@@ -104,12 +109,31 @@ public class Player {
 		return actions > 0;
 	}
 	
-	public void playCard(Card card)
+	/**
+	 * Needs to send network code or smth.
+	 * @param card
+	 * @return
+	 */
+	public boolean playCard(Card card, int phase)
 	{
-		if (canPlayAction())
+		List<String> types = Arrays.asList(card.getDisplayTypes());
+		if (types.contains("Action") && phase == 0)
 		{
-			actions--;
+			if (canPlayAction())
+			{
+				Log.log("[Player] " + getName() + " played the action card " + card.getName());
+				actions--;
+				return true;
+			}
 		}
+		else
+		{
+			if (types.contains("Treasure") && phase == 1)
+			{
+				Log.log("[Player] " + getName() + " played the action card " + card.getName());
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -212,6 +236,13 @@ public class Player {
 	{
 		buys = 1;
 	}
+	/**
+	 * Sets the money of a player to 0.
+	 */
+	public void resetMoney()
+	{
+		money = 0;
+	}
 	
 	/**
 	 * Removes a buy from the player
@@ -262,10 +293,18 @@ public class Player {
 		this.connected = connected;
 	}
 
+	/**
+	 * Gets the name of a player
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Sets the name of a player.
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}

@@ -37,7 +37,9 @@ public class StartGame
 		this.random = random;
 		setupRandomCards(sets);
 		board = new Board(playerCount, gameCards, cards.getSetup());
-		game = new Game(board, playerNames, playerCount);
+		game = new Game(board, playerNames, playerCount, random.nextInt(playerCount));
+		game.dummyGame();
+		//game.start();
 	}
 	
 	/**
@@ -58,7 +60,7 @@ public class StartGame
 					break;
 			}
 		}
-		Log.important("StartGame Object -> Selecting 10 random cards from card set.");
+		Log.important("[StartGame] Selecting 10 random cards from card set.");
 		int index;
 		Card card;
 		for (int i = 0; i < 10; i++)
@@ -67,9 +69,9 @@ public class StartGame
 	        card = unrandomized.get(index);
 	        unrandomized.remove(index);
 	        gameCards.add(card);
-	        Log.log(card.getName());
+	        Log.log("[StartGame] card selected: " +  card.getName());
 		}
-		Log.important("Done selecting cards.");
+		Log.important("[StartGame] Done selecting cards.");
 	}
 	
 	

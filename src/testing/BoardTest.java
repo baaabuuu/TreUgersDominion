@@ -27,8 +27,7 @@ public class BoardTest
 	private Card estateMock;
 	@Mock
 	private Card actionMock;
-	
-	private Board board;
+	private Board board;	
 	
 	@Before
 	public void setupBoard()
