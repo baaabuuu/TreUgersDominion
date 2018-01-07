@@ -166,7 +166,7 @@ public class PlayerTest
 	public void playCardNoAction()
 	{
 		Player player = new Player();
-		player.playCard(new Card());
+		player.playCard(new Card(), 0);
 		assertEquals("Action size = 0", 0, player.getActions());
 	}
 	
@@ -176,7 +176,7 @@ public class PlayerTest
 		Player player = new Player();
 		player.addActions(1);
 		assertEquals("Action size = 1", 1, player.getActions());
-		player.playCard(new Card());
+		player.playCard(new Card(), 0);
 		assertEquals("Action size = 0", 0, player.getActions());
 	}
 

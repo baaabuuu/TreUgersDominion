@@ -39,11 +39,11 @@ public class Card {
 	
 	public Card()
 	{
-		types = new String[] {};
-		dispTypes = new String[] {};
+		types = new String[] {"action"};
+		dispTypes = new String[] {"Action"};
 		effectCodes = new int[] {0};
-		typeCount = 0;
-		dispTypeCount = 0;
+		typeCount = 1;
+		dispTypeCount = 1;
 		effectCodeCount = 0;
 		
 
