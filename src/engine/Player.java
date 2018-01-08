@@ -40,6 +40,7 @@ public class Player {
 			Log.log(getName() + " has drawn " + drawn.getName());
 		}
 	}
+	
 	public void addEffect(String effect)
 	{
 		Log.log(getName() + " added the effect " + effect);
@@ -146,18 +147,14 @@ public class Player {
 			actions--;
 			removeFromHand(card);
 			discardCard(card);
-			if (canPlayAction())
-			{
-				Log.log(getName() + " played the action card " + card.getName());
-				actions--;
-				return true;
-			}
+			Log.log(getName() + " played the action card " + card.getName());
+			return true;
 		}
 		else
 		{
 			if (types.contains("Treasure") && phase == 1)
 			{
-				Log.log(getName() + " played the action card " + card.getName());
+				Log.log(getName() + " played the treasure card " + card.getName());
 				return true;
 			}
 		}
@@ -171,17 +168,17 @@ public class Player {
 	 */
 	public boolean canPay(int cost)
 	{
-		Log.log(getName() + " tries to pay " + cost + "has " + cost + "gold");
+		Log.log(getName() + " tries to pay " + cost + " has " + money + " gold");
 		return money >= cost;
 	}
 	/**
 	 * Buys the card triggers - buyEffects
 	 * @return
 	 */
-	public boolean buy(Card card)
+	public boolean buy(Card card, int phase)
 	{
 		
-		if (getBuys() > 0 && canPay(card.getCost()))
+		if (phase == 1 && getBuys() > 0 && canPay(card.getCost()))
 		{
 			Log.log(getName() + " bought " + card.getName());
 			money -= card.getCost();
@@ -232,6 +229,7 @@ public class Player {
 	
 	public void addActions(int actions) 
 	{
+		Log.log(getName() + " added " + actions +" actions");
 		this.actions += actions;
 	}
 

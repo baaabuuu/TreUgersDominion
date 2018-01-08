@@ -3,14 +3,9 @@ import cards.Card;
 import log.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
-public class EffectHandler {
-
-	/**
-	 * Creates an instance of the EffectHandler
-	 */
-	public EffectHandler() {};
+public class EffectHandler
+{	
 	/**
 	 * Coordinator of effects- Call this on a per-board basis
 	 * @param n - Specifies the effect code
@@ -19,8 +14,9 @@ public class EffectHandler {
 	 * @param board - current board state
 	 * @param players - List of playerIDs
 	 */
-	public void triggerEffect(int n,Player player,Card card,Board board,ArrayList<Player> players) {
-		Log.log("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
+	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players)
+	{
+		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
 		switch(n)
 		{
 			//Do nothing
@@ -59,7 +55,7 @@ public class EffectHandler {
 				break;
 			//Silver on deck, reveal VP cards
 			case 9:
-				silverOnDeckRevealVC(player,players);
+				silverOnDeckRevealVC(player, players);
 				break;
 			//get 1 VP for every 10 cards
 			case 10: 
@@ -113,7 +109,7 @@ public class EffectHandler {
 
 		}
 	}
-	private void draw2OthersCurse(Player player, ArrayList<Player> players) {
+	private void draw2OthersCurse(Player player, Player[] players) {
 		player.drawCard(2);
 		for(Player other: players) {
 			if(other.equals(player)) {
@@ -157,7 +153,7 @@ public class EffectHandler {
 		player.addMoney(2);
 		
 	}
-	private void draw4Buy1OthersDraw(Player player, ArrayList<Player> players) {
+	private void draw4Buy1OthersDraw(Player player, Player[] players) {
 		player.drawCard(4);
 		player.addBuys(1);
 		//NETWORK 
@@ -278,11 +274,11 @@ public class EffectHandler {
 	{
 		//Requires methods in board 
 	}
-	private void silverOnDeckRevealVC(Player player,List<Player> players)
+	private void silverOnDeckRevealVC(Player player, Player[] players)
 	{
-		//Requires a reveal and some stuff from patric
+		//Requires a reveal and some stuff from patrick
 	}
-	private void get2TempOthersDiscard(Player player, List<Player> players)
+	private void get2TempOthersDiscard(Player player, Player[] players)
 	{
 		player.addMoney(2);
 		for(Player other: players) {

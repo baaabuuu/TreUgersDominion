@@ -12,7 +12,7 @@ public class Board
 	private ArrayList<Card> trash = new ArrayList<Card>();
 	
 	/**
-	 * Creates the board, needs playercount, cards, and setupCards
+	 * Creates the board, needs player count, cards, and setupCards
 	 * @param playerCount
 	 * @param cards
 	 * @param setupCards
@@ -128,6 +128,7 @@ public class Board
 		}
 		return null;
 	}
+	
 	/**
 	 * Returns the amount of cards on the board including setup cards etc.
 	 * @return shop.size();

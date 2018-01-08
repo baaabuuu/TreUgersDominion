@@ -14,6 +14,7 @@ public class Game {
 	private int turn;
 	private int phase;
 	private int playerCount;
+	private EffectHandler effects = new EffectHandler();
 
 	
 	/**
@@ -60,7 +61,7 @@ public class Game {
 				}
 				else
 				{
-					Log.important(currPlayer.getName() + " failed to play " + currPlayer.getHand().get(Integer.parseInt(input.substring(input.indexOf(" ") + 1))).getName());
+					Log.important(currPlayer.getName() + " failed to play a card");
 				}
 			}
 			if (action[0] == "close")
@@ -112,14 +113,26 @@ public class Game {
 				output[1] = currPlayer.getHand();
 				break;
 			case "play" :
-				output[0] = "play";
 				Card played = currPlayer.getHand().get(Integer.parseInt(additional));
-				output[1] = currPlayer.playCard(played, phase);
-				if ((boolean) output[1])
+				Boolean out = currPlayer.playCard(played, phase);
+				if (out)
 				{
+					String[] types = played.getTypes();
+					int typeCount = played.getTypeCount();
+					for (int i = 0; i < typeCount; i++)
+					{
+						if (types[i].equals("action"))
+						{
+							int code = played.getEffectCode()[i];
+							Log.important("Effect being played: " + code);
+							effects.triggerEffect(code, currPlayer, played, board, players);
+						}
+					}
 					currPlayer.discardCard(played);
 					currPlayer.removeFromHand(Integer.parseInt(additional));
 				}
+				output[0] = "play";
+				output[1] = out;
 				break;
 			case "draw" :
 				currPlayer.drawCard(Integer.parseInt(additional));
@@ -132,7 +145,7 @@ public class Game {
 				Card buying = board.canBuy(additional);
 				if (buying != null)
 				{
-					if (currPlayer.buy(buying));
+					if (currPlayer.buy(buying, phase));
 					{
 						board.cardRemove(additional);
 					}

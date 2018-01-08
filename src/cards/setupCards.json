@@ -5,7 +5,7 @@
 		set : "treasures",
 		cost : 0,
 		money : 1,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -29,7 +29,7 @@
 		set : "treasures",
 		cost : 3,
 		money : 2,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -53,7 +53,7 @@
 		set : "treasures",
 		cost : 6,
 		money : 3,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -77,7 +77,7 @@
 		set : "treasures",
 		cost : 0,
 		money : 0,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -101,7 +101,7 @@
 		set : "treasures",
 		cost : 2,
 		money : 0,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -125,7 +125,7 @@
 		set : "treasures",
 		cost : 5,
 		money : 0,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
@@ -149,7 +149,7 @@
 		set : "treasures",
 		cost : 8,
 		money : 0,
-		effectCode :
+		effectCodes :
 		[
 			0
 		],
