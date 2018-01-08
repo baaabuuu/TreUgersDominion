@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.lang.System;
 
-
-
 /**
  * A simple little logger, if debug is set to true the code will start printing information about the game in the console.
  * @author s164166

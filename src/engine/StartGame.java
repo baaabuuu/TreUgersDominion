@@ -12,8 +12,6 @@ public class StartGame
 {
 	private Board board;
 	private Game game;
-	private int playerCount;
-	private String[] playerNames;
 	private CardReader cards;
 	private ArrayList<Card> gameCards = new ArrayList<Card>();
 	private Random random;
@@ -32,8 +30,6 @@ public class StartGame
 	 */
 	public StartGame(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random) throws IOException
 	{
-		this.playerCount = playerCount;
-		this.playerNames = playerNames;
 		this.cards = cards;
 		this.random = random;
 		setupRandomCards(sets);

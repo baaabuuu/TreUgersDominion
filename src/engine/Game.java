@@ -1,9 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
 import log.Log;
@@ -21,34 +19,40 @@ public class Game {
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
+	@SuppressWarnings("unchecked")
 	public void dummyGame()
 	{
 		Scanner scanner = new Scanner(System.in);
 		String input;
-		Log.important("[Game] Starting a DUMMY game, please use console commands.");
-		Log.log("[Game][CONSOLE INPUT] Available commands: ");
-		Log.log("[Game][CONSOLE INPUT] GetHand : displays the hand of a player.");
-		Log.log("[Game][CONSOLE INPUT] SwitchPhase : Go to next phase.");
-		Log.log("[Game][CONSOLE INPUT] play [index] : play the card located at index.");
+		Log.important("Starting a DUMMY game, please use console commands.");
+		Log.log("[CONSOLE INPUT] Available commands: ");
+		Log.log("[CONSOLE INPUT] GetHand : displays the hand of a player.");
+		Log.log("[CONSOLE INPUT] SwitchPhase : Go to next phase.");
+		Log.log("[CONSOLE INPUT] play [index] : play the card located at index.");
 		while(true)
 		{
-			Log.important("[Game][CONSOLE INPUT] Please type your next command.");
+			Log.important("[CONSOLE INPUT] Please type your next command.");
 			input = scanner.nextLine().toLowerCase();
 			Object[] action = action(input);
 			if (action[0] == "gethand")
 			{
-				Log.log("[Game] Displaying hand: ");
+				Log.log("Displaying hand: ");
 				int counter = 0;
 				ArrayList<Card> hand = (ArrayList<Card>) action[1];
 				for (Card card : (ArrayList<Card>) action[1])
 				{
-					Log.log("[Game] index: " + counter + " card name: " + card.getName());
-					Log.log("[Game] description: " + card.getDesc());
+					Log.log("index: " + counter + " card name: " + card.getName());
+					Log.log("description: " + card.getDesc());
 					counter++;
 				}
-			}		
-			Log.log("[Game] current phase: " + phase  + " current player: " + currPlayer.getName() );
+			}	
+			if(action[0] == "close")
+			{
+				break;
+			}
+			Log.log("current phase: " + phase  + " current player: " + currPlayer.getName() );
 		}
+		scanner.close();
 	}
 	
 	/**
@@ -68,9 +72,9 @@ public class Game {
 				break;
 			case "play" :
 				Card played = currPlayer.getHand().get(Integer.parseInt(additional));
-				Log.important("[Game] " + currPlayer.getName() + " is trying to play: " + played.getName());
+				Log.important("" + currPlayer.getName() + " is trying to play: " + played.getName());
 			default:
-				Log.important("[Game] Invalid action " + action);
+				Log.important("Invalid action " + action);
 		}
 		return output;
 	}
@@ -90,7 +94,7 @@ public class Game {
 		players = setupPlayers(playerNames);
 		this.turn = turn;
 		currPlayer = players[turn];
-		Log.important("[Game] Initial player is: " + currPlayer.getName() + "'s turn.");
+		Log.important("Initial player is: " + currPlayer.getName() + "'s turn.");
 		
 	}
 	
@@ -101,7 +105,7 @@ public class Game {
 	{
 		if (checkGameEnd())
 		{
-			Log.important("[Game] Game is over");
+			Log.important("Game is over");
 		}
 		else
 		{
@@ -111,13 +115,19 @@ public class Game {
 			{
 				turn = 0;
 			}
-			currPlayer = players[turn];
-			Log.important("[Game] Turn switch - switching to " + currPlayer.getName() + "'s turn.");
 			resetPlayer();
+			currPlayer = players[turn];
+			Log.important("Turn switch - switching to " + currPlayer.getName() + "'s turn.");
+			if (currPlayer.isConnected())
+				newTurn();
 		}
 		
 	}
 	
+	/**
+	 * Checks if the game has ended
+	 * @return true if conditions are met in Board.checkend
+	 */
 	private boolean checkGameEnd()
 	{
 		return board.checkEnd();
@@ -148,16 +158,15 @@ public class Game {
 		
 		for (int i = 0; i < playerCount; i++)
 		{
-			Card[] baseDeck = new Card[] {estate.copyOf(), estate.copyOf(), estate.copyOf(), copper.copyOf(), copper.copyOf(), copper.copyOf(),
-					copper.copyOf(), copper.copyOf(), copper.copyOf(), copper.copyOf()};
-
+			for (int a = 0; a < 3; a++)
+				players[i].addCardDecktop(estate.copyOf());
+			for (int a = 0; a < 7; a++)
+				players[i].addCardDecktop(copper.copyOf());
 			players[i] = new Player();
 			players[i].setName(playerNames[i]);
-			players[i].setDeck(new LinkedBlockingDeque<Card> (Arrays.asList(Arrays.copyOf(baseDeck, 10))));
 			players[i].shuffleDeck();
 			players[i].drawCard(5);
 		}
-		
 		return players;
 	}
 

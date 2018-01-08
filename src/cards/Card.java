@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.ArrayList;
-
 public class Card {
 
 	private String[] types;
@@ -34,7 +32,6 @@ public class Card {
 		copy.dispTypeCount = dispTypeCount;
 		copy.effectCodeCount = effectCodeCount;
 		return copy;
-		
 	}
 	
 	public Card()
@@ -45,8 +42,6 @@ public class Card {
 		typeCount = 1;
 		dispTypeCount = 1;
 		effectCodeCount = 0;
-		
-
 		name = "testCard";
 		description = "testing Purposes - not avail to players";
 		set = "base";
@@ -174,6 +169,10 @@ public class Card {
 	{
 		return name;
 	}
+	/**
+	 * Returns the set the card is from.
+	 * @return
+	 */
 	public String getSet()
 	{
 		return set;

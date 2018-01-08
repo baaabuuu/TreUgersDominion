@@ -8,7 +8,14 @@ import log.Log;
 
 public class Board
 {
-	private HashMap<String, Object[]> shop = new HashMap<String, Object[]>();
+	private HashMap<String, Object[]> board = new HashMap<String, Object[]>();
+	
+	/**
+	 * Creates the board, needs playercount, cards, and setupCards
+	 * @param playerCount
+	 * @param cards
+	 * @param setupCards
+	 */
 	public Board(int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
 	{
 		Log.important("Setting up supply piles:");		
@@ -19,27 +26,30 @@ public class Board
 		{
 			card = setupCards.get(i);
 			Object[] input = {cardSize[i], card};
-			shop.put(card.getName(), input);
+			board.put(card.getName(), input);
 			Log.log("Setup Card name: " + card.getName() + " copies: " + cardSize[i]);
 		}
 
 		for (Card card2 : cards)
 		{
 			Object[] input = {10, card2};
-			shop.put(card2.getName(), input);
+			board.put(card2.getName(), input);
 			Log.log("Setup Card name: " + card2.getName() + " copies: 10");
 		}
 	}
-	
+	/**
+	 * Remove the card if it contains
+	 * @param cardName
+	 */
 	public void cardRemove(String cardName)
 	{
-		if (shop.containsKey(cardName))
+		if (board.containsKey(cardName))
 		{
-			Object[] array = shop.get(cardName);
+			Object[] array = board.get(cardName);
 			if ((int) array[0] > 0)
 			{
 				array[0] = (int) array[0] - 1;
-				shop.put(cardName, array);
+				board.put(cardName, array);
 				Log.important("Card removed: "+ cardName + " copies left: " + array[0]);
 			}
 			Log.important("Cannot remove " + cardName + " no more left");	
@@ -50,11 +60,16 @@ public class Board
 		}
 	}
 	
+	/**
+	 * If a card is in the supply pile and has more than 0 copies left, return the card.
+	 * @param cardName
+	 * @return
+	 */
 	public Card canBuy(String cardName)
 	{
-		if (shop.containsKey(cardName))
+		if (board.containsKey(cardName))
 		{
-			Object[] array = shop.get(cardName);
+			Object[] array = board.get(cardName);
 			if ((int) array[0] > 0)
 			{
 				return (Card) array[1];
@@ -73,23 +88,25 @@ public class Board
 	 */
 	public int getBoardSize()
 	{
-		return shop.size();
+		return board.size();
 	}
+	
 	/**
 	 * Gets the name of every card in the game and returns it as an array
 	 * @return card names
 	 */
 	public String[] getBoardNamesArray()
 	{
-		return shop.keySet().toArray(new String[getBoardSize()]);
+		return board.keySet().toArray(new String[getBoardSize()]);
 	}
+	
 	/**
 	 * Gets the name of every card in the game and returns it as a list
 	 * @return card names
 	 */
 	public ArrayList<String> getBoardNamesList()
 	{
-		return new ArrayList<String> (shop.keySet());
+		return new ArrayList<String> (board.keySet());
 	}
 
 	/**
@@ -98,15 +115,15 @@ public class Board
 	 * <br><b>Three different supply piles are empty.</b>
 	 * @return
 	 */
-	public boolean checkEnd() {
+	public boolean checkEnd() 
+	{
 		int count = 0;
 		if (canBuy("Province") == null)
 		{
 			Log.important("Province pile is empty");
 			return true;
 		}
-			
-		for (String cardName : shop.keySet())
+		for (String cardName : board.keySet())
 		{
 			if (canBuy(cardName) == null)
 			{

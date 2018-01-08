@@ -37,12 +37,12 @@ public class Player {
 			}
 			Card drawn = deck.poll();
 			hand.add(drawn);
-			Log.log("[Player] " + getName() + " has drawn " + drawn.getName());
+			Log.log(getName() + " has drawn " + drawn.getName());
 		}
 	}
 	public void addEffect(String effect)
 	{
-		Log.log("[Player] + " + getName() + " added the effect " + effect);
+		Log.log(getName() + " added the effect " + effect);
 		effects.add(effect);
 	}
 	/**
@@ -51,17 +51,8 @@ public class Player {
 	 */
 	public void removeFromHand(int index)
 	{
-		Log.log("[Player] + " + getName() + " removed from hand: " + hand.get(index).getName());
+		Log.log(getName() + " removed from hand: " + hand.get(index).getName());
 		hand.remove(index);
-	}
-	/**
-	 * Adds money to the player's money.
-	 * @param money
-	 */
-	public void addMoney(int money)
-	{
-		Log.log("[Player] + " + getName() + " gained money " + money);
-		this.money += money;
 	}
 	
 	/**
@@ -70,8 +61,27 @@ public class Player {
 	 */
 	public void removeFromHand(Card card)
 	{
-		Log.log("[Player] + " + getName() + " removed from hand: " + card.getName());
+		Log.log(getName() + " removed from hand: " + card.getName());
 		hand.remove(card);
+	}
+	
+	/**
+	 * Adds money to the player's money.
+	 * @param money
+	 */
+	public void addMoney(int money)
+	{
+		Log.log(getName() + " gained money " + money);
+		this.money += money;
+	}
+	
+	/**
+	 * Returns the money a player has.
+	 * @return
+	 */
+	public int getMoney() 
+	{
+		return money;
 	}
 	
 	/**
@@ -80,7 +90,7 @@ public class Player {
 	 */
 	public void discardCard(Card card)
 	{
-		Log.log("[Player] + " + getName() + " discard from hand: " + card.getName());
+		Log.log(getName() + " discard from hand: " + card.getName());
 		discard.addFirst(card);
 	}
 	
@@ -89,7 +99,7 @@ public class Player {
 	 */
 	public void shuffleDeck()
 	{
-		Log.log("[Player] " + getName() + " just shuffled their deck.");
+		Log.log(getName() + " just shuffled their deck.");
 		List<Card> tempList = new LinkedList<Card>();
 		for (Card card : deck)
 			tempList.add(card);
@@ -102,7 +112,7 @@ public class Player {
 	 */
 	public void reshuffleDeck()
 	{
-		Log.log("[Player] " + getName() + " just reshuffled their deck.");
+		Log.log(getName() + " just reshuffled their deck.");
 		List<Card> tempList = new LinkedList<Card>();
 		for (Card card : deck)
 			tempList.add(card);
@@ -113,9 +123,13 @@ public class Player {
 		deck = new LinkedBlockingDeque<Card> (tempList);
 	}
 	
+	/**
+	 * Checks if actions are left
+	 * @return
+	 */
 	public boolean canPlayAction()
 	{
-		Log.log("[Player] + " + getName() + " action count " + actions);
+		Log.log(getName() + " action count " + actions);
 		return actions > 0;
 	}
 	
@@ -134,7 +148,7 @@ public class Player {
 			discardCard(card);
 			if (canPlayAction())
 			{
-				Log.log("[Player] " + getName() + " played the action card " + card.getName());
+				Log.log(getName() + " played the action card " + card.getName());
 				actions--;
 				return true;
 			}
@@ -143,19 +157,11 @@ public class Player {
 		{
 			if (types.contains("Treasure") && phase == 1)
 			{
-				Log.log("[Player] " + getName() + " played the action card " + card.getName());
+				Log.log(getName() + " played the action card " + card.getName());
+				return true;
 			}
 		}
 		return false;
-	}
-	
-	/**
-	 * Returns the money a player has.
-	 * @return
-	 */
-	public int getMoney() 
-	{
-		return money;
 	}
 	
 	/**
@@ -165,7 +171,7 @@ public class Player {
 	 */
 	public boolean canPay(int cost)
 	{
-		Log.log("[Player] + " + getName() + " tries to pay " + cost + "has " + cost + "gold");
+		Log.log(getName() + " tries to pay " + cost + "has " + cost + "gold");
 		return money >= cost;
 	}
 	/**
@@ -177,7 +183,7 @@ public class Player {
 		
 		if (getBuys() > 0 && canPay(card.getCost()))
 		{
-			Log.log("[Player] + " + getName() + " bought " + card.getName());
+			Log.log(getName() + " bought " + card.getName());
 			money -= card.getCost();
 			buyEffects(card);
 			return true;
@@ -214,11 +220,13 @@ public class Player {
 	}
 
 
-	public int getActions() {
+	public int getActions()
+	{
 		return actions;
 	}
 
-	public void setActions(int actions) {
+	public void setActions(int actions)
+	{
 		this.actions = actions;
 	}
 	
@@ -228,10 +236,10 @@ public class Player {
 	}
 
 
-	public int getVictoryPoints() {
+	public int getVictoryPoints()
+	{
 		return victoryPoints;
 	}
-
 
 
 	public void setVictoryPoints(int victoryPoints) {
@@ -375,6 +383,7 @@ public class Player {
 	 */
 	public Card select(List<Card> list,int index) {
 		Card selected = list.get(index);
+		Log.log(getName() + "Card selected: " + selected.getName());
 		return selected ;
 	}
 }
