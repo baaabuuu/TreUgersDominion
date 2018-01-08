@@ -3,9 +3,11 @@ package client;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
-import client.ClientActions;
+
 import Objects.BoardState;
 import Objects.OotAction;
+import cards.Card;
+import client.ClientActions;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -41,7 +43,7 @@ public class Consumer implements Runnable {
 							break;
 					case 4: input = clientSpace.getp(new ActualField(name), 
 								new FormalField(Object.class));
-							ClientActions.playerHand();
+							ClientActions.playerHand((Card[])input[1]);
 							break;
 					default: break;
 				}

@@ -1,16 +1,35 @@
 package testing;
 
-import client.ClientActions;
-import client.ClientActions.*;
+import java.io.IOException;
+
 import Objects.BoardState;
 import Objects.OotAction;
+import cards.Card;
+import cards.CardReader;
+import client.ClientActions;
+import client.ClientActions.*;
 
 public class ClientTester {
 	public static void main(String[] args) {
 		
-		OotAction test1 = new OotAction("Hello World", 1);
-		ClientActions.nonTurnAction(test1);
 		
+		
+		try {
+			CardReader cards = new CardReader();
+			Card[] card = {cards.getBase().get(4),cards.getBase().get(7),cards.getBase().get(10),cards.getBase().get(13)};
+			
+			ClientActions.playerHand(card);
+			
+			OotAction test1 = new OotAction("Discard down to three cards", 2);
+			ClientActions.nonTurnAction(test1);
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//ClientActions.playerHand();
 		
 	}
 }

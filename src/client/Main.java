@@ -1,12 +1,13 @@
 package client;
 
 
-import client.Networking;
-import client.Consumer;
 import java.util.Scanner;
 
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
+
+import client.Consumer;
+import client.Networking;
 
 public class Main {
 	public static String userName;
