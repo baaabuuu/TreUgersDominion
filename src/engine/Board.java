@@ -39,13 +39,13 @@ public class Board
 			{
 				array[0] = (int) array[0] - 1;
 				shop.put(cardName, array);
-				Log.important("Card removed: "+ cardName + " copies left: " + array[0]);
+				Log.important("[Board] Card removed: "+ cardName + " copies left: " + array[0]);
 			}
-			Log.important("Cannot remove " + cardName + " no more left");	
+			Log.important("[Board] Cannot remove " + cardName + " no more left");	
 		} 
 		else
 		{
-			Log.important("Cannot remove " + cardName + " card not on map");
+			Log.important("[Board] Cannot remove " + cardName + " card not on map");
 		}
 	}
 	
@@ -58,11 +58,11 @@ public class Board
 			{
 				return (Card) array[1];
 			}
-			Log.important("Cannot buy " + cardName + " no more left");
+			Log.important("[Board] Cannot buy " + cardName + " no more left");
 		} 
 		else
 		{
-			Log.important("Cannot buy " + cardName + " card not on map");
+			Log.important("[Board] Cannot buy " + cardName + " card not on map");
 		}
 		return null;
 	}
