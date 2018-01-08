@@ -10,7 +10,7 @@ public class ClientActions {
 	public static void takeTurn() {
 		
 	}
-	public static void nonTurnAction() {
+	public static void nonTurnAction(ootAction input) {
 		
 	}
 	public static void playerHand() {
@@ -28,21 +28,16 @@ public class ClientActions {
 	public static void displayLobby() {
 		
 	}
+	public static void currentPlayer() {
+		
+	}
 	public static void gameEnd() {
 		
 	}
 	
-	
-	
-	
-	
 	public class bState {
-		public int[] shopArea;
-		public int[] handCount;
-		public int[] deckCount;
-		public int[] discardCount;
-		public int trashCount;
-		public int[] vpCount; 
+		private int[] shopArea, handCount, deckCount, discardCount, vpCount;
+		private int trashCount;
 		public bState(int[] a, int[] b, int[] c, int[] d, int e, int[] f) {
 			this.shopArea = a;
 			this.handCount = b;
@@ -50,6 +45,38 @@ public class ClientActions {
 			this.discardCount = d;
 			this.trashCount = e;
 			this.vpCount = f;
+		}
+		int[] getShopArea(){
+			return shopArea;
+		}
+		int[] getHandCount(){
+			return handCount;
+		}
+		int[] getDeckCount(){
+			return deckCount;
+		}
+		int[] getDiscardCount(){
+			return discardCount;
+		}
+		int getTrashCount(){
+			return trashCount;
+		}
+		int[] getVpCount(){
+			return vpCount;
+		}
+	}
+	public class ootAction {
+		private String message;
+		private int amount;
+		public ootAction(String message, int amount) {
+			this.message = message;
+			this.amount = amount;
+		}
+		String getMessage() {
+			return message;
+		}
+		int getAmount() {
+			return amount;
 		}
 	}
 }

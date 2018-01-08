@@ -23,7 +23,7 @@ public class Main {
 		input.close();
 		
 		new Thread(new Networking()).start();
-		new Thread(new Consumer(gameSpace)).start();
+		new Thread(new Consumer(gameSpace,userName)).start();
 		
 	}
 	

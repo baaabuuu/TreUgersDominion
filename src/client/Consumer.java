@@ -3,8 +3,7 @@ package client;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
-import client.ClientActions;
-import client.ClientActions.bState;
+import client.ClientActions.*;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -18,21 +17,31 @@ public class Consumer implements Runnable {
 	@Override
 	public void run() {
 		
+		Object[] objs;
+		Object[] input;
 		while(true) {
 			try {
 				
-				Object[] objs = clientSpace.getp(new ActualField(name), 
-						new FormalField(String.class));
+				objs = clientSpace.getp(new ActualField(name), 
+						new FormalField(Integer.class));
 				
-				if(objs[0] == "1") {
-					bState board = (bState) objs[1];
-					ClientActions.updateBoard(board);
-				}
-				else if(objs[0] == "2") {
-					ClientActions.takeTurn();
-				}
-				else if(objs[0] == "3") {
-					ClientActions.nonTurnAction();
+				
+				switch ((int)objs[1]) {
+					case 1: input = clientSpace.getp(new ActualField(name), 
+								new FormalField(bState.class));
+							ClientActions.updateBoard((bState) input[1]);
+							break;
+					case 2: ClientActions.takeTurn();
+							break;
+					case 3: input = clientSpace.getp(new ActualField(name), 
+								new FormalField(ootAction.class));
+							ClientActions.nonTurnAction((ootAction)input[1]);
+							break;
+					case 4: input = clientSpace.getp(new ActualField(name), 
+								new FormalField(Object.class));
+							ClientActions.playerHand();
+							break;
+					default: break;
 				}
 				
 				
