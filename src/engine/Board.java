@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import cards.Card;
+import log.Log;
 
 public class Board
 {
 	private HashMap<String, Object[]> shop = new HashMap<String, Object[]>();
 	public Board(int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
 	{
-		Log.important("[Board] setting up buying area:");		
+		Log.important("Setting up supply piles:");		
 		int special = (playerCount == 2) ? 8 : 12;
 		int[] cardSize = {60-(7*playerCount), 40, 30, (playerCount - 1)*10, special, special, special};
 		Card card;
@@ -19,14 +20,14 @@ public class Board
 			card = setupCards.get(i);
 			Object[] input = {cardSize[i], card};
 			shop.put(card.getName(), input);
-			Log.log("[Board] Setup Card name: " + card.getName() + " copies: " + cardSize[i]);
+			Log.log("Setup Card name: " + card.getName() + " copies: " + cardSize[i]);
 		}
 
 		for (Card card2 : cards)
 		{
 			Object[] input = {10, card2};
 			shop.put(card2.getName(), input);
-			Log.log("[Board] Setup Card name: " + card2.getName() + " copies: 10");
+			Log.log("Setup Card name: " + card2.getName() + " copies: 10");
 		}
 	}
 	
@@ -39,13 +40,13 @@ public class Board
 			{
 				array[0] = (int) array[0] - 1;
 				shop.put(cardName, array);
-				Log.important("[Board] Card removed: "+ cardName + " copies left: " + array[0]);
+				Log.important("Card removed: "+ cardName + " copies left: " + array[0]);
 			}
-			Log.important("[Board] Cannot remove " + cardName + " no more left");	
+			Log.important("Cannot remove " + cardName + " no more left");	
 		} 
 		else
 		{
-			Log.important("[Board] Cannot remove " + cardName + " card not on map");
+			Log.important("Cannot remove " + cardName + " card not on map");
 		}
 	}
 	
@@ -58,11 +59,11 @@ public class Board
 			{
 				return (Card) array[1];
 			}
-			Log.important("[Board] Cannot buy " + cardName + " no more left");
+			Log.important("Cannot buy " + cardName + " no more left");
 		} 
 		else
 		{
-			Log.important("[Board] Cannot buy " + cardName + " card not on map");
+			Log.important("Cannot buy " + cardName + " card not on map");
 		}
 		return null;
 	}
@@ -101,7 +102,7 @@ public class Board
 		int count = 0;
 		if (canBuy("Province") == null)
 		{
-			Log.important("[Board] Province pile is empty");
+			Log.important("Province pile is empty");
 			return true;
 		}
 			
@@ -109,7 +110,7 @@ public class Board
 		{
 			if (canBuy(cardName) == null)
 			{
-				Log.important("[Board] empty supply pile: " + cardName);
+				Log.important("Empty supply pile: " + cardName);
 				count++;
 			}
 				

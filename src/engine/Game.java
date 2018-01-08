@@ -6,6 +6,7 @@ import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
+import log.Log;
 
 public class Game {
 

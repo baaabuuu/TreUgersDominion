@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
+import log.Log;
 
 public class Player {
 	private int money, actions, buys, victoryPoints;
@@ -126,7 +127,7 @@ public class Player {
 	public boolean playCard(Card card, int phase)
 	{
 		List<String> types = Arrays.asList(card.getDisplayTypes());
-		if (types.contains("Action") && phase == 0 &&canPlayAction())
+		if (types.contains("Action") && phase == 0 && canPlayAction())
 		{
 			actions--;
 			removeFromHand(card);

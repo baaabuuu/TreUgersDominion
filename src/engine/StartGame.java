@@ -6,6 +6,7 @@ import java.util.Random;
 
 import cards.Card;
 import cards.CardReader;
+import log.Log;
 
 public class StartGame
 {
@@ -60,7 +61,7 @@ public class StartGame
 					break;
 			}
 		}
-		Log.important("[StartGame] Selecting 10 random cards from card set.");
+		Log.important("Selecting 10 random cards from card set.");
 		int index;
 		Card card;
 		for (int i = 0; i < 10; i++)
@@ -69,9 +70,9 @@ public class StartGame
 	        card = unrandomized.get(index);
 	        unrandomized.remove(index);
 	        gameCards.add(card);
-	        Log.log("[StartGame] card selected: " +  card.getName());
+	        Log.log("Card selected: " +  card.getName());
 		}
-		Log.important("[StartGame] Done selecting cards.");
+		Log.important("Done selecting cards.");
 	}
 	
 	
