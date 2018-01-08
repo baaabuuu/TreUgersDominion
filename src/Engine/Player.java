@@ -1,4 +1,4 @@
-package Engine;
+package engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +20,6 @@ public class Player {
 	private boolean connected = true;
 	private String name = "";
 	
-	
 	/**
 	 * Draw n cards - if the deck is empty try to reshuffle, if that can't be done stop drawing.
 	 * @param n - cards to draw
@@ -40,8 +39,10 @@ public class Player {
 			Log.log("[Player] " + getName() + " has drawn " + drawn.getName());
 		}
 	}
-	public void addEffect(String effect) {
-		this.effects.add(effect);
+	public void addEffect(String effect)
+	{
+		Log.log("[Player] + " + getName() + " added the effect " + effect);
+		effects.add(effect);
 	}
 	/**
 	 * Removes a card from the hand with the selected index.
@@ -49,6 +50,7 @@ public class Player {
 	 */
 	public void removeFromHand(int index)
 	{
+		Log.log("[Player] + " + getName() + " removed from hand: " + hand.get(index).getName());
 		hand.remove(index);
 	}
 	/**
@@ -57,6 +59,7 @@ public class Player {
 	 */
 	public void addMoney(int money)
 	{
+		Log.log("[Player] + " + getName() + " gained money " + money);
 		this.money += money;
 	}
 	
@@ -66,6 +69,7 @@ public class Player {
 	 */
 	public void removeFromHand(Card card)
 	{
+		Log.log("[Player] + " + getName() + " removed from hand: " + card.getName());
 		hand.remove(card);
 	}
 	
@@ -75,6 +79,7 @@ public class Player {
 	 */
 	public void discardCard(Card card)
 	{
+		Log.log("[Player] + " + getName() + " discard from hand: " + card.getName());
 		discard.addFirst(card);
 	}
 	
@@ -109,6 +114,7 @@ public class Player {
 	
 	public boolean canPlayAction()
 	{
+		Log.log("[Player] + " + getName() + " action count " + actions);
 		return actions > 0;
 	}
 	
@@ -119,17 +125,12 @@ public class Player {
 	 */
 	public boolean playCard(Card card, int phase)
 	{
-<<<<<<< HEAD
-		ArrayList<Card> tempHand= getHand();
-		if (canPlayAction())
+		List<String> types = Arrays.asList(card.getDisplayTypes());
+		if (types.contains("Action") && phase == 0 &&canPlayAction())
 		{
 			actions--;
-			tempHand.remove(card);
-			setHand(tempHand);
-=======
-		List<String> types = Arrays.asList(card.getDisplayTypes());
-		if (types.contains("Action") && phase == 0)
-		{
+			removeFromHand(card);
+			discardCard(card);
 			if (canPlayAction())
 			{
 				Log.log("[Player] " + getName() + " played the action card " + card.getName());
@@ -143,7 +144,6 @@ public class Player {
 			{
 				Log.log("[Player] " + getName() + " played the action card " + card.getName());
 			}
->>>>>>> feature-base-engine
 		}
 		return false;
 	}
@@ -164,19 +164,24 @@ public class Player {
 	 */
 	public boolean canPay(int cost)
 	{
+		Log.log("[Player] + " + getName() + " tries to pay " + cost + "has " + cost + "gold");
 		return money >= cost;
 	}
 	/**
 	 * Buys the card triggers - buyEffects
 	 * @return
 	 */
-	public void buy(Card card)
+	public boolean buy(Card card)
 	{
+		
 		if (getBuys() > 0 && canPay(card.getCost()))
 		{
+			Log.log("[Player] + " + getName() + " bought " + card.getName());
 			money -= card.getCost();
 			buyEffects(card);
+			return true;
 		}
+		return false;
 		
 	}
 	
