@@ -9,6 +9,7 @@ import log.Log;
 public class Board
 {
 	private HashMap<String, Object[]> board = new HashMap<String, Object[]>();
+	private ArrayList<Card> trash = new ArrayList<Card>();
 	
 	/**
 	 * Creates the board, needs playercount, cards, and setupCards
@@ -37,6 +38,12 @@ public class Board
 			Log.log("Setup Card name: " + card2.getName() + " copies: 10");
 		}
 	}
+	
+	public void trashCard(Card card)
+	{
+		trash.add(card);
+	}
+	
 	/**
 	 * Remove the card if it contains
 	 * @param cardName

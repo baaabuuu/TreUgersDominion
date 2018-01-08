@@ -1,9 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 import cards.Card;
 import log.Log;
@@ -137,7 +135,6 @@ public class Game {
 					if (currPlayer.buy(buying));
 					{
 						board.cardRemove(additional);
-						//Bought
 					}
 				}
 				break;
