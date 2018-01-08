@@ -63,6 +63,8 @@ public void triggerEffect(int n,Player player,Card card,Board board,ArrayList<Pl
 		//May trash copper, if so, add +3 tempmoney
 		case 12: //wait for trash
 			break;
+		case 13: //wait for merge
+			break;
 		default: //Invalid effect error here;
 		
 	}
@@ -146,7 +148,7 @@ private void gain1MaxCost4() {
 	//Requires methods in board 
 	}
 private void silverOnDeckRevealVC(Player player,List<Player> players) {
-	//Requires a reveal and some stuff from patrick
+	//Requires a reveal and some stuff from patric
 	}
 private void get2TempOthersDiscard(Player player, List<Player> players) {
 	player.addMoney(2);
@@ -156,6 +158,7 @@ private void get2TempOthersDiscard(Player player, List<Player> players) {
 			continue;
 		
 		else {
+			//NETWORK
 			//Ask other players what cards they want to discard
 	}
 	
