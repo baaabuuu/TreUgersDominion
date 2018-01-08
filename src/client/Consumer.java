@@ -3,7 +3,9 @@ package client;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
-import client.ClientActions.*;
+import client.ClientActions;
+import Objects.BoardState;
+import Objects.OotAction;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -28,14 +30,14 @@ public class Consumer implements Runnable {
 				
 				switch ((int)objs[1]) {
 					case 1: input = clientSpace.getp(new ActualField(name), 
-								new FormalField(bState.class));
-							ClientActions.updateBoard((bState) input[1]);
+								new FormalField(BoardState.class));
+							ClientActions.updateBoard((BoardState) input[1]);
 							break;
 					case 2: ClientActions.takeTurn();
 							break;
 					case 3: input = clientSpace.getp(new ActualField(name), 
-								new FormalField(ootAction.class));
-							ClientActions.nonTurnAction((ootAction)input[1]);
+								new FormalField(OotAction.class));
+							ClientActions.nonTurnAction((OotAction)input[1]);
 							break;
 					case 4: input = clientSpace.getp(new ActualField(name), 
 								new FormalField(Object.class));
