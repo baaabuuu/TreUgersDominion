@@ -1,4 +1,4 @@
-package engine;
+package Engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +36,9 @@ public class Player {
 			}
 			hand.add(deck.poll());			
 		}
+	}
+	public void addEffect(String effect) {
+		this.effects.add(effect);
 	}
 	/**
 	 * Removes a card from the hand with the selected index.
@@ -106,9 +109,12 @@ public class Player {
 	
 	public void playCard(Card card)
 	{
+		ArrayList<Card> tempHand= getHand();
 		if (canPlayAction())
 		{
 			actions--;
+			tempHand.remove(card);
+			setHand(tempHand);
 		}
 	}
 	
@@ -310,5 +316,14 @@ public class Player {
 	public int getDeckSize()
 	{
 		return deck.size();
+	}
+	/**
+	 *  Selects a card form a list of cards
+	 * @param list - List of cards
+	 * @param index - Card to be taken
+	 */
+	public Card select(List<Card> list,int index) {
+		Card selected = list.get(index);
+		return selected ;
 	}
 }
