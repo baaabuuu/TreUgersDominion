@@ -16,6 +16,10 @@ public class CardReader {
 	private static ArrayList<Card> setup = new ArrayList<Card>();
 	private static ArrayList<Card> base = new ArrayList<Card>();
 	
+	/**
+	 * Creates a card reader contains setup, base etc.
+	 * @throws IOException
+	 */
 	public CardReader() throws IOException
 	{
 		Gson gson = new GsonBuilder().create();
@@ -28,6 +32,12 @@ public class CardReader {
 		
 	}
 	
+	/**
+	 * gets the card from the file:
+	 * @param filename
+	 * @return
+	 * @throws IOException
+	 */
 	public String getCards(String filename) throws IOException
 	{
 		String output = "";

@@ -6,13 +6,12 @@ import java.util.Random;
 
 import cards.Card;
 import cards.CardReader;
+import log.Log;
 
 public class StartGame
 {
 	private Board board;
 	private Game game;
-	private int playerCount;
-	private String[] playerNames;
 	private CardReader cards;
 	private ArrayList<Card> gameCards = new ArrayList<Card>();
 	private Random random;
@@ -31,13 +30,13 @@ public class StartGame
 	 */
 	public StartGame(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random) throws IOException
 	{
-		this.playerCount = playerCount;
-		this.playerNames = playerNames;
 		this.cards = cards;
 		this.random = random;
 		setupRandomCards(sets);
 		board = new Board(playerCount, gameCards, cards.getSetup());
-		game = new Game(board, playerNames, playerCount);
+		game = new Game(board, playerNames, playerCount, random.nextInt(playerCount));
+		game.dummyGame();
+		//game.start();
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class StartGame
 					break;
 			}
 		}
-		Log.important("StartGame Object -> Selecting 10 random cards from card set.");
+		Log.important("Selecting 10 random cards from card set.");
 		int index;
 		Card card;
 		for (int i = 0; i < 10; i++)
@@ -67,7 +66,7 @@ public class StartGame
 	        card = unrandomized.get(index);
 	        unrandomized.remove(index);
 	        gameCards.add(card);
-	        Log.log(card.getName());
+	        Log.log("Card selected: " +  card.getName());
 		}
 		Log.important("Done selecting cards.");
 	}

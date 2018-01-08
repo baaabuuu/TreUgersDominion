@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.ArrayList;
-
 public class Card {
 
 	private String[] types;
@@ -11,16 +9,39 @@ public class Card {
 	private int cost, money, victoryPoints;
 	private int minCost, costMod, typeCount, dispTypeCount, effectCodeCount = 0;
 	
+	/**
+	 * Due to the fact that if the same object is placed into a data structure is a reference to the original object and not its own unique object this is used to ensure that no references to other players decks
+	 * are added to the others players and each copy "bought" is added to that data structure.
+	 * @return copy of original object.
+	 */
+	public Card copyOf()
+	{
+		Card copy = new Card();
+		copy.types = types;
+		copy.dispTypes = dispTypes;
+		copy.effectCodes = effectCodes;
+		copy.name = name;
+		copy.description = description;
+		copy.set = set;
+		copy.cost = cost;
+		copy.money = money;
+		copy.victoryPoints = victoryPoints;
+		copy.minCost = minCost;
+		copy.costMod = costMod;
+		copy.typeCount = typeCount;
+		copy.dispTypeCount = dispTypeCount;
+		copy.effectCodeCount = effectCodeCount;
+		return copy;
+	}
+	
 	public Card()
 	{
-		types = new String[] {};
-		dispTypes = new String[] {};
+		types = new String[] {"action"};
+		dispTypes = new String[] {"Action"};
 		effectCodes = new int[] {0};
-		typeCount = 0;
-		dispTypeCount = 0;
+		typeCount = 1;
+		dispTypeCount = 1;
 		effectCodeCount = 0;
-		
-
 		name = "testCard";
 		description = "testing Purposes - not avail to players";
 		set = "base";
@@ -148,6 +169,10 @@ public class Card {
 	{
 		return name;
 	}
+	/**
+	 * Returns the set the card is from.
+	 * @return
+	 */
 	public String getSet()
 	{
 		return set;
