@@ -90,7 +90,7 @@ public class Player {
 	 */
 	public void discardCard(Card card)
 	{
-		Log.log(getName() + " discard from hand: " + card.getName());
+		Log.log(getName() + " added to their discard pile: " + card.getName());
 		discard.addFirst(card);
 	}
 	

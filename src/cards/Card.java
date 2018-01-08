@@ -18,7 +18,7 @@ public class Card {
 	{
 		Card copy = new Card();
 		copy.types = types;
-		copy.dispTypes = types;
+		copy.dispTypes = dispTypes;
 		copy.effectCodes = effectCodes;
 		copy.name = name;
 		copy.description = description;

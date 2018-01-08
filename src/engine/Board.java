@@ -61,6 +61,45 @@ public class Board
 	}
 	
 	/**
+	 * Returns the amount of copies left of a single card
+	 * @param cardName
+	 * @return
+	 */
+	public int getCopiesLeft(String cardName)
+	{
+		if (board.containsKey(cardName))
+		{
+			int copies = (int) board.get(cardName)[0];
+			Log.log(copies + " copies left of " + cardName);
+			return copies;
+		}
+		return 0;
+	}
+	
+	/**
+	 * Gains a copy of a card
+	 * @param cardName
+	 * @return Card or Null
+	 */
+	public Card gainCopy(String cardName)
+	{
+		if (board.containsKey(cardName))
+		{
+			Object[] array = board.get(cardName);
+			if ((int) array[0] > 0)
+			{
+				return (Card) array[1];
+			}
+			Log.important("Cannot gain " + cardName + " no more copies left");
+		}
+		else
+		{
+			Log.important("Cannot gain " + cardName + " card does not exist in supply");
+		}
+		return null;
+	}
+	
+	/**
 	 * If a card is in the supply pile and has more than 0 copies left, return the card.
 	 * @param cardName
 	 * @return
@@ -74,11 +113,11 @@ public class Board
 			{
 				return (Card) array[1];
 			}
-			Log.important("Cannot buy " + cardName + " no more left");
+			Log.important("Cannot buy " + cardName + " no more copies left");
 		} 
 		else
 		{
-			Log.important("Cannot buy " + cardName + " card not on map");
+			Log.important("Cannot buy " + cardName + " card does not exist in supply");
 		}
 		return null;
 	}
