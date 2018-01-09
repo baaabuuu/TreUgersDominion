@@ -3,20 +3,41 @@ package client;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.jspace.Space;
+
 import Objects.BoardState;
+import Objects.CardOption;
 import Objects.OotAction;
 import cards.Card;
 
 public class ClientActions {
-	private static String[] buyArea;
+	private static Card[] buyArea;
 	private static String[] playerNames;
 	private static Card[] playerHand;
+	static Scanner scan;
 	
 	public static void updateBoard(BoardState input) {
 		System.out.println(input.getTrashCount());
 	}
-	public static void takeTurn() {
+	public static void takeTurn(Space clientSpace) {
 		
+		System.out.println("\n----------------------");
+		System.out.println("\nYOUR TURN HAS BEGUN!");
+		System.out.println("Your hand contains: ");
+		printCards(playerHand);
+		System.out.println("\n----------------------");
+		System.out.println("The Buy Area contains: ");
+		printBuyArea();
+		System.out.println("ACTION PHASE");
+		System.out.println("Play an action card, or skip the action phase by typing '0'.");
+		
+		System.out.println("BUY PHASE");
+		System.out.println("Either play non-action cards or buy cards, or skip the action phase by typing '0'.");
+		
+		System.out.println("CLEANUP PHASE");
+		System.out.println("Your board is being cleared of used cards.");
+		
+		System.out.println("\nYour turn has ended.");
 	}
 	/**
 	 * An action affecting the players hand, while it is not the players turn.
@@ -25,15 +46,22 @@ public class ClientActions {
 	public static void nonTurnAction(OotAction input) {
 		System.out.println("\n" + input.getMessage());
 		System.out.println("Your hand contains: ");
-		printHand();
+		printCards(playerHand);
 		selectCard(input.getAmount(),playerHand);
 		
 	}
-	public static void playerSelect() {
-		
+	/**
+	 * An action that provides the player a choice of cards.
+	 * @param OotAction
+	 */
+	public static void playerSelect(CardOption input) {
+		System.out.println("\n" + input.getMessage());
+		System.out.println("Your options are: ");
+		printCards(input.getCards());
+		selectCard(input.getAmount(),input.getCards());
 	}
 	private static void selectCard(int count, Card[] cards) {
-		Scanner scanner = new Scanner(System.in);
+		scan = new Scanner(System.in);
 		
 		ArrayList<Integer> selected = new ArrayList<Integer>();
 		String number;
@@ -45,7 +73,7 @@ public class ClientActions {
 			locked = true;
 			while(locked) {
 				System.out.println("Select card " + i + ": ");
-				number = scanner.nextLine();
+				number = scan.nextLine();
 				// Test if integer.
 				try {
 					value = Integer.parseInt(number);
@@ -65,14 +93,13 @@ public class ClientActions {
 				}
 			}
 		}
-		scanner.close();
 	}
 	public static void playerHand(Card[] newHand) {
 		playerHand = newHand;
 		System.out.println("Your new hand contains: ");
-		printHand();
+		printCards(playerHand);
 	}
-	public static void buyArea(String[] input) {
+	public static void buyArea(Card[] input) {
 		buyArea = input;
 	}
 	public static void setPlayerNames(String[] input) {
@@ -91,13 +118,14 @@ public class ClientActions {
 		
 	}
 	/**
-	 * Prints out the cards in the players hand.
+	 * Prints out the given Card[].
+	 * @param Card[]
 	 */
-	public static void printHand() {
+	private static void printCards(Card[] cards) {
 		
 		// Simple print of current hand.
-		for(int i = 0; i < playerHand.length; i++){
-			System.out.println("Card " + (i+1) + ": " + playerHand[i].getName());
+		for(int i = 0; i < cards.length; i++){
+			System.out.println("Card " + (i+1) + ": " + cards[i].getName());
 		}
 		/*
 		// More detailed print of current hand.
@@ -107,6 +135,12 @@ public class ClientActions {
 			System.out.print("\n******* \n");
 		}
 		*/		
+	}
+	private static void printBuyArea() {
+		for(int i = 0; i < buyArea.length; i++){
+			System.out.println("Card " + (i+1) + ": " + buyArea[i].getName() + "\nCost: "
+					+ buyArea[i].getCost() + "\nDescription: \n" + buyArea[i].getDesc() + "\n");
+		}
 	}
 	
 	

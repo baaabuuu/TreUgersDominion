@@ -3,9 +3,9 @@ package client;
 import org.jspace.Space;
 
 public class Sender implements Runnable {
-	Space gameSpace;
-	public Sender(Space gameSpace) {
-		this.gameSpace = gameSpace;
+	Space clientSpace;
+	public Sender(Space clientSpace) {
+		this.clientSpace = clientSpace;
 	}
 
 	@Override

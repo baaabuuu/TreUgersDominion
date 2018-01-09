@@ -15,7 +15,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		Space gameSpace = new SequentialSpace();
+		Space clientSpace = new SequentialSpace();
 		
 		
 		Scanner input = new Scanner(System.in);
@@ -24,9 +24,9 @@ public class Main {
 		userName = input.next();
 		input.close();
 		
-		new Thread(new Receiver(gameSpace)).start();
-		new Thread(new Sender(gameSpace)).start();
-		new Thread(new Consumer(gameSpace,userName)).start();
+		new Thread(new Receiver(clientSpace)).start();
+		new Thread(new Sender(clientSpace)).start();
+		new Thread(new Consumer(clientSpace,userName)).start();
 		
 	}
 	

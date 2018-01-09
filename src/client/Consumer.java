@@ -35,7 +35,7 @@ public class Consumer implements Runnable {
 								new FormalField(BoardState.class));
 							ClientActions.updateBoard((BoardState) input[1]);
 							break;
-					case 2: ClientActions.takeTurn();
+					case 2: ClientActions.takeTurn(clientSpace);
 							break;
 					case 3: input = clientSpace.getp(new ActualField(name), 
 								new FormalField(OotAction.class));
