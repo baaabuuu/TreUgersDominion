@@ -59,7 +59,11 @@ public class Board
 				board.put(cardName, array);
 				Log.important("Card removed: "+ cardName + " copies left: " + array[0]);
 			}
-			Log.important("Cannot remove " + cardName + " no more left");	
+			else
+			{
+				Log.important("Cannot remove " + cardName + " no more left");	
+			}
+			
 		} 
 		else
 		{

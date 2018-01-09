@@ -15,6 +15,7 @@ public class Game {
 	private int phase;
 	private int playerCount;
 	private EffectHandler effects = new EffectHandler();
+	private final String[] phases = {"Action Phase", "Buy phase", "Clean-up Phase"};
 
 	
 	/**
@@ -48,8 +49,7 @@ public class Game {
 				ArrayList<Card> hand = (ArrayList<Card>) action[1];
 				for (Card card : hand)
 				{
-					Log.log(counter + " " + card.getName());
-					Log.log(card.getDesc());
+					Log.log("Card: " + counter + " " + card.getName() + " - " + card.getDesc());
 					counter++;
 				}
 			}
@@ -85,10 +85,20 @@ public class Game {
 			{
 				nextPhase();
 			}
-			Log.log("current phase: " + phase  + " current player: " + currPlayer.getName() + " money: " + currPlayer.getMoney() + " buys: " + currPlayer.getBuys() +
+			Log.log("current phase: " + phases[phase]  + " current player: " + currPlayer.getName() + " money: " + currPlayer.getMoney() + " buys: " + currPlayer.getBuys() +
 					" actions: " + currPlayer.getActions());
 		}
 		scanner.close();
+	}
+	
+	/**
+	 * If no actions - no action phase
+	 * <br> Cannot skip buy phase - Treasure can potentially have buys on them.
+	 */
+	private void checkNextPhase()
+	{
+		if (phase == 0 && !currPlayer.canPlayAction())
+				nextPhase();
 	}
 	
 	/**
@@ -145,7 +155,7 @@ public class Game {
 				Card buying = board.canBuy(additional);
 				if (buying != null)
 				{
-					if (currPlayer.buy(buying, phase));
+					if (currPlayer.buy(buying, phase))
 					{
 						board.cardRemove(additional);
 					}
@@ -257,7 +267,7 @@ public class Game {
 	public void nextPhase()
 	{
 		phase++;
-		if (phase > 2)
+		if (phase > 1)
 			newTurn();
 	}
 

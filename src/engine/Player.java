@@ -182,6 +182,7 @@ public class Player {
 		{
 			Log.log(getName() + " bought " + card.getName());
 			money -= card.getCost();
+			buys--;
 			buyEffects(card);
 			return true;
 		}
