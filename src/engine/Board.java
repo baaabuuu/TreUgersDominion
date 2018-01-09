@@ -6,6 +6,10 @@ import java.util.HashMap;
 import cards.Card;
 import log.Log;
 
+/**
+ * The state of the board, contains the supply piles (card stacks).
+ * @author s164166
+ */
 public class Board
 {
 	private HashMap<String, Object[]> board = new HashMap<String, Object[]>();
