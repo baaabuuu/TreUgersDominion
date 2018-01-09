@@ -7,7 +7,8 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import client.Consumer;
-import client.Networking;
+import client.Receiver;
+import client.Sender;
 
 public class Main {
 	public static String userName;
@@ -23,7 +24,8 @@ public class Main {
 		userName = input.next();
 		input.close();
 		
-		new Thread(new Networking()).start();
+		new Thread(new Receiver(gameSpace)).start();
+		new Thread(new Sender(gameSpace)).start();
 		new Thread(new Consumer(gameSpace,userName)).start();
 		
 	}
