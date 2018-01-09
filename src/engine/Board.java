@@ -39,8 +39,13 @@ public class Board
 		}
 	}
 	
+	/**
+	 * Add a card to the trash pile
+	 * @param card
+	 */
 	public void trashCard(Card card)
 	{
+		Log.log(card.getName() + " was trashed.");
 		trash.add(card);
 	}
 	
@@ -168,12 +173,12 @@ public class Board
 	 */
 	public boolean checkEnd() 
 	{
-		int count = 0;
 		if (canBuy("Province") == null)
 		{
 			Log.important("Province pile is empty");
 			return true;
 		}
+		int count = 0;
 		for (String cardName : board.keySet())
 		{
 			if (canBuy(cardName) == null)
