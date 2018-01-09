@@ -93,11 +93,11 @@ public class Board
 	}
 	
 	/**
-	 * Gains a copy of a card
+	 * If a card is in the supply pile and has more than 0 copies left, return the card.
 	 * @param cardName
-	 * @return Card or Null
+	 * @return
 	 */
-	public Card gainCopy(String cardName)
+	public Card canGain(String cardName)
 	{
 		if (board.containsKey(cardName))
 		{
@@ -107,33 +107,10 @@ public class Board
 				return (Card) array[1];
 			}
 			Log.important("Cannot gain " + cardName + " no more copies left");
-		}
-		else
-		{
-			Log.important("Cannot gain " + cardName + " card does not exist in supply");
-		}
-		return null;
-	}
-	
-	/**
-	 * If a card is in the supply pile and has more than 0 copies left, return the card.
-	 * @param cardName
-	 * @return
-	 */
-	public Card canBuy(String cardName)
-	{
-		if (board.containsKey(cardName))
-		{
-			Object[] array = board.get(cardName);
-			if ((int) array[0] > 0)
-			{
-				return (Card) array[1];
-			}
-			Log.important("Cannot buy " + cardName + " no more copies left");
 		} 
 		else
 		{
-			Log.important("Cannot buy " + cardName + " card does not exist in supply");
+			Log.important("Cannot gain " + cardName + " card does not exist in supply");
 		}
 		return null;
 	}
@@ -173,7 +150,7 @@ public class Board
 	 */
 	public boolean checkEnd() 
 	{
-		if (canBuy("Province") == null)
+		if (canGain("Province") == null)
 		{
 			Log.important("Province pile is empty");
 			return true;
@@ -181,7 +158,7 @@ public class Board
 		int count = 0;
 		for (String cardName : board.keySet())
 		{
-			if (canBuy(cardName) == null)
+			if (canGain(cardName) == null)
 			{
 				Log.important("Empty supply pile: " + cardName);
 				count++;

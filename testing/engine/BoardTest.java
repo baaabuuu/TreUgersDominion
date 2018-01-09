@@ -109,31 +109,31 @@ public class BoardTest
 	}
 	
 	@Test
-	public void canBuyNonExisting()
+	public void canGainNonExisting()
 	{
-		Card card = board.canBuy("HELLO WORLD");
+		Card card = board.canGain("HELLO WORLD");
 		board.cardRemove("HELLO WORLD");
 		assertNull("Card does not exist", card);
 	}
 	
 	@Test
-	public void canBuyNoneLeft()
+	public void canGainNoneLeft()
 	{
-		Card card = board.canBuy("Action");
+		Card card = board.canGain("Action");
 		board.cardRemove("Action");
 		for(int i = 0; i < 10; i++)
 		{
 			assertNotNull("card not equal to null", card);
-			card = board.canBuy("Action");
+			card = board.canGain("Action");
 			board.cardRemove("Action");
 		}
 		assertNull("Card does not exist", card);
 	}
 	
 	@Test
-	public void canBuy()
+	public void canGain()
 	{
-		Card card = board.canBuy("testCard");
+		Card card = board.canGain("testCard");
 		assertNotNull("Card exists", card);
 	}
 	
@@ -151,28 +151,6 @@ public class BoardTest
 	{
 		int remain = board.getCopiesLeft("null");
 		assertEquals("0 copies exist", 0, remain);
-	}
-	
-	@Test
-	public void gainCardNotExisting()
-	{
-		Card card = board.gainCopy("null");
-		assertNull("Card is equal to null", card);
-	}
-	@Test
-	public void gainCardNoMoreCopies()
-	{
-		for (int i = 0; i < 10; i++)
-			board.cardRemove("Action");
-		Card card = board.gainCopy("Action");
-		assertNull("Card is equal to null", card);
-	}
-	
-	@Test
-	public void gainCardExisting()
-	{
-		Card card = board.gainCopy("Action");
-		assertNotNull("Card is not equal to null", card);
 	}
 	
 	@Test
