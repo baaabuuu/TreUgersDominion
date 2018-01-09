@@ -1,8 +1,10 @@
-package testing;
+package engine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 
@@ -27,6 +29,8 @@ public class BoardTest
 	private Card estateMock;
 	@Mock
 	private Card actionMock;
+	@Mock
+	private Card provinceMock;
 	private Board board;	
 	
 	@Before
@@ -37,10 +41,12 @@ public class BoardTest
 		copperMock = mock(Card.class);
 		estateMock = mock(Card.class);
 		actionMock = mock(Card.class);
+		provinceMock = mock(Card.class);
 		
 		when(copperMock.getName()).thenReturn("Copper");
 		when(estateMock.getName()).thenReturn("Estate");
 		when(actionMock.getName()).thenReturn("Action");
+		when(provinceMock.getName()).thenReturn("Province");
 		
 		ArrayList<Card> dummyCards = new ArrayList<Card>();
 		for (int i = 0; i < 10; i++)
@@ -55,26 +61,27 @@ public class BoardTest
 			dummySetup.add(new Card());
 		}
 		dummySetup.add(estateMock);
-		for (int i = 0; i < 2; i++)
-		{
-			dummySetup.add(new Card());
-		}
+		dummySetup.add(new Card());
+		dummySetup.add(provinceMock);
 		board = new Board(2, dummyCards, dummySetup);
 	}
+	
 	@Test(expected = NullPointerException.class) 
 	public void createboardNoSetupNoCards()
 	{
-		Board board = new Board(0, null, null);
+		new Board(0, null, null);
 	}
+	
 	@Test(expected = NullPointerException.class) 
 	public void createBoardNoCards()
 	{		
-		Board board = new Board(0, null, new ArrayList<Card>());
+		new Board(0, null, new ArrayList<Card>());
 	}
+
 	@Test(expected = NullPointerException.class) 
 	public void createBoardNoSetup()
 	{
-		Board board = new Board(0, new ArrayList<Card>(), null);
+		new Board(0, new ArrayList<Card>(), null);
 	}
 	
 	@Test 
@@ -92,42 +99,92 @@ public class BoardTest
 		}
 		assertEquals("Dummy setup size : 7", dummySetup.size(), 7);
 		assertEquals("Dummy cards size : 10", dummyCards.size(), 10);
-		Board board = new Board(2, dummyCards, dummySetup);
+		new Board(2, dummyCards, dummySetup);
 	}
 	
 	@Test
 	public void createBoardEmptyLists()
 	{
-		Board board = new Board(0, new ArrayList<Card>(), new ArrayList<Card>());
+		new Board(0, new ArrayList<Card>(), new ArrayList<Card>());
 	}
 	
 	@Test
-	public void canBuyNonExisting()
+	public void canGainNonExisting()
 	{
-		Card card = board.canBuy("HELLO WORLD");
+		Card card = board.canGain("HELLO WORLD");
 		board.cardRemove("HELLO WORLD");
 		assertNull("Card does not exist", card);
 	}
+	
 	@Test
-	public void canBuy()
+	public void canGainNoneLeft()
 	{
-		Card card = board.canBuy("testCard");
-		board.cardRemove("testCard");
-		assertNotNull("Card exists", card);
-	}
-	@Test
-	public void canBuyNoneLeft()
-	{
-		Card card = board.canBuy("Action");
+		Card card = board.canGain("Action");
 		board.cardRemove("Action");
 		for(int i = 0; i < 10; i++)
 		{
 			assertNotNull("card not equal to null", card);
-			card = board.canBuy("Action");
+			card = board.canGain("Action");
 			board.cardRemove("Action");
 		}
 		assertNull("Card does not exist", card);
 	}
+	
+	@Test
+	public void canGain()
+	{
+		Card card = board.canGain("testCard");
+		assertNotNull("Card exists", card);
+	}
+	
+	@Test
+	public void getCopiesLeft()
+	{
+		int remain = board.getCopiesLeft("Action");
+		assertEquals("10 copies left: ", 10, remain);
+		remain = board.getCopiesLeft("Estate");
+		assertEquals("8 copies left: ", 8, remain);
+	}
+	
+	@Test
+	public void getCopiesNonExisting()
+	{
+		int remain = board.getCopiesLeft("null");
+		assertEquals("0 copies exist", 0, remain);
+	}
+	
+	@Test
+	public void checkEndNoneApply()
+	{
+		Boolean result = board.checkEnd();
+		assertFalse("Game is not over", result);
+	}
+	
+	@Test
+	public void checkEndProvince()
+	{
+		for (int i = 0; i < 8; i++)
+			board.cardRemove("Province");
+		Boolean result = board.checkEnd();
+		assertTrue("Game is over", result);
+	}
+	
+	@Test
+	public void checkEndThreePiles()
+	{
+		for (int i = 0; i < 8; i++)
+			board.cardRemove("Estate");
+		for (int i = 0; i < 10; i++)
+		{
+			board.cardRemove("Action");
+			board.cardRemove("testCard");
+		}
+			
+		Boolean result = board.checkEnd();
+		assertTrue("Game is over", result);
+	}
+
+	
 	
 	
 

@@ -152,7 +152,7 @@ public class Game {
 			case "buy" :
 				output[0] = "buy";
 				output[1] = null;
-				Card buying = board.canBuy(additional);
+				Card buying = board.canGain(additional);
 				if (buying != null)
 				{
 					if (currPlayer.buy(buying, phase))
@@ -186,7 +186,7 @@ public class Game {
 				ArrayList<Integer> supplyCopies = new ArrayList<Integer>();
 				for (String cardName : board.getBoardNamesList())
 				{
-					supply.add(board.canBuy(cardName));
+					supply.add(board.canGain(cardName));
 				}
 				for (String cardName : board.getBoardNamesList())
 				{
@@ -300,8 +300,8 @@ public class Game {
 	private Player[] setupPlayers(String[] playerNames)
 	{
 		Player[] players = new Player[playerCount];
-		Card estate = board.canBuy("Estate");
-		Card copper = board.canBuy("Copper");
+		Card estate = board.canGain("Estate");
+		Card copper = board.canGain("Copper");
 		
 		for (int i = 0; i < playerCount; i++)
 		{	
