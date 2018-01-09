@@ -6,6 +6,11 @@ import java.util.Scanner;
 import cards.Card;
 import log.Log;
 
+/**
+ * The game - Handles actual game knowledge - is starting through StartGame
+ * @author Arada
+ *
+ */
 public class Game {
 
 	private Player[] players;

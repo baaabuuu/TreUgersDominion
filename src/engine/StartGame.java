@@ -8,6 +8,13 @@ import cards.Card;
 import cards.CardReader;
 import log.Log;
 
+/**
+ * Starts a game
+ * <p>TODO - Threading, pass this into some sorta lobby mechanism.
+ * <p>TODO - also get rid of main, dummyGame setup game properly
+ * <p>TODO - Networking. Need to establish how network communication is done.
+ * @author s164166
+ */
 public class StartGame
 {
 	private Board board;
