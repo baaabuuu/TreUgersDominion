@@ -31,7 +31,8 @@ public class EffectHandler
 				player.drawCard(2);
 				break;
 			//Reveal and become immune to an attack card
-			case 3: //Implement reveal
+			case 3://Implement reveal
+				revealImunitiy(player,card);
 				break;
 				//Look through discard and maybe put one on top of the deck
 			case 4: 
@@ -73,12 +74,13 @@ public class EffectHandler
 				discardPerEmptySupply(player,board);
 				break;
 			case 14:
-				trashFromHandGainPlus2();
+				trashFromHandGainPlus2(player, board);
 				break;
 			case 15:
-				playActionFromHandtwice(player);
+				playActionFromHandtwice(player, board, players);
 				break;
 			case 16:
+				
 				break;
 			case 17:
 				draw4Buy1OthersDraw(player,players);
@@ -90,13 +92,13 @@ public class EffectHandler
 				draw2Action1(player);
 				break;
 			case 20:
-				
+				drawTill7(player);
 				break;
 			case 21:
 				draw1Action1Buy1Tempmoney(player);
 				break;
-			case 22:
-				//Requires trash
+			case 22://Requires trash
+				mayTrashTreasure(player,board);
 				break;
 			case 23:
 				draw1Action1Look2(player);
@@ -105,6 +107,7 @@ public class EffectHandler
 				draw2OthersCurse(player,players);
 				break;
 			case 25:
+				gainPlus5(player,board);
 				break;
 			default:
 				Log.important("Invalid effect code: "+n);
@@ -112,15 +115,131 @@ public class EffectHandler
 
 		}
 	}
-	private void trashFromHandGainPlus2() {
-		// TODO Auto-generated method stub
+	private void gainPlus5(Player player, Board board) {
+		//NETWORK
+		//loop
+		//What card to gain
+		String cardName ="Placeholder";
+		Card gainedCard =board.canGain(cardName);
+		if(gainedCard != null && gainedCard.getCost()<=5) {
+		board.cardRemove(cardName);
+		}
+		else {
+			//Invalid card break networking loop
+		}
+	//loopend
+	//NETWORK select a card
+		int input =0; //Placeholder value. Should be player choice
+	
+		Card selected =player.select(player.getHand(), input);
+		player.removeFromHand(selected);
+		player.addCardDecktop(selected);
+	}
+	private void mayTrashTreasure(Player player, Board board) {
+		//NETWORK
+		//Query: Want to trash?
+		//If yes, trash card from hand
+		//Check of card is valid
+		Card placeholder = new Card();
+		for(String type: placeholder.getDisplayTypes()) {
+			if(type.equals("Treasure")) {
+				board.trashCard(placeholder);
+				break;
+			}
+			
+		}
+		
+		
+		//Query: What card to gain?
+		
+		//Some kind of loop here
+		
+		String placeholder2= "placeholder";
+		Card gainedCard=board.canGain(placeholder2);
+		for(String type: gainedCard.getDisplayTypes()) {
+			if(type.equals("Treasure")) {
+				
+				if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+3) {
+					board.cardRemove(placeholder2);
+					ArrayList<Card> tempHand = player.getHand();
+					tempHand.add(gainedCard);
+					player.setHand(tempHand);
+					}
+					else {
+						//Error, request new card
+						
+					}
+				break;
+			}
+			
+		}
+		
+		
+	}
+	private void revealImunitiy(Player player,Card card) {
+		//Implement reveal here
+		
+		player.addEffect("immuneToAttack");
+	}
+	private void drawTill7(Player player) {
+		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
+		while(player.getHandSize() <7 || player.getDeckSize()>0) {
+			player.drawCard(1);
+			Card currentDraw =player.select(player.getHand(), player.getHandSize()-1);
+			for(String dispType: currentDraw.getDisplayTypes()) {
+				if(dispType.equals("Action")) {
+					//NETWORK
+					//Ask if discard or keep
+					boolean placeholder =true; //Keep card?
+					if(placeholder) {
+						break;
+					}
+					else {
+						ArrayList<Card> tempHand = player.getHand();
+						player.removeFromHand(currentDraw);
+						toBeDiscarded.add(currentDraw);
+					}
+					break;
+				}
+				
+			}
+			
+			
+		}
+		for (Card cardToDiscard: toBeDiscarded) {
+			player.discardCard(cardToDiscard);
+		}
+		
+	}
+	private void trashFromHandGainPlus2(Player player, Board board) {
+	//NETWORK
+	//Query: Want to trash?
+	//If yes, trash card, 
+	Card placeholder = new Card();
+	board.trashCard(placeholder);
+	//Query: What card to gain?
+	
+	//Some kind of loop here
+	
+	String placeholder2= "placeholder";
+	Card gainedCard=board.canGain(placeholder2);
+	if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+2) {
+	board.cardRemove(placeholder2);
+	player.discardCard(gainedCard);
+	}
+	else {
+		//Error, request new card
+		
+	}
+	
+	//Loop end
 		
 	}
 	private void discardPerEmptySupply(Player player, Board board) {
 		int count =0;
 		for (String cardName : board.getBoardNamesArray())
 		{
-			if (board.canBuy(cardName) == null)
+			if (board.canGain(cardName) == null)
 			{
 				count++;
 			}
@@ -209,20 +328,25 @@ public class EffectHandler
 		}
 		
 	}
-	private void playActionFromHandtwice(Player player) {
+	private void playActionFromHandtwice(Player player,Board board,Player[] players) {
 		//NETWORK
 		//Select card to be played twice or if none 
 		boolean placeholder=false;
 		if(placeholder) {
 			
-		}else {
+		}
+		else {
 		//If wants to play action w/ double battlecry
 			
 		
 		int selected =0; //Response form networking goes here.
 		Card cardSelected = player.select(player.getHand(), selected);
-		// Needs logic for bypassing normal playing restrictions
-		
+		//Do the twice
+			for(int o =0;o<2;o++) {
+				for(int i:cardSelected.getEffectCode()) {
+				triggerEffect(i,player, cardSelected, board, players);					
+				}
+			}
 		}
 	}
 	private void discardNDrawN(Player player)
