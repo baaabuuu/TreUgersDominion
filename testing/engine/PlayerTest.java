@@ -1,4 +1,4 @@
-package testing;
+package engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -68,7 +68,7 @@ public class PlayerTest
 		player.addMoney(Integer.MAX_VALUE);
 		assertEquals("Player has enough money", player.getMoney(), Integer.MAX_VALUE); 
 		assertEquals("Player has no buys", player.getBuys(), 0);
-		player.buy(new Card());
+		player.buy(new Card(), 1);
 		assertEquals("Player discard pile size: 0", 0, player.getDiscardSize());
 	}
 	
@@ -80,7 +80,19 @@ public class PlayerTest
 		player.addBuys(Integer.MAX_VALUE);
 		assertEquals("Player has MIN_value money", player.getMoney(), Integer.MIN_VALUE); 
 		assertEquals("Player has MAX value buys", player.getBuys(), Integer.MAX_VALUE);
-		player.buy(new Card());
+		player.buy(new Card(), 1);
+		assertEquals("Player discard pile size: 0", 0, player.getDiscardSize());
+	}
+	
+	@Test
+	public void buyWrongPhase()
+	{
+		Player player = new Player();
+		player.addMoney(Integer.MAX_VALUE);
+		player.addBuys(Integer.MAX_VALUE);
+		assertEquals("Player has MAX_value money", player.getMoney(), Integer.MAX_VALUE); 
+		assertEquals("Player has MAX value buys", player.getBuys(), Integer.MAX_VALUE);
+		player.buy(new Card(), 0);
 		assertEquals("Player discard pile size: 0", 0, player.getDiscardSize());
 	}
 	
@@ -92,7 +104,7 @@ public class PlayerTest
 		player.addBuys(Integer.MAX_VALUE);
 		assertEquals("Player has MAX_value money", player.getMoney(), Integer.MAX_VALUE); 
 		assertEquals("Player has MAX value buys", player.getBuys(), Integer.MAX_VALUE);
-		player.buy(new Card());
+		player.buy(new Card(), 1);
 		assertEquals("Player discard pile size: 1", 1, player.getDiscardSize());
 	}
 	

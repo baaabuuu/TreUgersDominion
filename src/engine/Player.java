@@ -383,6 +383,6 @@ public class Player {
 	public Card select(List<Card> list,int index) {
 		Card selected = list.get(index);
 		Log.log(getName() + "Card selected: " + selected.getName());
-		return selected ;
+		return selected;
 	}
 }
