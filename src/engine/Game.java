@@ -8,8 +8,7 @@ import log.Log;
 
 /**
  * The game - Handles actual game knowledge - is starting through StartGame
- * @author Arada
- *
+ * @author s164166
  */
 public class Game {
 
@@ -26,6 +25,7 @@ public class Game {
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
+
 	@SuppressWarnings("unchecked")
 	public void dummyGame()
 	{
@@ -94,16 +94,6 @@ public class Game {
 					" actions: " + currPlayer.getActions());
 		}
 		scanner.close();
-	}
-	
-	/**
-	 * If no actions - no action phase
-	 * <br> Cannot skip buy phase - Treasure can potentially have buys on them.
-	 */
-	private void checkNextPhase()
-	{
-		if (phase == 0 && !currPlayer.canPlayAction())
-				nextPhase();
 	}
 	
 	/**
@@ -231,17 +221,17 @@ public class Game {
 		this.turn = turn;
 		currPlayer = players[turn];
 		Log.important("Initial player is: " + currPlayer.getName() + "'s turn.");
-		
 	}
 	
 	/**
 	 * A new turn, used at the end of the turn - also checks if game is over.
 	 */
-	public void newTurn()
+	public boolean newTurn()
 	{
 		if (checkGameEnd())
 		{
 			Log.important("Game is over");
+			return true;
 		}
 		else
 		{
@@ -255,9 +245,13 @@ public class Game {
 			currPlayer = players[turn];
 			Log.important("Turn switch - switching to " + currPlayer.getName() + "'s turn.");
 			if (!currPlayer.isConnected())
-				newTurn();
+			{
+				Log.important("Skipping - " + currPlayer.getName() + "'s turn due to disconnected state.");
+				return newTurn();
+
+			}
 		}
-		
+		return false;
 	}
 	
 	/**
@@ -269,6 +263,9 @@ public class Game {
 		return board.checkEnd();
 	}
 	
+	/**
+	 * Go to next phase
+	 */
 	public void nextPhase()
 	{
 		phase++;
@@ -329,10 +326,54 @@ public class Game {
 		}
 		return players;
 	}
+	
+	/**
+	 * Returns the current phase.
+	 * @return phase
+	 */
+	public int getPhase()
+	{
+		return phase;
+	}
+	
+	/**
+	 * Returns the current turn
+	 * @return turn
+	 */
+	public int getTurn()
+	{
+		return turn;
+	}
+	
+	/**
+	 * Returns the currentPlayer
+	 * @return
+	 */
+	public Player getCurrentPlayer()
+	{
+		return currPlayer;
+	}
+	
+	/**
+	 * Returns a player with the following index
+	 * @param index
+	 * @return
+	 */
+	public Player getPlayer(int index)
+	{
+		return players[index];
+	}
+	/**
+	 * Returns the array of players
+	 * @return
+	 */
+	public Player[] getPlayers()
+	{
+		return players;
+	}
 
 	public void start() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }
