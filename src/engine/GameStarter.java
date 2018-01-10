@@ -35,7 +35,7 @@ public class GameStarter
 	 * @param random2 
 	 * @throws IOException
 	 */
-	public GameStarter(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random) throws IOException
+	public GameStarter(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random)
 	{
 		this.cards = cards;
 		this.random = random;
