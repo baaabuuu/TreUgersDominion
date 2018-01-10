@@ -49,7 +49,7 @@ public class GameStarter
 	 */
 	public void startDummyGame()
 	{
-		game.dummyGame();
+		//game.dummyGame();
 	}
 	
 	/**
@@ -58,6 +58,15 @@ public class GameStarter
 	public void startGame()
 	{
 		game.start();
+	}
+	
+	/**
+	 * Gets the card.
+	 * @return
+	 */
+	public Game getGame()
+	{
+		return game;
 	}
 	
 	/**

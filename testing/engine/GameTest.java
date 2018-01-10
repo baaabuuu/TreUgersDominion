@@ -2,6 +2,7 @@ package engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import cards.Card;
 import cards.CardReader;
@@ -95,10 +98,31 @@ public class GameTest
 	}
 	
 	@Test
-	public void newTurnEnd()
+	public void newTurnGameEnd()
 	{
+		MockitoAnnotations.initMocks(this);
+		Board board = mock(Board.class);
+		
+		String[] names = {"Test Person1", "Test Person2"};
 		when(board.checkEnd()).thenReturn(true);
+		when(board.canGain(Mockito.anyString())).thenReturn(new Card());
+		
+		Game game = new Game(board, names, names.length, 0);
 		boolean checkTurn = game.newTurn();
 		assertTrue("Game is over", checkTurn);
+	}
+	
+	@Test
+	public void newTurnDisconnected()
+	{
+		MockitoAnnotations.initMocks(this);
+		Board board = mock(Board.class);
+		String[] names = {"Test Person1", "Test Person2"};
+		Game game = new Game(board, names, names.length, 0);
+		game.getPlayer(1).setConnected(false);
+		Player old = game.getCurrentPlayer();
+		boolean checkTurn = game.newTurn();
+		Player curr = game.getCurrentPlayer();
+		assertEquals("It is still current Players turn", curr, old);
 	}
 }
