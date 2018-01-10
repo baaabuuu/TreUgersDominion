@@ -1,7 +1,7 @@
 package engine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
@@ -13,8 +13,8 @@ public class CardTest
 	public void copyNonIdentical()
 	{
 		Card dummyCard = new Card();
-		boolean result = (dummyCard == dummyCard.copyOf());
-		assertFalse("Copies are no the same object", result);
+		Card dummyCard2 = dummyCard.copyOf();
+		assertNotEquals("Copies are no the same object", dummyCard, dummyCard2);
 	}
 	
 	@Test

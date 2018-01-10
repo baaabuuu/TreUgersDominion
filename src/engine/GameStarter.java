@@ -15,7 +15,7 @@ import log.Log;
  * <p>TODO - Networking. Need to establish how network communication is done.
  * @author s164166
  */
-public class StartGame
+public class GameStarter
 {
 	private Board board;
 	private Game game;
@@ -28,22 +28,36 @@ public class StartGame
 		String[] playerNames = {"Hillary Rodham Clinton", "Donald J. Trump"};
 		ArrayList<String> expansions = new ArrayList<String>();
 		expansions.add("base");
-		new StartGame(2, playerNames, new CardReader(), expansions, new Random());
+		new GameStarter(2, playerNames, new CardReader(), expansions, new Random()).startDummyGame();
 	}
 	/**
 	 * @param cards
 	 * @param random2 
 	 * @throws IOException
 	 */
-	public StartGame(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random) throws IOException
+	public GameStarter(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random) throws IOException
 	{
 		this.cards = cards;
 		this.random = random;
 		setupRandomCards(sets);
 		board = new Board(playerCount, gameCards, cards.getSetup());
 		game = new Game(board, playerNames, playerCount, random.nextInt(playerCount));
+	}
+	
+	/**
+	 * Starts a dummy game running on the console.
+	 */
+	public void startDummyGame()
+	{
 		game.dummyGame();
-		//game.start();
+	}
+	
+	/**
+	 * Starts a game
+	 */
+	public void startGame()
+	{
+		game.start();
 	}
 	
 	/**
@@ -63,6 +77,12 @@ public class StartGame
 				default :
 					break;
 			}
+		}
+		if (unrandomized.size() == 0)
+		{
+			Log.important("No sets were selected - adding base set");
+			for (Card card : cards.getBase())
+				unrandomized.add(card);
 		}
 		Log.important("Selecting 10 random cards from card set.");
 		int index;
