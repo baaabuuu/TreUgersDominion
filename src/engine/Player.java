@@ -321,10 +321,18 @@ public class Player {
 		this.discard = discard;
 	}
 
+	/**
+	 * Returns whether a player is connected or not.
+	 * @return
+	 */
 	public boolean isConnected() {
 		return connected;
 	}
 
+	/**
+	 * Sets whether a played is connected or not.
+	 * @param connected
+	 */
 	public void setConnected(boolean connected) {
 		this.connected = connected;
 	}
@@ -378,6 +386,7 @@ public class Player {
 	{
 		return discard.size();
 	}
+	
 	/**
 	 * Gets the deck stack size
 	 * @return deck.size();
@@ -386,6 +395,7 @@ public class Player {
 	{
 		return deck.size();
 	}
+	
 	/**
 	 * Selects a card form a list of cards
 	 * <p>Very generic method - dosnt utilize any Player variables?

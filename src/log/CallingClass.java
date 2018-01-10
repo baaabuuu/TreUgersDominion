@@ -3,7 +3,8 @@ package log;
 public class CallingClass extends SecurityManager {
     public static final CallingClass INSTANCE = new CallingClass();
 
-    public Class[] getCallingClasses() {
+    @SuppressWarnings("rawtypes")
+	public Class[] getCallingClasses() {
         return getClassContext();
     }
 }
