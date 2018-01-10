@@ -3,19 +3,24 @@ package client;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.Space;
 
 import Objects.BoardState;
 import Objects.CardOption;
 import Objects.OotAction;
+import Objects.turnValues;
 import cards.Card;
 
 public class ClientActions {
 	private String playerName;
+	private turnValues playerValues;
 	private Card[] buyArea;
 	private String[] playerNames;
 	private Card[] playerHand;
 	static Scanner scan;
+	
 	
 	public ClientActions(String playerName){
 		this.playerName = playerName;
@@ -24,25 +29,27 @@ public class ClientActions {
 	public void updateBoard(BoardState input) {
 		System.out.println(input.getTrashCount());
 	}
-	public void takeTurn(Space clientSpace, Space hostSpace) {
+	public void takeTurn(Space clientSpace, Space hostSpace) throws InterruptedException {
 		
 		System.out.println("\n----------------------");
 		System.out.println("\nYOUR TURN HAS BEGUN!");
 		System.out.println("Your hand contains: ");
 		printCards(playerHand);
+		setTurnValues(new turnValues(1,1,0));
+		printTurnValues(playerValues);
 		System.out.println("\n----------------------");
 		System.out.println("The Buy Area contains: ");
 		printBuyArea();
 		System.out.println("ACTION PHASE");
-		System.out.println("Play an action card, or skip the action phase by typing '0'.");
-		
 		scan = new Scanner(System.in);
 		String number;
 		int value;
-		int selected;
+		Object[] serverInput;
 		boolean playerLock = true;
 		boolean lock = true;
 		while(playerLock) {
+			System.out.println("Play an Action Card, or skip the action phase by typing '0'.");
+			lock = true;
 			while(lock) {
 				number = scan.nextLine();
 				
@@ -51,9 +58,21 @@ public class ClientActions {
 					
 					if(value < 0 || value > playerHand.length) {
 						System.out.println("Input is not a valid card.");
-					} else if(value == 0) { // If an integer not already in list, add to list and unlock while loop.
-						
+					} else if(value == 0) {
+						playerLock = false;
+						lock = false;
 					}else {
+						hostSpace.put(playerName, value);
+						serverInput = clientSpace.getp(new ActualField(playerName), 
+								new FormalField(turnValues.class));
+						setTurnValues((turnValues)serverInput[1]);
+						
+						serverInput = clientSpace.getp(new ActualField(playerName), 
+								new FormalField(Card[].class));
+						setPlayerHand((Card[])serverInput[1]);
+						printCards(playerHand);
+						
+						
 						
 					}
 				}catch(NumberFormatException e) {
@@ -185,7 +204,14 @@ public class ClientActions {
 					+ buyArea[i].getCost() + "\nDescription: \n" + buyArea[i].getDesc() + "\n");
 		}
 	}
-	
+	private void setTurnValues(turnValues values) {
+		this.playerValues = values;
+	}
+	private void printTurnValues(turnValues values) {
+		System.out.println("Actions: " + values.getAction());
+		System.out.println("Buys: " + values.getBuy());
+		System.out.println("Money: " + values.getMoney());
+	}
 	
 	
 	
