@@ -11,7 +11,7 @@ import org.jspace.SpaceRepository;
 
 import cards.CardReader;
 import log.Log;
-import engine.StartGame;
+import engine.GameStarter;
 
 
 public class GameThread extends Thread  {
@@ -64,9 +64,9 @@ public class GameThread extends Thread  {
 			
 		}
 		Log.log("Game start");
-		StartGame game = null;
+		GameStarter game = null;
 		
-			game = new StartGame(noOfPlayers,playerNames.toArray(new String[noOfPlayers]),cardReader, expansions, new Random());
+			game = new GameStarter(noOfPlayers,playerNames.toArray(new String[noOfPlayers]),cardReader, expansions, new Random());
 		
 		for(int i = 0; i<noOfPlayers ; i++){
 			players[i] = new PlayerThread(gameSpace,name,game);
