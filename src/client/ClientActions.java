@@ -11,15 +11,20 @@ import Objects.OotAction;
 import cards.Card;
 
 public class ClientActions {
-	private static Card[] buyArea;
-	private static String[] playerNames;
-	private static Card[] playerHand;
+	private String playerName;
+	private Card[] buyArea;
+	private String[] playerNames;
+	private Card[] playerHand;
 	static Scanner scan;
 	
-	public static void updateBoard(BoardState input) {
+	public ClientActions(String playerName){
+		this.playerName = playerName;
+	}
+	
+	public void updateBoard(BoardState input) {
 		System.out.println(input.getTrashCount());
 	}
-	public static void takeTurn(Space clientSpace) {
+	public void takeTurn(Space clientSpace, Space hostSpace) {
 		
 		System.out.println("\n----------------------");
 		System.out.println("\nYOUR TURN HAS BEGUN!");
@@ -30,6 +35,41 @@ public class ClientActions {
 		printBuyArea();
 		System.out.println("ACTION PHASE");
 		System.out.println("Play an action card, or skip the action phase by typing '0'.");
+		
+		scan = new Scanner(System.in);
+		String number;
+		int value;
+		int selected;
+		boolean playerLock = true;
+		boolean lock = true;
+		while(playerLock) {
+			while(lock) {
+				number = scan.nextLine();
+				
+				try {
+					value = Integer.parseInt(number);
+					
+					if(value < 0 || value > playerHand.length) {
+						System.out.println("Input is not a valid card.");
+					} else if(value == 0) { // If an integer not already in list, add to list and unlock while loop.
+						
+					}else {
+						
+					}
+				}catch(NumberFormatException e) {
+					System.out.println("Input is not a valid integer.");
+				}
+				
+				
+			}
+		}
+		System.out.println("Select card: ");
+		
+		
+		
+		
+		
+		
 		
 		System.out.println("BUY PHASE");
 		System.out.println("Either play non-action cards or buy cards, or skip the action phase by typing '0'.");
@@ -42,25 +82,27 @@ public class ClientActions {
 	/**
 	 * An action affecting the players hand, while it is not the players turn.
 	 * @param OotAction
+	 * @throws InterruptedException 
 	 */
-	public static void nonTurnAction(OotAction input) {
+	public void nonTurnAction(OotAction input, Space hostSpace) throws InterruptedException {
 		System.out.println("\n" + input.getMessage());
 		System.out.println("Your hand contains: ");
 		printCards(playerHand);
-		selectCard(input.getAmount(),playerHand);
+		selectCard(input.getAmount(),playerHand, hostSpace);
 		
 	}
 	/**
 	 * An action that provides the player a choice of cards.
 	 * @param OotAction
+	 * @throws InterruptedException 
 	 */
-	public static void playerSelect(CardOption input) {
+	public void playerSelect(CardOption input, Space hostSpace) throws InterruptedException {
 		System.out.println("\n" + input.getMessage());
 		System.out.println("Your options are: ");
 		printCards(input.getCards());
-		selectCard(input.getAmount(),input.getCards());
+		selectCard(input.getAmount(),input.getCards(), hostSpace);
 	}
-	private static void selectCard(int count, Card[] cards) {
+	private void selectCard(int count, Card[] cards, Space hostSpace) throws InterruptedException {
 		scan = new Scanner(System.in);
 		
 		ArrayList<Integer> selected = new ArrayList<Integer>();
@@ -92,36 +134,37 @@ public class ClientActions {
 					System.out.println("Input is not a valid integer.");
 				}
 			}
+			hostSpace.put(playerName,selected);
 		}
 	}
-	public static void playerHand(Card[] newHand) {
+	public void setPlayerHand(Card[] newHand) {
 		playerHand = newHand;
 		System.out.println("Your new hand contains: ");
 		printCards(playerHand);
 	}
-	public static void buyArea(Card[] input) {
-		buyArea = input;
+	public void setBuyArea(Card[] input) {
+		this.buyArea = input;
 	}
-	public static void setPlayerNames(String[] input) {
-		playerNames = input;
+	public void setPlayerNames(String[] input) {
+		this.playerNames = input;
 	}
-	public static void displayLaunge() {
+	public void displayLaunge() {
 		
 	}
-	public static void displayLobby() {
+	public void displayLobby() {
 		
 	}
-	public static void currentPlayer() {
+	public void currentPlayer() {
 		
 	}
-	public static void gameEnd() {
+	public void gameEnd() {
 		
 	}
 	/**
 	 * Prints out the given Card[].
 	 * @param Card[]
 	 */
-	private static void printCards(Card[] cards) {
+	private void printCards(Card[] cards) {
 		
 		// Simple print of current hand.
 		for(int i = 0; i < cards.length; i++){
@@ -136,7 +179,7 @@ public class ClientActions {
 		}
 		*/		
 	}
-	private static void printBuyArea() {
+	private void printBuyArea() {
 		for(int i = 0; i < buyArea.length; i++){
 			System.out.println("Card " + (i+1) + ": " + buyArea[i].getName() + "\nCost: "
 					+ buyArea[i].getCost() + "\nDescription: \n" + buyArea[i].getDesc() + "\n");
