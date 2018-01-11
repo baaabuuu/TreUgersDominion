@@ -1,4 +1,4 @@
-package Objects;
+package objects;
 
 public enum Commands {
 	setBoardState,
@@ -7,12 +7,13 @@ public enum Commands {
 	playerSelect,
 	setPlayerHand,
 	setBuyArea,
-	setNames,
 	setLaunge,
 	setLobby,
-	setCurrentPlayer,
 	message,
 	gameStart,
 	gameEnd,
-	changePhase
+	changePhase,
+	buyCard,
+	playCard,
+	selectCard
 }

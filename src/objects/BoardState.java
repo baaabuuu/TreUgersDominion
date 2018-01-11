@@ -1,15 +1,17 @@
-package Objects;
+package objects;
 
 public class BoardState {
 	private int[] shopArea, handCount, deckCount, discardCount, vpCount;
 	private int trashCount;
-	public BoardState(int[] a, int[] b, int[] c, int[] d, int e, int[] f) {
+	private String[] names;
+	public BoardState(int[] a, int[] b, int[] c, int[] d, int e, int[] f, String[] g) {
 		this.shopArea = a;
 		this.handCount = b;
 		this.deckCount = c;
 		this.discardCount = d;
 		this.trashCount = e;
 		this.vpCount = f;
+		this.names = g;
 	}
 	public int[] getShopArea(){
 		return shopArea;
@@ -29,6 +31,9 @@ public class BoardState {
 	public int[] getVpCount(){
 		return vpCount;
 	}
+	public String[] getNames(){
+		return names;
+	}
 	public void setShopArea(int[] shopArea){
 		this.shopArea = shopArea;
 	}
@@ -46,5 +51,8 @@ public class BoardState {
 	}
 	public void setVpCount(int[] vpCount){
 		this.vpCount = vpCount;
+	}
+	public void setNames(String[] names){
+		this.names = names;
 	}
 }

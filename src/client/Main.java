@@ -31,8 +31,6 @@ public class Main {
 			System.out.print("Type in the IP address of a Server: ");
 			host = input.next();
 			
-			
-			
 			String uri = "tcp://" + host + ":" + port + "/board?conn";
 			
 	        Space hostSpace;
@@ -42,6 +40,9 @@ public class Main {
 				new Thread(new Receiver(clientSpace, userName, hostSpace)).start();
 				new Thread(new Consumer(clientSpace, userName, hostSpace)).start();
 				
+				
+				
+				
 				lock = false;
 			} catch (UnknownHostException e) {
 				System.out.println("Host not found");
@@ -50,15 +51,6 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
-		
-        
-		
-		
 		input.close();
 	}
-	
-	
-	
-	
-	
 }

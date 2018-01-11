@@ -4,10 +4,10 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import Objects.BoardState;
-import Objects.OotAction;
-import Objects.PlayerHand;
-import Objects.Commands;
+import objects.BoardState;
+import objects.Commands;
+import objects.OotAction;
+import objects.PlayerHand;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -30,24 +30,28 @@ public class Consumer implements Runnable {
 		while(true) {
 			try {
 				
-				objs = clientSpace.getp(new ActualField(name), 
+				objs = clientSpace.get(new ActualField(name), 
 						new FormalField(Commands.class));
 				
 				
 				switch ((Commands)objs[1]) {
-					case setBoardState: input = clientSpace.getp(new ActualField(name), 
+					case setBoardState: input = clientSpace.get(new ActualField(name), 
 								new FormalField(BoardState.class));
-							action.updateBoard((BoardState) input[1]);
+							action.displayBoardState((BoardState) input[1]);
 							break;
 					case takeTurn: action.takeTurn(clientSpace, hostSpace);
 							break;
-					case nonTurnAction: input = clientSpace.getp(new ActualField(name), 
+					case nonTurnAction: input = clientSpace.get(new ActualField(name), 
 								new FormalField(OotAction.class));
 							action.nonTurnAction((OotAction)input[1], hostSpace);
 							break;
-					case setPlayerHand: input = clientSpace.getp(new ActualField(name), 
+					case setPlayerHand: input = clientSpace.get(new ActualField(name), 
 								new FormalField(PlayerHand.class));
 							action.setPlayerHand((PlayerHand)input[1]);
+							break;
+					case message: input = clientSpace.get(new ActualField(name), 
+							new FormalField(String.class));
+							action.serverMessage((String)input[1]);
 							break;
 					default: break;
 				}
@@ -58,6 +62,4 @@ public class Consumer implements Runnable {
 			}
 		}
 	}
-	
-
 }

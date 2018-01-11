@@ -2,12 +2,12 @@ package testing;
 
 import java.io.IOException;
 
-import Objects.BoardState;
-import Objects.CardOption;
-import Objects.OotAction;
 import cards.Card;
 import cards.CardReader;
 import client.ClientActions;
+import objects.BoardState;
+import objects.CardOption;
+import objects.OotAction;
 
 public class ClientTester {
 	public static void main(String[] args) {
