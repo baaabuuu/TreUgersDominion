@@ -14,6 +14,7 @@ import Objects.OotAction;
 import Objects.PlayerHand;
 import Objects.TurnValues;
 import cards.Card;
+import log.Log;
 
 public class ClientActions {
 	private String playerName;
@@ -45,19 +46,9 @@ public class ClientActions {
 		System.out.println("ACTION PHASE");
 		actionPhase(clientSpace, hostSpace);
 		
-		
-		
-		
-		System.out.println("Select card: ");
-		
-		
-		
-		
-		
-		
-		
 		System.out.println("BUY PHASE");
-		System.out.println("Either play non-action cards or buy cards, or skip the action phase by typing '0'.");
+		buyPhase(clientSpace, hostSpace);
+		
 		
 		System.out.println("CLEANUP PHASE");
 		System.out.println("Your board is being cleared of used cards.");
@@ -69,7 +60,6 @@ public class ClientActions {
 		scan = new Scanner(System.in);
 		String number;
 		int value;
-		Object[] serverInput;
 		boolean lock = true;
 		boolean lock2 = true;
 		Object[] objs;
@@ -97,18 +87,29 @@ public class ClientActions {
 								new FormalField(Commands.class));
 						
 						switch ((Commands)objs[1]) {
-							case message:
+							case message: Log.log("Recieved message command");
 									input = clientSpace.get(new ActualField(playerName), 
 										new FormalField(String.class));
 									System.out.println((String)input[1]);
 									lock2 = false;
 									break;
-							case takeTurn:
+							case takeTurn: Log.log("Recieved takeTurn command");
 									input = clientSpace.get(new ActualField(playerName), 
-										new FormalField(String.class));
+										new FormalField(BoardState.class));
+									updateBoard((BoardState)input[1]);
+									
+									input = clientSpace.get(new ActualField(playerName), 
+										new FormalField(PlayerHand.class));
+									setPlayerHand((PlayerHand)input[1]);
+									
+									input = clientSpace.get(new ActualField(playerName), 
+										new FormalField(TurnValues.class));
+									setTurnValues((TurnValues)input[1]);
+									System.out.println("Your hand contains: ");
+									printCards(playerHand);
 									lock2 = false;
 									break;
-							case playerSelect:
+							case playerSelect: Log.log("Recieved playerSelect command");
 									input = clientSpace.get(new ActualField(playerName), 
 										new FormalField(CardOption.class));
 									playerSelect((CardOption)input[1],hostSpace);
@@ -116,37 +117,19 @@ public class ClientActions {
 							default: break;
 						}
 					}
-					
-					input = clientSpace.get(new ActualField(playerName), 
-							new FormalField(BoardState.class));
-						updateBoard((BoardState)input[1]);
-						
-					input = clientSpace.get(new ActualField(playerName), 
-								new FormalField(PlayerHand.class));
-						setPlayerHand((PlayerHand)input[1]);
-						
-					input = clientSpace.get(new ActualField(playerName), 
-							new FormalField(TurnValues.class));
-						setTurnValues((TurnValues)input[1]);
-						
-					
-					
-					serverInput = clientSpace.get(new ActualField(playerName), 
-							new FormalField(TurnValues.class));
-					setTurnValues((TurnValues)serverInput[1]);
-					
-					serverInput = clientSpace.get(new ActualField(playerName), 
-							new FormalField(PlayerHand.class));
-					setPlayerHand((PlayerHand)serverInput[1]);
-					System.out.println("Your hand contains: ");
-					printCards(playerHand);
-					
-					
-					
 				}
 			}catch(NumberFormatException e) {
 				System.out.println("Input is not a valid integer.");
 			}
+		}
+	}
+	public void buyPhase(Space clientSpace, Space hostSpace) {
+		
+		boolean lock = true;
+		while(lock) {
+			System.out.println("Either play non-action cards or buy cards, or skip the Buy phase by typing '0'.");
+			
+			
 			
 			
 		}
