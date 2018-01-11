@@ -9,6 +9,7 @@ public enum Commands {
 	setBuyArea,
 	setLaunge,
 	setLobby,
+	setNames,
 	message,
 	gameStart,
 	gameEnd,

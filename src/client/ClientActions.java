@@ -16,6 +16,7 @@ public class ClientActions {
 	private String playerName;
 	private TurnValues playerValues;
 	private Card[] buyArea;
+	private String[] names;
 	private List<Card> playerHand;
 	static Scanner scan;
 	
@@ -284,6 +285,9 @@ public class ClientActions {
 			hostSpace.put(playerName,selected);
 		}
 	}
+	public void setNames(String[] names) {
+		this.names = names;
+	}
 	public void setPlayerHand(PlayerHand input) {
 		playerHand = input.getCards();
 		System.out.println("Your new hand contains: ");
@@ -292,8 +296,12 @@ public class ClientActions {
 	public void setBuyArea(Card[] input) {
 		this.buyArea = input;
 	}
-	public void displayLaunge() {
-		
+	public void displayLaunge(Launge lobbies) {
+		System.out.println("Server sent a list of lobbies: ");
+		for(int i = 0 ; i < lobbies.getLobbies().length; i++) {
+			System.out.println("Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "//4 players.");
+		}
+		System.out.println("Server sent a list of lobbies: ");
 	}
 	public void displayLobby() {
 		

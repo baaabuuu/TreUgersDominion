@@ -19,8 +19,8 @@ public class ClientTester {
 			
 			//action.setPlayerHand(card);
 			
-			CardOption test2 = new CardOption("Select cards to discard", 3, card);
-			action.playerSelect(test2, null);
+			//CardOption test2 = new CardOption("Select cards to discard", 3, card);
+			//action.playerSelect(test2, null);
 			
 			OotAction test1 = new OotAction("Discard down to three cards", 2);
 			action.nonTurnAction(test1, null);

@@ -4,10 +4,7 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import objects.BoardState;
-import objects.Commands;
-import objects.OotAction;
-import objects.PlayerHand;
+import objects.*;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -50,8 +47,16 @@ public class Consumer implements Runnable {
 							action.setPlayerHand((PlayerHand)input[1]);
 							break;
 					case message: input = clientSpace.get(new ActualField(name), 
-							new FormalField(String.class));
+								new FormalField(String.class));
 							action.serverMessage((String)input[1]);
+							break;
+					case setNames: input = clientSpace.get(new ActualField(name), 
+								new FormalField(String[].class));
+							action.setNames((String[])input[1]);
+							break;
+					case setLaunge: input = clientSpace.get(new ActualField(name), 
+								new FormalField(Launge.class));
+							action.displayLaunge((Launge)input[1]);
 							break;
 					default: break;
 				}
