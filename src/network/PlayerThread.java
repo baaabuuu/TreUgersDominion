@@ -4,14 +4,14 @@ package network;
 import org.jspace.ActualField;
 import org.jspace.Space;
 
-import engine.GameStarter;
+import engine.Game;
 
 public class PlayerThread extends Thread {
 	Space gameSpace;
 	String playerName;
-	GameStarter game;
+	Game game;
 	
-	public PlayerThread(Space gameSpace, String playerName, GameStarter game)
+	public PlayerThread(Space gameSpace, String playerName, Game game)
 	{
 		
 		this.gameSpace = gameSpace;
@@ -31,4 +31,11 @@ public class PlayerThread extends Thread {
 		
 	}
 	
+	public void sendMessage(String cmd){
+		// TODO
+	}
+	
+	public String getPlayerName(){
+		return playerName;
+	}
 }

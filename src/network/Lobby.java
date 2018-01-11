@@ -18,7 +18,7 @@ public class Lobby {
 	private static int indexID;
 	
 	//Setup the uri
-	private static int port = 8080;
+	private static int port = 8181;
 	private static String host = "localhost";
 	private static String uri = "tcp://"+ host + ":" + port + "/?keep";
 	
