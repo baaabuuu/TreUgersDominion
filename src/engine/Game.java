@@ -25,6 +25,7 @@ public class Game {
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
+
 	@SuppressWarnings("unchecked")
 	public void dummyGame()
 	{
@@ -262,6 +263,9 @@ public class Game {
 		return board.checkEnd();
 	}
 	
+	/**
+	 * Go to next phase
+	 */
 	public void nextPhase()
 	{
 		phase++;
@@ -339,6 +343,33 @@ public class Game {
 	public int getTurn()
 	{
 		return turn;
+	}
+	
+	/**
+	 * Returns the currentPlayer
+	 * @return
+	 */
+	public Player getCurrentPlayer()
+	{
+		return currPlayer;
+	}
+	
+	/**
+	 * Returns a player with the following index
+	 * @param index
+	 * @return
+	 */
+	public Player getPlayer(int index)
+	{
+		return players[index];
+	}
+	/**
+	 * Returns the array of players
+	 * @return
+	 */
+	public Player[] getPlayers()
+	{
+		return players;
 	}
 
 	public void start() {
