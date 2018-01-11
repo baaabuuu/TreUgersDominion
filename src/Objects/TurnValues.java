@@ -1,10 +1,10 @@
-package Objects;
+package objects;
 
-public class turnValues {
+public class TurnValues {
 	private int action;
 	private int buy;
 	private int money;
-	public turnValues(int action, int buy, int money) {
+	public TurnValues(int action, int buy, int money) {
 		this.action = action;
 		this.buy = buy;
 		this.money = money;

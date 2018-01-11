@@ -1,4 +1,4 @@
-package Objects;
+package objects;
 
 public class BoardState {
 	private int[] shopArea, handCount, deckCount, discardCount, vpCount;

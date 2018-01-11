@@ -4,9 +4,10 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import Objects.BoardState;
-import Objects.OotAction;
-import cards.Card;
+import objects.BoardState;
+import objects.Commands;
+import objects.OotAction;
+import objects.PlayerHand;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
@@ -30,23 +31,23 @@ public class Consumer implements Runnable {
 			try {
 				
 				objs = clientSpace.getp(new ActualField(name), 
-						new FormalField(Integer.class));
+						new FormalField(Commands.class));
 				
 				
-				switch ((int)objs[1]) {
-					case 1: input = clientSpace.getp(new ActualField(name), 
+				switch ((Commands)objs[1]) {
+					case setBoardState: input = clientSpace.getp(new ActualField(name), 
 								new FormalField(BoardState.class));
 							action.updateBoard((BoardState) input[1]);
 							break;
-					case 2: action.takeTurn(clientSpace, hostSpace);
+					case takeTurn: action.takeTurn(clientSpace, hostSpace);
 							break;
-					case 3: input = clientSpace.getp(new ActualField(name), 
+					case nonTurnAction: input = clientSpace.getp(new ActualField(name), 
 								new FormalField(OotAction.class));
 							action.nonTurnAction((OotAction)input[1], hostSpace);
 							break;
-					case 4: input = clientSpace.getp(new ActualField(name), 
-								new FormalField(Card[].class));
-							action.setPlayerHand((Card[])input[1]);
+					case setPlayerHand: input = clientSpace.getp(new ActualField(name), 
+								new FormalField(PlayerHand.class));
+							action.setPlayerHand((PlayerHand)input[1]);
 							break;
 					default: break;
 				}
