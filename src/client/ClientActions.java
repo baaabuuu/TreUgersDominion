@@ -9,15 +9,17 @@ import org.jspace.Space;
 
 import Objects.BoardState;
 import Objects.CardOption;
+import Objects.Commands;
 import Objects.OotAction;
-import Objects.turnValues;
+import Objects.PlayerHand;
+import Objects.TurnValues;
 import cards.Card;
 
 public class ClientActions {
 	private String playerName;
-	private turnValues playerValues;
+	private TurnValues playerValues;
 	private Card[] buyArea;
-	private String[] playerNames;
+	private String[] names;
 	private Card[] playerHand;
 	static Scanner scan;
 	
@@ -35,53 +37,17 @@ public class ClientActions {
 		System.out.println("\nYOUR TURN HAS BEGUN!");
 		System.out.println("Your hand contains: ");
 		printCards(playerHand);
-		setTurnValues(new turnValues(1,1,0));
+		setTurnValues(new TurnValues(1,1,0));
 		printTurnValues(playerValues);
 		System.out.println("\n----------------------");
 		System.out.println("The Buy Area contains: ");
 		printBuyArea();
 		System.out.println("ACTION PHASE");
-		scan = new Scanner(System.in);
-		String number;
-		int value;
-		Object[] serverInput;
-		boolean playerLock = true;
-		boolean lock = true;
-		while(playerLock) {
-			System.out.println("Play an Action Card, or skip the action phase by typing '0'.");
-			lock = true;
-			while(lock) {
-				number = scan.nextLine();
-				
-				try {
-					value = Integer.parseInt(number);
-					
-					if(value < 0 || value > playerHand.length) {
-						System.out.println("Input is not a valid card.");
-					} else if(value == 0) {
-						playerLock = false;
-						lock = false;
-					}else {
-						hostSpace.put(playerName, value);
-						serverInput = clientSpace.getp(new ActualField(playerName), 
-								new FormalField(turnValues.class));
-						setTurnValues((turnValues)serverInput[1]);
-						
-						serverInput = clientSpace.getp(new ActualField(playerName), 
-								new FormalField(Card[].class));
-						setPlayerHand((Card[])serverInput[1]);
-						printCards(playerHand);
-						
-						
-						
-					}
-				}catch(NumberFormatException e) {
-					System.out.println("Input is not a valid integer.");
-				}
-				
-				
-			}
-		}
+		actionPhase(clientSpace, hostSpace);
+		
+		
+		
+		
 		System.out.println("Select card: ");
 		
 		
@@ -97,6 +63,95 @@ public class ClientActions {
 		System.out.println("Your board is being cleared of used cards.");
 		
 		System.out.println("\nYour turn has ended.");
+	}
+	private void actionPhase(Space clientSpace, Space hostSpace) throws InterruptedException {
+		
+		scan = new Scanner(System.in);
+		String number;
+		int value;
+		Object[] serverInput;
+		boolean lock = true;
+		boolean lock2 = true;
+		Object[] objs;
+		Object[] input;
+		
+		while(lock) {
+			System.out.println("Play an Action Card, or skip the action phase by typing '0'.");
+			number = scan.nextLine();
+			
+			try {
+				value = Integer.parseInt(number);
+				
+				if(value < 0 || value > playerHand.length) {
+					System.out.println("Input is not a valid card.");
+				
+				//If player wants to get out of Action phase
+				} else if(value == 0) {
+					System.out.println("Action phase has ended");
+					hostSpace.put(playerName, value);
+					lock = false;
+				}else {
+					hostSpace.put(playerName, value);
+					while(lock2) {
+						objs = clientSpace.get(new ActualField(playerName), 
+								new FormalField(Commands.class));
+						
+						switch ((Commands)objs[1]) {
+							case message:
+									input = clientSpace.get(new ActualField(playerName), 
+										new FormalField(String.class));
+									System.out.println((String)input[1]);
+									lock2 = false;
+									break;
+							case takeTurn:
+									input = clientSpace.get(new ActualField(playerName), 
+										new FormalField(String.class));
+									lock2 = false;
+									break;
+							case playerSelect:
+									input = clientSpace.get(new ActualField(playerName), 
+										new FormalField(CardOption.class));
+									playerSelect((CardOption)input[1],hostSpace);
+									break;
+							default: break;
+						}
+					}
+					
+					input = clientSpace.get(new ActualField(playerName), 
+							new FormalField(BoardState.class));
+						updateBoard((BoardState)input[1]);
+						
+					input = clientSpace.get(new ActualField(playerName), 
+								new FormalField(PlayerHand.class));
+						setPlayerHand((PlayerHand)input[1]);
+						
+					input = clientSpace.get(new ActualField(playerName), 
+							new FormalField(TurnValues.class));
+						setTurnValues((TurnValues)input[1]);
+						
+					
+					
+					serverInput = clientSpace.get(new ActualField(playerName), 
+							new FormalField(TurnValues.class));
+					setTurnValues((TurnValues)serverInput[1]);
+					
+					serverInput = clientSpace.get(new ActualField(playerName), 
+							new FormalField(PlayerHand.class));
+					setPlayerHand((PlayerHand)serverInput[1]);
+					System.out.println("Your hand contains: ");
+					printCards(playerHand);
+					
+					
+					
+				}
+			}catch(NumberFormatException e) {
+				System.out.println("Input is not a valid integer.");
+			}
+			
+			
+		}
+		
+		
 	}
 	/**
 	 * An action affecting the players hand, while it is not the players turn.
@@ -156,16 +211,16 @@ public class ClientActions {
 			hostSpace.put(playerName,selected);
 		}
 	}
-	public void setPlayerHand(Card[] newHand) {
-		playerHand = newHand;
+	public void setPlayerHand(PlayerHand input) {
+		playerHand = input.getCards();
 		System.out.println("Your new hand contains: ");
 		printCards(playerHand);
 	}
 	public void setBuyArea(Card[] input) {
 		this.buyArea = input;
 	}
-	public void setPlayerNames(String[] input) {
-		this.playerNames = input;
+	public void setNames(String[] input) {
+		this.names = input;
 	}
 	public void displayLaunge() {
 		
@@ -183,11 +238,11 @@ public class ClientActions {
 	 * Prints out the given Card[].
 	 * @param Card[]
 	 */
-	private void printCards(Card[] cards) {
+	private void printCards(Card[] playerHand) {
 		
 		// Simple print of current hand.
-		for(int i = 0; i < cards.length; i++){
-			System.out.println("Card " + (i+1) + ": " + cards[i].getName());
+		for(int i = 0; i < playerHand.length; i++){
+			System.out.println("Card " + (i+1) + ": " + playerHand[i].getName());
 		}
 		/*
 		// More detailed print of current hand.
@@ -204,10 +259,10 @@ public class ClientActions {
 					+ buyArea[i].getCost() + "\nDescription: \n" + buyArea[i].getDesc() + "\n");
 		}
 	}
-	private void setTurnValues(turnValues values) {
+	private void setTurnValues(TurnValues values) {
 		this.playerValues = values;
 	}
-	private void printTurnValues(turnValues values) {
+	private void printTurnValues(TurnValues values) {
 		System.out.println("Actions: " + values.getAction());
 		System.out.println("Buys: " + values.getBuy());
 		System.out.println("Money: " + values.getMoney());
