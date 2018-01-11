@@ -4,6 +4,7 @@ import cards.Card;
 
 public class PlayerHand {
 	Card[] cards;
+	
 	public PlayerHand(Card[] cards) {
 		this.cards = cards;
 	}

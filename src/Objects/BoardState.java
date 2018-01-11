@@ -3,7 +3,8 @@ package objects;
 public class BoardState {
 	private int[] shopArea, handCount, deckCount, discardCount, vpCount;
 	private int trashCount;
-	public BoardState(int[] a, int[] b, int[] c, int[] d, int e, int[] f) {
+	public BoardState(int[] a, int[] b, int[] c, int[] d, int e, int[] f)
+	{
 		this.shopArea = a;
 		this.handCount = b;
 		this.deckCount = c;
