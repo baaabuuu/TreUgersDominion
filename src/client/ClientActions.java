@@ -7,14 +7,14 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import Objects.BoardState;
-import Objects.CardOption;
-import Objects.Commands;
-import Objects.OotAction;
-import Objects.PlayerHand;
-import Objects.TurnValues;
 import cards.Card;
 import log.Log;
+import objects.BoardState;
+import objects.CardOption;
+import objects.Commands;
+import objects.OotAction;
+import objects.PlayerHand;
+import objects.TurnValues;
 
 public class ClientActions {
 	private String playerName;
