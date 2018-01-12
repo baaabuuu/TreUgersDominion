@@ -46,6 +46,13 @@ public class Player {
 		Log.log(getName() + " added the effect " + effect);
 		effects.add(effect);
 	}
+	public ArrayList<String> getEffects() {
+		
+		return effects;
+	}
+	public void removeEffect(String effectName){
+		effects.remove(effectName);
+	}
 	/**
 	 * Removes a card from the hand with the selected index.
 	 * @param index

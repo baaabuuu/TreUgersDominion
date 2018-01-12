@@ -16,10 +16,11 @@ public class EffectHandler
 				if(c.getName().equals("Moat")){ //To be replaced with switch statement for future expansion
 					//NETWORK query ask if want to counter this card
 					//Set counter here
-					
+					Log.log(p + " has chosen to use their reaction from "+c.getName());
 				}
 			}
 			if(counter) {
+				
 				continue;
 			}
 			else {
@@ -27,6 +28,17 @@ public class EffectHandler
 			}
 		}
 		return affectedPlayers;
+	}
+	public void playerEffects(String effect,Player owner, Card card) {
+		switch(effect) {
+		
+		case "SilverNextMoney1":
+			if(card.getName().equals("Silver")) {
+				owner.addMoney(1);
+				owner.removeEffect(effect);
+			}
+			break;
+		}
 	}
 	/**
 	 * Coordinator of effects- Call this on a per-board basis
@@ -38,6 +50,18 @@ public class EffectHandler
 	 */
 	
 	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players){
+		//First check if playing this card would trigger any other effect
+		for(Player p: players) {
+			if(p.getEffects().size()== 0) {
+				continue;
+			}
+			else {
+				for(String s: p.getEffects()) {
+					playerEffects(s,p,card);
+				}
+			}
+		}
+		//If it is an attack, can somoene use a reaction card?
 		Player[] affectedPlayers=null;
 		for(String type: card.getTypes()) {
 			if(type.equals("attack")) {
@@ -73,7 +97,7 @@ public class EffectHandler
 				break;
 			//Next time a silver is played, gain +1 temp monies
 			case 5: 
-				player.addEffect("1TempOnNextSilver");
+				player.addEffect("NextSilverMoney1");
 				break;
 			//Discard top of deck, if action card, play it.
 			case 6: 
@@ -103,7 +127,7 @@ public class EffectHandler
 			case 12: 
 				mayTrashCopperGain2(player,board);
 				break;
-			case 13: //wait for merge
+			case 13: 
 				discardPerEmptySupply(player,board);
 				break;
 			case 14:
