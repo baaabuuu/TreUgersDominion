@@ -51,7 +51,7 @@ public class EffectHandler
 				break;
 			//Gain a card costing upto 4
 			case 8: 
-				gain1MaxCost4();
+				gain1MaxCost4(player, board);
 				break;
 			//Silver on deck, reveal VP cards
 			case 9:
@@ -66,11 +66,14 @@ public class EffectHandler
 				get2TempOthersDiscard(player,players);
 				break;
 			//May trash copper, if so, add +3 tempmoney
-			case 12: //wait for trash
+			case 12: 
+				mayTrashCopperGain2(player,board);
 				break;
 			case 13: //wait for merge
+				discardPerEmptySupply(player,board);
 				break;
 			case 14:
+				trashFromHandGainPlus2();
 				break;
 			case 15:
 				playActionFromHandtwice(player);
@@ -87,7 +90,7 @@ public class EffectHandler
 				draw2Action1(player);
 				break;
 			case 20:
-				//We needed to do something special here if i recall correctly
+				
 				break;
 			case 21:
 				draw1Action1Buy1Tempmoney(player);
@@ -108,6 +111,46 @@ public class EffectHandler
 				break;//Invalid effect error here;
 
 		}
+	}
+	private void trashFromHandGainPlus2() {
+		// TODO Auto-generated method stub
+		
+	}
+	private void discardPerEmptySupply(Player player, Board board) {
+		int count =0;
+		for (String cardName : board.getBoardNamesArray())
+		{
+			if (board.canGain(cardName) == null)
+			{
+				count++;
+			}
+				
+		}
+		Log.log(player+ " needs to discard "+count+ " cards.");
+		//NETWORK
+		//Ask player to discard "count" cards
+		//Reponse
+		
+		for(int i =0;i<count;i++) {
+			//discard cards chosen
+		}
+		
+	}
+	private void mayTrashCopperGain2(Player player,Board board) {
+		for(Card copper: player.getHand()) {
+			if(copper.getName().equals("Copper")) {
+				//Only network if player has copper
+				//NETWORK 
+				//Ask if player wants to trash if yes
+				 ArrayList<Card> tempHand = player.getHand();
+				tempHand.remove(copper);
+				board.trashCard(copper);
+				player.setHand(tempHand);
+				break;
+				
+			}
+		}
+		//Tell player: You don't have copper
 	}
 	private void draw2OthersCurse(Player player, Player[] players) {
 		player.drawCard(2);
@@ -270,13 +313,28 @@ public class EffectHandler
 		player.addActions(2);
 	}
 
-	private void gain1MaxCost4()
+	private void gain1MaxCost4(Player player, Board board)
 	{
-		//Requires methods in board 
+		
+		//NETWORK
+		//Ask players what card to gain
+		String cardName = "Placeholder";
+		
+		Card gainedCard = board.canGain(cardName);
+		if(gainedCard.getCost() >4)
+		{
+			Log.important(player+ " tried to gain a card costing more than 4");
+			//Figure out how we do repetition with NETWORKING
+		}
+		else 
+		{
+			player.discardCard(gainedCard);
+			board.cardRemove(cardName);
+		}
 	}
 	private void silverOnDeckRevealVC(Player player, Player[] players)
 	{
-		//Requires a reveal and some stuff from patrick
+		//Requires a reveal and some stuff from the others
 	}
 	private void get2TempOthersDiscard(Player player, Player[] players)
 	{
