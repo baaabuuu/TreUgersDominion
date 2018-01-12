@@ -18,9 +18,10 @@ public class Log {
 		{
 			//Not sure we need year and day for this pretty I'm pretty sure.
 			//System.out.println("[" + new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss").format(new Date()) + "]: " + message);
-			String input = CallingClass.INSTANCE.getCallingClasses()[2].getName();
+			String input = CallingClass.INSTANCE.getCallingClasses()[2].getName(); 
+			String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
 			input = input.substring(input.indexOf(".")+1);
-			System.out.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + input + "]: " + message);
+			System.out.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + input + "][" + methodName + "] " + message);
 		}
 	}
 	
@@ -30,8 +31,9 @@ public class Log {
 		{
 			//System.out.println("[" + new SimpleDateFormat("yyyy:MM:dd:HH:mm:ss").format(new Date()) + "]: " + message);
 			String input = CallingClass.INSTANCE.getCallingClasses()[2].getName();
+			String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
 			input = input.substring(input.indexOf(".")+1);
-			System.err.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + input + "]: " + message);
+			System.err.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "][" + input + "][" + methodName + "] " + message);
 		}
 	}
 }
