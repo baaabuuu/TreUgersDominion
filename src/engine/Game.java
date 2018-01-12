@@ -334,10 +334,10 @@ public class Game {
 	 * @param list
 	 * @throws InterruptedException
 	 */
-	public void sendCardOption(int playerID, String message, int count, List<Card> list) throws InterruptedException
+	public void sendCardOption(int playerID, String message, int count, List<Card> list, boolean may) throws InterruptedException
 	{
 		Log.log("Transmitting cardOption to player " + players[playerID].getName() + "#" + playerID);
-		CardOption option = new CardOption(message, count, list);
+		CardOption option = new CardOption(message, count, list, may);
 		writer.sendMessage(new Tuple(playerID, ServerCommands.playerSelect, option));
 	}
 	
