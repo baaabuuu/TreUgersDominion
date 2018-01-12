@@ -1,13 +1,18 @@
 package engine;
-import cards.Card;
-import log.Log;
-
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
+
+import cards.Card;
+import log.Log;
 public class EffectHandler
 {	
 	
-	public ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) {
+	private Game game;
+	public EffectHandler(Game game) {
+		this.game=game;
+		
+	}
+	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) {
 		boolean counter;
 		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
 		for(Player p: players) {
@@ -31,7 +36,7 @@ public class EffectHandler
 		}
 		return affectedPlayers;
 	}
-	public void playerEffects(String effect,Player owner, Card card) {
+	private void playerEffects(String effect,Player owner, Card card) {
 		switch(effect) {
 		
 		case "SilverNextMoney1":

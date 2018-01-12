@@ -28,7 +28,7 @@ public class Game {
 	private int turn;
 	private int phase;
 	private int playerCount;
-	private EffectHandler effects = new EffectHandler();
+	private EffectHandler effects = new EffectHandler(this);
 	private Space space;
 	private Writer writer;
 	
