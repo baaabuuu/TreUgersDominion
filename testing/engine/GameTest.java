@@ -121,7 +121,7 @@ public class GameTest
 		Game game = new Game(board, names, names.length, 0);
 		game.getPlayer(1).setConnected(false);
 		Player old = game.getCurrentPlayer();
-		boolean checkTurn = game.newTurn();
+		game.newTurn();
 		Player curr = game.getCurrentPlayer();
 		assertEquals("It is still current Players turn", curr, old);
 	}
