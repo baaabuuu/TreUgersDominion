@@ -120,7 +120,7 @@ public class EffectHandler
 		int count =0;
 		for (String cardName : board.getBoardNamesArray())
 		{
-			if (board.canBuy(cardName) == null)
+			if (board.canGain(cardName) == null)
 			{
 				count++;
 			}
@@ -320,7 +320,7 @@ public class EffectHandler
 		//Ask players what card to gain
 		String cardName = "Placeholder";
 		
-		Card gainedCard =board.canBuy(cardName);
+		Card gainedCard =board.canGain(cardName);
 		if(gainedCard.getCost() >4)
 		{
 			Log.important(player+ " tried to gain a card costing more than 4");

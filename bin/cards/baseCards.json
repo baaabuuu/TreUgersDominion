@@ -31,7 +31,7 @@
 		money : 2,
 		effectCodes :
 		[
-			0
+			26
 		],
 		victoryPoints : 0,
 		minCost : 0,

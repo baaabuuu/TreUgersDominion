@@ -49,7 +49,7 @@ public class GameStarter
 	 */
 	public void startDummyGame()
 	{
-		//game.dummyGame();
+		game.dummyGame();
 	}
 	
 	/**
