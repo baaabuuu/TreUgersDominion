@@ -6,6 +6,28 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 public class EffectHandler
 {	
+	
+	public ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) {
+		boolean counter;
+		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
+		for(Player p: players) {
+			counter = false;
+			for(Card c : p.getHand()) {
+				if(c.getName().equals("Moat")){ //To be replaced with switch statement for future expansion
+					//NETWORK query ask if want to counter this card
+					//Set counter here
+					
+				}
+			}
+			if(counter) {
+				continue;
+			}
+			else {
+				affectedPlayers.add(p);
+			}
+		}
+		return affectedPlayers;
+	}
 	/**
 	 * Coordinator of effects- Call this on a per-board basis
 	 * @param n - Specifies the effect code
@@ -14,8 +36,19 @@ public class EffectHandler
 	 * @param board - current board state
 	 * @param players - List of playerIDs
 	 */
-	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players)
-	{
+	
+	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players){
+		Player[] affectedPlayers=null;
+		for(String type: card.getTypes()) {
+			if(type.equals("attack")) {
+				affectedPlayers=(Player[]) findCounterPlays(player, card, board, players).toArray();
+			}
+			else {
+				affectedPlayers = players;
+			}
+			
+		}
+		
 		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
 		switch(n)
 		{
@@ -32,7 +65,7 @@ public class EffectHandler
 				break;
 			//Reveal and become immune to an attack card
 			case 3://Implement reveal
-				revealImunitiy(player,card);
+				//does not trigger on play
 				break;
 				//Look through discard and maybe put one on top of the deck
 			case 4: 
@@ -56,7 +89,7 @@ public class EffectHandler
 				break;
 			//Silver on deck, reveal VP cards
 			case 9:
-				silverOnDeckRevealVC(player, players);
+				silverOnDeckRevealVC(player, board, affectedPlayers);
 				break;
 			//get 1 VP for every 10 cards
 			case 10: 
@@ -64,7 +97,7 @@ public class EffectHandler
 				break;
 			//Get 2 temp money, others discard untill they have 3 cards left
 			case 11: 
-				get2TempOthersDiscard(player,players);
+				get2TempOthersDiscard(player,affectedPlayers);
 				break;
 			//May trash copper, if so, add +3 tempmoney
 			case 12: 
@@ -77,13 +110,13 @@ public class EffectHandler
 				trashFromHandGainPlus2(player, board);
 				break;
 			case 15:
-				playActionFromHandtwice(player, board, players);
+				playActionFromHandtwice(player, board, affectedPlayers);
 				break;
 			case 16:
-				
+				gainGoldOthersReveal(player,board, affectedPlayers);
 				break;
 			case 17:
-				draw4Buy1OthersDraw(player,players);
+				draw4Buy1OthersDraw(player,affectedPlayers);
 				break;
 			case 18:
 				action2Buy1Money2(player);
@@ -104,7 +137,7 @@ public class EffectHandler
 				draw1Action1Look2(player);
 				break;
 			case 24:
-				draw2OthersCurse(player,players);
+				draw2OthersCurse(player,affectedPlayers);
 				break;
 			case 25:
 				gainPlus5(player,board);
@@ -114,6 +147,18 @@ public class EffectHandler
 				break;//Invalid effect error here;
 
 		}
+	}
+	private void gainGoldOthersReveal(Player player, Board board, Player[] players) {
+		Card gold =board.canGain("Gold");
+		if(gold != null) {
+			player.discardCard(gold);
+			board.cardRemove("Gold");
+		}
+			//reveal 2 top cards
+			//if revealed and is Treasure
+			//not equal tó copper, trash one of them
+			//And discard the others
+		
 	}
 	private void gainPlus5(Player player, Board board) {
 		//NETWORK
@@ -176,11 +221,7 @@ public class EffectHandler
 		
 		
 	}
-	private void revealImunitiy(Player player,Card card) {
-		//Implement reveal here
-		
-		player.addEffect("immuneToAttack");
-	}
+	
 	private void drawTill7(Player player) {
 		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
 		while(player.getHandSize() <7 || player.getDeckSize()>0) {
@@ -447,7 +488,6 @@ public class EffectHandler
 		Card gainedCard =board.canGain(cardName);
 		if(gainedCard.getCost() >4)
 		{
-			Log.important(player+ " tried to gain a card costing more than 4");
 			//Figure out how we do repetition with NETWORKING
 		}
 		else 
@@ -456,9 +496,10 @@ public class EffectHandler
 			board.cardRemove(cardName);
 		}
 	}
-	private void silverOnDeckRevealVC(Player player, Player[] players)
+	private void silverOnDeckRevealVC(Player player,Board board, Player[] players)
 	{
-		//Requires a reveal and some stuff from the others
+			board.canGain("Silver");
+			
 	}
 	private void get2TempOthersDiscard(Player player, Player[] players)
 	{
