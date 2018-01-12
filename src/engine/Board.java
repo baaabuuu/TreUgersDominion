@@ -3,19 +3,27 @@ package engine;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.jspace.Tuple;
+
 import cards.Card;
 import log.Log;
 
+/**
+ * The state of the board, contains the supply piles (card stacks).
+ * @author s164166
+ */
 public class Board
 {
 	private HashMap<String, Object[]> board = new HashMap<String, Object[]>();
-	private ArrayList<Card> trash = new ArrayList<Card>();
+	private ArrayList<Card> trash = new ArrayList<Card>();	
 	
 	/**
 	 * Creates the board, needs player count, cards, and setupCards
 	 * @param playerCount
 	 * @param cards
 	 * @param setupCards
+	 * @param safeSpace 
+	 * @param writer 
 	 */
 	public Board(int playerCount, ArrayList<Card> cards, ArrayList<Card> setupCards)
 	{
@@ -47,6 +55,17 @@ public class Board
 	{
 		Log.log(card.getName() + " was trashed.");
 		trash.add(card);
+	}
+		
+	
+	/**
+	 * Transmits the tuple further.
+	 * @param tuple
+	 * @return
+	 */
+	public Tuple sendTuple(Tuple tuple)
+	{
+		return tuple;
 	}
 	
 	/**
@@ -166,7 +185,15 @@ public class Board
 				
 		}
 		return count >= 3;
-		
+	}
+	
+	/**
+	 * Returns the size of the trash pile
+	 * @return
+	 */
+	public int getTrashSize()
+	{
+		return trash.size();
 	}
 
 }

@@ -10,6 +10,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import cards.Card;
 import log.Log;
 
+/**
+ * A simple player object, used to handle the players in the game.
+ * @author s164166
+ */
 public class Player {
 	private int money, actions, buys, victoryPoints;
 	//Insertion in the back and in the front in O(1) time due to linkedBlockingQueue
@@ -57,20 +61,26 @@ public class Player {
 	 * Removes a card from the hand with the selected index.
 	 * @param index
 	 */
-	public void removeFromHand(int index)
+	public boolean removeFromHand(int index)
 	{
-		Log.log(getName() + " removed from hand: " + hand.get(index).getName());
-		hand.remove(index);
+		if (index >= 0 && index < hand.size() )
+		{
+			Log.log(getName() + " removed from hand: " + hand.get(index).getName());
+			hand.remove(index);
+			return true;
+		}
+		return false;
 	}
 	
 	/**
 	 * Removes a specific card from the hand
 	 * @param card
+	 * @return 
 	 */
-	public void removeFromHand(Card card)
+	public boolean removeFromHand(Card card)
 	{
 		Log.log(getName() + " removed from hand: " + card.getName());
-		hand.remove(card);
+		return hand.remove(card);
 	}
 	
 	/**
@@ -161,6 +171,7 @@ public class Player {
 		{
 			if (types.contains("Treasure") && phase == 1)
 			{
+				addMoney(card.getMoney());
 				Log.log(getName() + " played the treasure card " + card.getName());
 				return true;
 			}
@@ -317,10 +328,18 @@ public class Player {
 		this.discard = discard;
 	}
 
+	/**
+	 * Returns whether a player is connected or not.
+	 * @return
+	 */
 	public boolean isConnected() {
 		return connected;
 	}
 
+	/**
+	 * Sets whether a played is connected or not.
+	 * @param connected
+	 */
 	public void setConnected(boolean connected) {
 		this.connected = connected;
 	}
@@ -374,6 +393,7 @@ public class Player {
 	{
 		return discard.size();
 	}
+	
 	/**
 	 * Gets the deck stack size
 	 * @return deck.size();
@@ -382,8 +402,10 @@ public class Player {
 	{
 		return deck.size();
 	}
+	
 	/**
-	 *  Selects a card form a list of cards
+	 * Selects a card form a list of cards
+	 * <p>Very generic method - dosnt utilize any Player variables?
 	 * @param list - List of cards
 	 * @param index - Card to be taken
 	 */

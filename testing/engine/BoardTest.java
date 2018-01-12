@@ -183,10 +183,4 @@ public class BoardTest
 		Boolean result = board.checkEnd();
 		assertTrue("Game is over", result);
 	}
-
-	
-	
-	
-
-
 }

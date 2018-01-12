@@ -1,0 +1,7 @@
+Notes regarding transmission.
+
+Sending supply piles information.
+Transmit supply piles the start
+Everytime a boardstate is sent - transmit the count of them as a int integer.
+
+Hello WOrld

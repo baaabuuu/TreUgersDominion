@@ -511,7 +511,7 @@ public class EffectHandler
 		//Ask players what card to gain
 		String cardName = "Placeholder";
 		
-		Card gainedCard =board.canGain(cardName);
+		Card gainedCard = board.canGain(cardName);
 		if(gainedCard.getCost() >4)
 		{
 			//Figure out how we do repetition with NETWORKING

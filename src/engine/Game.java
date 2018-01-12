@@ -1,11 +1,25 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+import org.jspace.Space;
+import org.jspace.Tuple;
 
 import cards.Card;
 import log.Log;
+import network.Writer;
+import objects.BoardState;
+import objects.CardOption;
+import objects.PlayerHand;
+import objects.ServerCommands;
+import objects.TurnValues;
 
+/**
+ * The game - Handles actual game knowledge - is starting through StartGame
+ * @author s164166
+ */
 public class Game {
 
 	private Player[] players;
@@ -15,12 +29,17 @@ public class Game {
 	private int phase;
 	private int playerCount;
 	private EffectHandler effects = new EffectHandler();
+	private Space space;
+	private Writer writer;
+	
+	
 	private final String[] phases = {"Action Phase", "Buy phase", "Clean-up Phase"};
 
 	
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
+
 	@SuppressWarnings("unchecked")
 	public void dummyGame()
 	{
@@ -92,18 +111,8 @@ public class Game {
 	}
 	
 	/**
-	 * If no actions - no action phase
-	 * <br> Cannot skip buy phase - Treasure can potentially have buys on them.
-	 */
-	private void checkNextPhase()
-	{
-		if (phase == 0 && !currPlayer.canPlayAction())
-				nextPhase();
-	}
-	
-	/**
 	 * Tries to perform the following action
-	 * @param action
+	 * @param action 
 	 */
 	public Object[] action(String action)
 	{
@@ -213,12 +222,12 @@ public class Game {
 	
 	/**
 	 * Creates a game object, a game object runs the actually game and handles game play logic. 
-	 * @param board
+	 * @param board  
 	 * @param playerNames
 	 * @param playerCount
 	 * @param turn
 	 */
-	public Game(Board board, String[] playerNames, int playerCount, int turn)
+	public Game(Board board, String[] playerNames, int playerCount, int turn, Writer writer, Space space)
 	{
 		this.board = board;
 		this.playerCount = playerCount;
@@ -226,17 +235,19 @@ public class Game {
 		this.turn = turn;
 		currPlayer = players[turn];
 		Log.important("Initial player is: " + currPlayer.getName() + "'s turn.");
-		
+		this.writer = writer;
+		this.space = space;
 	}
 	
 	/**
 	 * A new turn, used at the end of the turn - also checks if game is over.
 	 */
-	public void newTurn()
+	public boolean newTurn()
 	{
 		if (checkGameEnd())
 		{
 			Log.important("Game is over");
+			return true;
 		}
 		else
 		{
@@ -250,9 +261,13 @@ public class Game {
 			currPlayer = players[turn];
 			Log.important("Turn switch - switching to " + currPlayer.getName() + "'s turn.");
 			if (!currPlayer.isConnected())
-				newTurn();
+			{
+				Log.important("Skipping - " + currPlayer.getName() + "'s turn due to disconnected state.");
+				return newTurn();
+
+			}
 		}
-		
+		return false;
 	}
 	
 	/**
@@ -264,11 +279,101 @@ public class Game {
 		return board.checkEnd();
 	}
 	
+	/**
+	 * Go to next phase
+	 */
 	public void nextPhase()
 	{
 		phase++;
 		if (phase > 1)
 			newTurn();
+	}
+	
+	/**
+	 * Transmits board state to all players.
+	 * @throws InterruptedException 
+	 */
+	public void sendBoardState() throws InterruptedException
+	{
+		int boardSize = board.getBoardSize();
+		ArrayList<String> boardNames = board.getBoardNamesList();
+		int[] shopCount = new int[boardSize];
+		for (int i = 0; i < boardSize; i++)
+		{
+			shopCount[i] = board.getCopiesLeft(boardNames.get(i));
+		}
+		int[] handCount = new int[players.length];
+		int[] deckCount = new int[players.length];
+		int[] discardCount = new int[players.length];
+		int[] vpCount = new int[players.length];
+		for (int i = 0; i < players.length; i++)
+		{
+			handCount[i] = players[i].getHandSize();
+			deckCount[i] = players[i].getDeckSize();
+			discardCount[i] = players[i].getDiscardSize();
+			vpCount[i] = players[i].getVictoryPoints();
+		}
+		int trashCount = board.getTrashSize();		
+		BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
+		for (int playerID = 0; playerID < players.length; playerID++)
+		{
+			if (players[playerID].isConnected())
+			{
+				Log.log("Transmitting BoardState to " + players[playerID].getName()+ "#" + playerID);
+				writer.sendMessage(new Tuple(playerID, ServerCommands.setBoardState, boardState));
+
+			}
+		}
+	}
+	
+	/**
+	 * Send a card option to the following players.
+	 * @param playerID
+	 * @param message
+	 * @param count
+	 * @param list
+	 * @throws InterruptedException
+	 */
+	public void sendCardOption(int playerID, String message, int count, List<Card> list) throws InterruptedException
+	{
+		Log.log("Transmitting cardOption to player " + players[playerID].getName() + "#" + playerID);
+		CardOption option = new CardOption(message, count, list);
+		writer.sendMessage(new Tuple(playerID, ServerCommands.playerSelect, option));
+	}
+	
+	/**
+	 * Sends the playerHand to the player
+	 * @throws InterruptedException 
+	 */
+	public void sendPlayerHand(int targetID, int playerID) throws InterruptedException
+	{
+		Log.log("Transmitting playerHand of " + players[targetID].getName() + "#" + targetID + " to " + players[playerID] + "#" + playerID);
+		PlayerHand hand = new PlayerHand(players[targetID].getHand());
+		writer.sendMessage(new Tuple(playerID, ServerCommands.setPlayerHand, hand));
+	}
+	
+	/**
+	 * Updates the turn values - displayed to 1 player
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendTurnValues(int playerID) throws InterruptedException
+	{
+		Player player = players[playerID];
+		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
+		TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
+		writer.sendMessage(new Tuple(playerID, ServerCommands.turnValues, values));
+	}
+	
+	/**
+	 * Updates the turn values - displayed to 1 player
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendMessage(String message, int target) throws InterruptedException
+	{
+		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
+		writer.sendMessage(new Tuple(target, ServerCommands.message, message));
 	}
 
 
@@ -324,10 +429,54 @@ public class Game {
 		}
 		return players;
 	}
+	
+	/**
+	 * Returns the current phase.
+	 * @return phase
+	 */
+	public int getPhase()
+	{
+		return phase;
+	}
+	
+	/**
+	 * Returns the current turn
+	 * @return turn
+	 */
+	public int getTurn()
+	{
+		return turn;
+	}
+	
+	/**
+	 * Returns the currentPlayer
+	 * @return
+	 */
+	public Player getCurrentPlayer()
+	{
+		return currPlayer;
+	}
+	
+	/**
+	 * Returns a player with the following index
+	 * @param index
+	 * @return
+	 */
+	public Player getPlayer(int index)
+	{
+		return players[index];
+	}
+	/**
+	 * Returns the array of players
+	 * @return
+	 */
+	public Player[] getPlayers()
+	{
+		return players;
+	}
 
 	public void start() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

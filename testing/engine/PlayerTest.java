@@ -2,8 +2,12 @@ package engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
 
 import cards.Card;
 import engine.Player;
@@ -59,6 +63,44 @@ public class PlayerTest
 		assertEquals("0 cards in discard pile - reshuffled discard pile", 0, player.getDiscard().size());
 		player.drawCard(1);
 		assertEquals("no cards drawn - hand size is 2 - no more cards can be drawn", 2, player.getHandSize());
+	}
+	
+	@Test
+	public void removeNoCards()
+	{
+		Player player = new Player();
+		Boolean result = player.removeFromHand(0);
+		assertFalse("Cannot remove if no card in at index 0", result);
+		 result = player.removeFromHand(new Card());
+		assertFalse("Cannot remove if card does not exist in hand", result);
+	}
+	
+	@Test
+	public void removeFromHandUnderIndex()
+	{
+		Player player = new Player();
+		player.getHand().add(new Card());
+		Boolean result = player.removeFromHand(-1);
+		assertFalse("Cannot remove if index under 0", result);
+	}
+	
+	@Test
+	public void removeFromHand()
+	{
+		Player player = new Player();
+		player.getHand().add(new Card());
+		Boolean result = player.removeFromHand(0);
+		assertTrue("Card Removed", result);
+	}
+	
+	@Test
+	public void removeSpecificCard()
+	{
+		Player player = new Player();
+		Card card = new Card();
+		player.getHand().add(card);
+		Boolean result = player.removeFromHand(card);
+		assertTrue("Card removed from hand", result);
 	}
 	
 	@Test
@@ -175,21 +217,85 @@ public class PlayerTest
 	}
 	
 	@Test
-	public void playCardNoAction()
+	public void playActionCardNoActions()
 	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
 		Player player = new Player();
-		player.playCard(new Card(), 0);
+		player.playCard(actionMock, 0);
 		assertEquals("Action size = 0", 0, player.getActions());
+	}
+	
+	@Test
+	public void playCardWrongPhase()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
+		Player player = new Player();
+		player.addActions(1);
+		player.playCard(actionMock, 1);
+
+		assertEquals("Action size = 1", 1, player.getActions());
+	}
+	
+	@Test
+	public void playCardWrongType()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card treasureMock = mock(Card.class);
+	    String[] bc = {"Treasure"};                                    
+		when(treasureMock.getDisplayTypes()).thenReturn(bc);
+		Player player = new Player();
+		player.addActions(1);
+		player.playCard(treasureMock, 0);
+
+		assertEquals("Action size = 1", 1, player.getActions());
 	}
 	
 	@Test
 	public void playCardAction()
 	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
 		Player player = new Player();
 		player.addActions(1);
 		assertEquals("Action size = 1", 1, player.getActions());
-		player.playCard(new Card(), 0);
+		player.playCard(actionMock, 0);
 		assertEquals("Action size = 0", 0, player.getActions());
+	}
+	
+	@Test
+	public void playTreasureWrongPhase()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card treasureMock = mock(Card.class);
+	    String[] bc = {"Treasure"};                                    
+		when(treasureMock.getDisplayTypes()).thenReturn(bc);
+		when(treasureMock.getMoney()).thenReturn(1);
+		Player player = new Player();
+		assertEquals("Money = 0", 0, player.getMoney());
+		player.playCard(treasureMock, 0);
+		assertEquals("Money = 0", 0, player.getMoney());
+	}
+	
+	@Test
+	public void playTreasure()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card treasureMock = mock(Card.class);
+	    String[] bc = {"Treasure"};                                    
+		when(treasureMock.getDisplayTypes()).thenReturn(bc);
+		when(treasureMock.getMoney()).thenReturn(1);
+		Player player = new Player();
+		assertEquals("Money = 0", 0, player.getMoney());
+		player.playCard(treasureMock, 1);
+		assertEquals("Money = 1", 1, player.getMoney());
 	}
 
 }

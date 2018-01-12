@@ -17,20 +17,20 @@ public class Card {
 	public Card copyOf()
 	{
 		Card copy = new Card();
-		copy.types = types;
-		copy.dispTypes = dispTypes;
-		copy.effectCodes = effectCodes;
-		copy.name = name;
-		copy.description = description;
-		copy.set = set;
+		copy.types = getTypes();
+		copy.dispTypes = getDisplayTypes();
+		copy.effectCodes = getEffectCode();
+		copy.name = getName();
+		copy.description = getDesc();
+		copy.set = getSet();
 		copy.cost = cost;
-		copy.money = money;
-		copy.victoryPoints = victoryPoints;
+		copy.money = getMoney();
+		copy.victoryPoints = getVP();
 		copy.minCost = minCost;
-		copy.costMod = costMod;
-		copy.typeCount = typeCount;
-		copy.dispTypeCount = dispTypeCount;
-		copy.effectCodeCount = effectCodeCount;
+		copy.costMod = getCostMod();
+		copy.typeCount = getTypeCount();
+		copy.dispTypeCount = getDisplayCountCount();
+		copy.effectCodeCount = getEffectCount();
 		return copy;
 	}
 	
