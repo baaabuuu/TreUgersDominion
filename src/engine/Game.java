@@ -1,10 +1,18 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
+import org.jspace.Space;
+import org.jspace.Tuple;
 
 import cards.Card;
 import log.Log;
+import network.Writer;
+import objects.BoardState;
+import objects.CardOption;
+import objects.ServerCommands;
 
 /**
  * The game - Handles actual game knowledge - is starting through StartGame
@@ -19,6 +27,10 @@ public class Game {
 	private int phase;
 	private int playerCount;
 	private EffectHandler effects = new EffectHandler();
+	private Space space;
+	private Writer writer;
+	
+	
 	private final String[] phases = {"Action Phase", "Buy phase", "Clean-up Phase"};
 
 	
@@ -98,7 +110,7 @@ public class Game {
 	
 	/**
 	 * Tries to perform the following action
-	 * @param action
+	 * @param action 
 	 */
 	public Object[] action(String action)
 	{
@@ -213,7 +225,7 @@ public class Game {
 	 * @param playerCount
 	 * @param turn
 	 */
-	public Game(Board board, String[] playerNames, int playerCount, int turn)
+	public Game(Board board, String[] playerNames, int playerCount, int turn, Writer writer, Space space)
 	{
 		this.board = board;
 		this.playerCount = playerCount;
@@ -221,6 +233,8 @@ public class Game {
 		this.turn = turn;
 		currPlayer = players[turn];
 		Log.important("Initial player is: " + currPlayer.getName() + "'s turn.");
+		this.writer = writer;
+		this.space = space;
 	}
 	
 	/**
@@ -271,6 +285,52 @@ public class Game {
 		phase++;
 		if (phase > 1)
 			newTurn();
+	}
+	
+	/**
+	 * Transmits board state to all players.
+	 * @throws InterruptedException 
+	 */
+	public void sendBoardState() throws InterruptedException
+	{
+		int boardSize = board.getBoardSize();
+		ArrayList<String> boardNames = board.getBoardNamesList();
+		int[] shopCount = new int[boardSize];
+		for (int i = 0; i < boardSize; i++)
+		{
+			shopCount[i] = board.getCopiesLeft(boardNames.get(i));
+		}
+		int[] handCount = new int[players.length];
+		int[] deckCount = new int[players.length];
+		int[] discardCount = new int[players.length];
+		int[] vpCount = new int[players.length];
+		for (int i = 0; i < players.length; i++)
+		{
+			handCount[i] = players[i].getHandSize();
+			deckCount[i] = players[i].getDeckSize();
+			discardCount[i] = players[i].getDiscardSize();
+			vpCount[i] = players[i].getVictoryPoints();
+		}
+		int trashCount = board.getTrashSize();		
+		BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
+		for (int i = 0; i < players.length; i++)
+		{
+			writer.sendMessage(new Tuple(i, ServerCommands.setBoardState, boardState));
+		}
+	}
+	
+	/**
+	 * Send a card option to the following players.
+	 * @param playerID
+	 * @param message
+	 * @param count
+	 * @param list
+	 * @throws InterruptedException
+	 */
+	public void sendCardOption(int playerID, String message, int count, List<Card> list) throws InterruptedException
+	{
+		CardOption option = new CardOption(message, count, list);
+		writer.sendMessage( new Tuple(playerID, ServerCommands.playerSelect, option));
 	}
 
 

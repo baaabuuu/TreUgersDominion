@@ -43,7 +43,7 @@ public class GameTest
 		
 		String[] names = {"Test Person1", "Test Person2"};
 		
-		board = new Board(2, cards, treasures);
+		board = new Board(2, cards, treasures, null, null);
 		game = new Game(board, names, names.length, 0);
 	}
 	
@@ -52,7 +52,7 @@ public class GameTest
 	{
 		String[] names = {"Test Person1", "Test Person2"};
 		assertEquals("Treasure size: ", treasures.size(), 7);
-		Board board = new Board(2, cards, treasures);
+		Board board = new Board(2, cards, treasures, null, null);
 		new Game(board, names, names.length, 0);
 	}
 	
@@ -60,7 +60,7 @@ public class GameTest
 	public void create3Player()
 	{
 		String[] names = {"Test Person1", "Test Person2", "Test Person3"};
-		Board board = new Board(3, cards, treasures);
+		Board board = new Board(3, cards, treasures, null, null);
 		new Game(board, names, names.length, 0);
 	}
 	
@@ -68,7 +68,7 @@ public class GameTest
 	public void create4Player()
 	{
 		String[] names = {"Test Person1", "Test Person2", "Test Person3", "Test Person4"};
-		Board board = new Board(4, cards, treasures);
+		Board board = new Board(4, cards, treasures, null, null);
 		new Game(board, names, names.length, 0);
 	}
 	
