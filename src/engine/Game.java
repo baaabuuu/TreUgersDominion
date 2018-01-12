@@ -12,7 +12,9 @@ import log.Log;
 import network.Writer;
 import objects.BoardState;
 import objects.CardOption;
+import objects.PlayerHand;
 import objects.ServerCommands;
+import objects.TurnValues;
 
 /**
  * The game - Handles actual game knowledge - is starting through StartGame
@@ -220,7 +222,7 @@ public class Game {
 	
 	/**
 	 * Creates a game object, a game object runs the actually game and handles game play logic. 
-	 * @param board
+	 * @param board  
 	 * @param playerNames
 	 * @param playerCount
 	 * @param turn
@@ -313,9 +315,14 @@ public class Game {
 		}
 		int trashCount = board.getTrashSize();		
 		BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
-		for (int i = 0; i < players.length; i++)
+		for (int playerID = 0; playerID < players.length; playerID++)
 		{
-			writer.sendMessage(new Tuple(i, ServerCommands.setBoardState, boardState));
+			if (players[playerID].isConnected())
+			{
+				Log.log("Transmitting BoardState to " + players[playerID].getName()+ "#" + playerID);
+				writer.sendMessage(new Tuple(playerID, ServerCommands.setBoardState, boardState));
+
+			}
 		}
 	}
 	
@@ -329,8 +336,44 @@ public class Game {
 	 */
 	public void sendCardOption(int playerID, String message, int count, List<Card> list) throws InterruptedException
 	{
+		Log.log("Transmitting cardOption to player " + players[playerID].getName() + "#" + playerID);
 		CardOption option = new CardOption(message, count, list);
-		writer.sendMessage( new Tuple(playerID, ServerCommands.playerSelect, option));
+		writer.sendMessage(new Tuple(playerID, ServerCommands.playerSelect, option));
+	}
+	
+	/**
+	 * Sends the playerHand to the player
+	 * @throws InterruptedException 
+	 */
+	public void sendPlayerHand(int targetID, int playerID) throws InterruptedException
+	{
+		Log.log("Transmitting playerHand of " + players[targetID].getName() + "#" + targetID + " to " + players[playerID] + "#" + playerID);
+		PlayerHand hand = new PlayerHand(players[targetID].getHand());
+		writer.sendMessage(new Tuple(playerID, ServerCommands.setPlayerHand, hand));
+	}
+	
+	/**
+	 * Updates the turn values - displayed to 1 player
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendTurnValues(int playerID) throws InterruptedException
+	{
+		Player player = players[playerID];
+		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
+		TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
+		writer.sendMessage(new Tuple(playerID, ServerCommands.turnValues, values));
+	}
+	
+	/**
+	 * Updates the turn values - displayed to 1 player
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendMessage(String message, int target) throws InterruptedException
+	{
+		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
+		writer.sendMessage(new Tuple(target, ServerCommands.message, message));
 	}
 
 
