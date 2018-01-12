@@ -1,18 +1,16 @@
-package Objects;
+package objects;
 
-public enum Commands {
+public enum ServerCommands {
 	setBoardState,
 	takeTurn,
 	nonTurnAction,
 	playerSelect,
 	setPlayerHand,
 	setBuyArea,
-	setNames,
 	setLaunge,
 	setLobby,
-	setCurrentPlayer,
+	setNames,
 	message,
 	gameStart,
-	gameEnd,
-	changePhase
+	gameEnd
 }
