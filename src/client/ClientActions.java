@@ -213,7 +213,7 @@ public class ClientActions {
 								lock2 = false;
 							}else {
 								hostSpace.put(playerName, ClientCommands.buyCard);
-								hostSpace.put(playerName, value);
+								hostSpace.put(playerName, buyArea[value]);
 								resolvePlay(clientSpace, hostSpace);
 							}
 						}catch(NumberFormatException e) {
