@@ -13,11 +13,13 @@ public class EffectHandler
 		for(Player p: players) {
 			counter = false;
 			for(Card c : p.getHand()) {
-				if(c.getName().equals("Moat")){ //To be replaced with switch statement for future expansion
-					//NETWORK query ask if want to counter this card
-					//Set counter here
-					Log.log(p + " has chosen to use their reaction from "+c.getName());
+				
+				switch(c.getName()) {
+				case "Moat":
+					//ask if we counter
+					break;
 				}
+				
 			}
 			if(counter) {
 				
