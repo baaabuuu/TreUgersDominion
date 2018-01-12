@@ -28,10 +28,10 @@ public class Consumer implements Runnable {
 			try {
 				
 				objs = clientSpace.get(new ActualField(name), 
-						new FormalField(Commands.class));
+						new FormalField(ServerCommands.class));
 				
 				
-				switch ((Commands)objs[1]) {
+				switch ((ServerCommands)objs[1]) {
 					case setBoardState: input = clientSpace.get(new ActualField(name), 
 								new FormalField(BoardState.class));
 							action.displayBoardState((BoardState) input[1]);

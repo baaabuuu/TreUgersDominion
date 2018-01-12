@@ -1,6 +1,6 @@
 package objects;
 
-public enum Commands {
+public enum ServerCommands {
 	setBoardState,
 	takeTurn,
 	nonTurnAction,
@@ -12,9 +12,5 @@ public enum Commands {
 	setNames,
 	message,
 	gameStart,
-	gameEnd,
-	changePhase,
-	buyCard,
-	playCard,
-	selectCard
+	gameEnd
 }

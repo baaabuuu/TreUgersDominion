@@ -54,7 +54,7 @@ public class ClientActions {
 		System.out.println("CLEANUP PHASE");
 		System.out.println("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
-		clientSpace.get(new ActualField(playerName), new ActualField(Commands.setPlayerHand));
+		clientSpace.get(new ActualField(playerName), new ActualField(ServerCommands.setPlayerHand));
 		Object[] objs = clientSpace.get(new ActualField(playerName), 
 				new FormalField(PlayerHand.class));
 		
@@ -75,9 +75,9 @@ public class ClientActions {
 		boolean lock = true;
 		while(lock) {
 			objs = clientSpace.get(new ActualField(playerName), 
-					new FormalField(Commands.class));
+					new FormalField(ServerCommands.class));
 			
-			switch ((Commands)objs[1]) {
+			switch ((ServerCommands)objs[1]) {
 				case message: Log.log("Recieved message command");
 						input = clientSpace.get(new ActualField(playerName), 
 							new FormalField(String.class));
@@ -134,10 +134,10 @@ public class ClientActions {
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
 					System.out.println("Action phase has ended.");
-					hostSpace.put(playerName, Commands.changePhase);
+					hostSpace.put(playerName, ClientCommands.changePhase);
 					lock = false;
 				}else {
-					hostSpace.put(playerName, Commands.playCard);
+					hostSpace.put(playerName, ClientCommands.playCard);
 					hostSpace.put(playerName, value);
 					resolvePlay(clientSpace, hostSpace);
 				}
@@ -182,7 +182,7 @@ public class ClientActions {
 								System.out.println("");
 								lock2 = false;
 							}else {
-								hostSpace.put(playerName, Commands.playCard);
+								hostSpace.put(playerName, ClientCommands.playCard);
 								hostSpace.put(playerName, value);
 								resolvePlay(clientSpace, hostSpace);
 							}
@@ -207,7 +207,7 @@ public class ClientActions {
 								System.out.println("");
 								lock2 = false;
 							}else {
-								hostSpace.put(playerName, Commands.buyCard);
+								hostSpace.put(playerName, ClientCommands.buyCard);
 								hostSpace.put(playerName, value);
 								resolvePlay(clientSpace, hostSpace);
 							}
@@ -218,7 +218,7 @@ public class ClientActions {
 					break;
 				case "0":
 					System.out.println("Buy phase has ended.");
-					hostSpace.put(playerName, Commands.changePhase);
+					hostSpace.put(playerName, ClientCommands.changePhase);
 					lock = false;
 				default: System.out.println("Not a valid input!");
 					break;
@@ -281,8 +281,8 @@ public class ClientActions {
 					System.out.println("Input is not a valid integer.");
 				}
 			}
-			hostSpace.put(playerName,Commands.selectCard);
-			hostSpace.put(playerName,selected);
+			hostSpace.put(playerName, ClientCommands.selectCard);
+			hostSpace.put(playerName, selected);
 		}
 	}
 	public void setNames(String[] names) {
