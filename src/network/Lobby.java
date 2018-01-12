@@ -14,7 +14,7 @@ import log.Log;
 
 public class Lobby {
 	//Setup
-	private static GameThread[] gamesRunning = new GameThread[1000];
+	private static Initializer[] gamesRunning = new Initializer[1000];
 	private static int indexID;
 	
 	//Setup the uri
@@ -51,21 +51,20 @@ public class Lobby {
 			//Obeys command
 			switch(cmd.toLowerCase()){
 			case "enter":		
-				lobby.get(new ActualField("server"),new ActualField(name),new ActualField(gameID));
+				lobby.get(new ActualField("server"), new ActualField(name), new ActualField(gameID));
 				
 				
 				if(indexID < gameID){
-					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(gameID),new ActualField(gamesRunning[gameID].getURI()));
+					lobby.put("roomURI", name, gameID, gamesRunning[gameID].getURI());
 				} else {
 					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(gameID),new ActualField("gameNotFoundException"));
 				}
 			case "create":
 				if(indexID < 1000){
 					tempURI = "tcp://"+ host + ":" + port + "/" + indexID +"?keep";
-					GameThread tempGame = new GameThread(tempURI, cardReader);
-					gamesRunning[indexID] = tempGame;
-					tempGame.start();
-					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(indexID),new ActualField(gamesRunning[indexID].getURI()));
+					Initializer tempInit = new Initializer(tempURI, cardReader);
+					gamesRunning[indexID] = tempInit;
+					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(indexID),new ActualField(tempURI));
 					indexID++;
 				} else {
 					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(1000),new ActualField("toManyGamesException"));
