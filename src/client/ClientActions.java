@@ -10,16 +10,12 @@ import org.jspace.Space;
 
 import cards.Card;
 import log.Log;
-<<<<<<< HEAD
 import objects.BoardState;
-import objects.CardOption;
-import objects.Commands;
+import objects.ClientCommands;
 import objects.OotAction;
 import objects.PlayerHand;
 import objects.TurnValues;
-=======
 import objects.*;
->>>>>>> Client1
 
 public class ClientActions {
 	private String playerName;

@@ -4,14 +4,11 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-<<<<<<< HEAD
 import objects.BoardState;
-import objects.Commands;
+import objects.ClientCommands;
 import objects.OotAction;
 import objects.PlayerHand;
-=======
 import objects.*;
->>>>>>> Client1
 
 public class Consumer implements Runnable {
 	private Space clientSpace;

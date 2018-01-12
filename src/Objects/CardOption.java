@@ -1,9 +1,6 @@
 package objects;
-<<<<<<< HEAD:src/Objects/CardOption.java
-=======
 
 import java.util.List;
->>>>>>> Client1:src/objects/CardOption.java
 
 import cards.Card;
 
