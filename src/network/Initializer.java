@@ -27,7 +27,7 @@ public class Initializer extends Thread  {
 	private CardReader cardReader;
 	private ArrayList<String> players;
 	private Writer writer;
-	
+	private ControlCenter controlCenter;
 	
 	public Initializer(String uri, CardReader cardReader){
 		
@@ -79,44 +79,19 @@ public class Initializer extends Thread  {
 
 		//Setup writer
 		writer = new Writer(clientSpace, players.toArray(new String[noOfPlayers]));
-				
+		
+		//Setup controlcenter
+		controlCenter = new ControlCenter(clientSpace, safeSpace);
+		
 		//Setup game		
 		GameStarter gameStarter = new GameStarter(noOfPlayers, players.toArray(new String[noOfPlayers]), cardReader, expansions, new Random(), writer, safeSpace);
 		gameStarter.startGame();
 		
-		for(int i = 0; i<noOfPlayers ; i++){
-			players[i] = new PlayerThread(clientSpace, name, game);
-			players[i].start();
-		}
 		
 	}
 	
 	public String getURI(){
 		return uri;
-	}
-	
-	
-	public void sendToOthers(String excludedName, String cmd, Tuple information){
-		
-		for(int i = 0; i<noOfPlayers ; i++){
-			if(players[i].getPlayerName() != excludedName){
-			players[i].sendMessage(cmd, information);
-			}
-		}
-		
-	}
-	
-	public void sendToPlayer(String name, String cmd, Tuple information){
-		
-		for(int i = 0; i<noOfPlayers ; i++){
-			if(players[i].getPlayerName() == name){
-			players[i].sendMessage(cmd, information);
-			}
-		}
-	}
-	
-	public Space getTuple(){
-		return gameSpace;
 	}
 	
 	

@@ -3,7 +3,7 @@ package network;
 import org.jspace.Space;
 import org.jspace.Tuple;
 
-public class Writer extends Thread {
+public class Writer {
 
 	private Space clientSpace;
 	String[] players;
