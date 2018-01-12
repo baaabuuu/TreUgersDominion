@@ -4,5 +4,8 @@ public enum ClientCommands {
 	changePhase,
 	buyCard,
 	playCard,
-	selectCard
+	selectCard,
+	enterLobby,
+	createLobby,
+	getLobbies
 }

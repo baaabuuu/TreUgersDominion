@@ -12,5 +12,6 @@ public enum ServerCommands {
 	setNames,
 	message,
 	gameStart,
-	gameEnd
+	gameEnd,
+	newConnection
 }
