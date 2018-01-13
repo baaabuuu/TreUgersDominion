@@ -37,7 +37,7 @@ public class Game {
 
 
 	 
-	public void forwardTurnValues(int playerID) throws InterruptedException
+	public void sendTurnValues(int playerID) throws InterruptedException
 	{
 		Player player = players[playerID];
 		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
@@ -50,7 +50,7 @@ public class Game {
 	 * @param playerID
 	 * @throws InterruptedException
 	 */
-	public void forwardMessage(String message, int target) throws InterruptedException
+	public void sendMessage(String message, int target) throws InterruptedException
 	{
 		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
 		writer.sendMessage(new Tuple(target, ServerCommands.message, message));

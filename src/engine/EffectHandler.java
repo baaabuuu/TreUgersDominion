@@ -36,6 +36,13 @@ public class EffectHandler
 		}
 		return affectedPlayers;
 	}
+	/**
+	 * Expandable "on play" card handler. Currently only needs three params but will
+	 * expand with future implementation
+	 * @param effect String with the c
+	 * @param owner
+	 * @param card
+	 */
 	private void playerEffects(String effect,Player owner, Card card) {
 		switch(effect) {
 		
@@ -53,7 +60,7 @@ public class EffectHandler
 	 * @param player - PLayer that the effect should a apply toString[] players
 	 * @param card - The card that was played.
 	 * @param board - current board state
-	 * @param players - List of playerIDs
+	 * @param players - List of playerObjects
 	 */
 	
 	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players){
