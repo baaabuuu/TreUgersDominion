@@ -28,14 +28,33 @@ public class Game {
 	private int turn;
 	private int phase;
 	private int playerCount;
-	private EffectHandler effects = new EffectHandler();
+	private EffectHandler effects = new EffectHandler(this);
 	private Space space;
 	private Writer writer;
 	
 	
 	private final String[] phases = {"Action Phase", "Buy phase", "Clean-up Phase"};
 
+
+	 
+	public void sendTurnValues(int playerID) throws InterruptedException
+	{
+		Player player = players[playerID];
+		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
+		TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
+		writer.sendMessage(new Tuple(playerID, ServerCommands.turnValues, values));
+	}
 	
+	/**
+	 * Updates the turn values - displayed to 1 player
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendMessage(String message, int target) throws InterruptedException
+	{
+		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
+		writer.sendMessage(new Tuple(target, ServerCommands.message, message));
+	}
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
@@ -352,32 +371,6 @@ public class Game {
 		writer.sendMessage(new Tuple(playerID, ServerCommands.setPlayerHand, hand));
 	}
 	
-	
-	
-	/**
-	 * Updates the turn values - displayed to 1 player
-	 * @param playerID
-	 * @throws InterruptedException
-	 */
-	public void sendTurnValues(int playerID) throws InterruptedException
-	{
-		Player player = players[playerID];
-		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
-		TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
-		writer.sendMessage(new Tuple(playerID, ServerCommands.turnValues, values));
-	}
-	
-	/**
-	 * Updates the turn values - displayed to 1 player
-	 * @param playerID
-	 * @throws InterruptedException
-	 */
-	public void sendMessage(String message, int target) throws InterruptedException
-	{
-		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
-		writer.sendMessage(new Tuple(target, ServerCommands.message, message));
-	}
-
 
 	/**
 	 * Resets a player
@@ -478,7 +471,7 @@ public class Game {
 	}
 
 	public void start() {
-		space.get(arg0)
+		space.get(new Object);
 		while(Boolean.TRUE)
 		{
 			//Init game
