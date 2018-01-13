@@ -602,10 +602,15 @@ public class Game {
 			{
 				Log.important(currPlayer.getName() + "#" + turn + " didnt take their action!");
 				sendDisconnect(turn);
+				nextPhase();
+				nextPhase();
 				break;
 			}
 			Thread.sleep(10);
-		}
+		}	
+	}
+	private void takeBuy() {
+		// TODO Auto-generated method stub
 		
 	}
 
@@ -627,5 +632,7 @@ public class Game {
 			
 		}
 	}
+
+	
 
 }
