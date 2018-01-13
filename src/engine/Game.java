@@ -51,6 +51,21 @@ public class Game {
 	}
 	
 	/**
+	 * Send to a player that something was invalid.
+	 * @param message
+	 * @param target
+	 * @throws InterruptedException
+	 */
+	public void sendInvalid(String message, int target) throws InterruptedException
+	{
+		if (players[target].isConnected())
+		{
+			Log.log("Sending invalid message to " + players[target].getName() + "\n" + message);
+			writer.sendMessage(new Tuple(target, ServerCommands.invalid, message));
+		}
+	}
+	
+	/**
 	 * Transmit to the player they have to take a turn.
 	 * @param playerID
 	 * @throws InterruptedException
@@ -96,7 +111,6 @@ public class Game {
 			Log.log("Sending message to " + players[target].getName() + "\n" + message);
 			writer.sendMessage(new Tuple(target, ServerCommands.message, message));
 		}
-		
 	}
 	
 	/**
@@ -228,8 +242,6 @@ public class Game {
 							effects.triggerEffect(code, currPlayer, played, board, players);
 						}
 					}
-					currPlayer.discardCard(played);
-					currPlayer.removeFromHand(Integer.parseInt(additional));
 				}
 				output[0] = "play";
 				output[1] = out;
@@ -580,13 +592,12 @@ public class Game {
 					}
 					else 
 					{
-						Log.log("failed to play it");
-						sendMessage("You cannot play this card.", playerNum);
+						sendInvalid("You cannot play this card right now.", playerNum);
 					}
 				}
 				else
 				{
-					sendMessage("You cannot play a card when its not your turn", playerNum);
+					sendInvalid("You cannot play a card when its not your turn", playerNum);
 					Log.log("It wasn't their turn though.");
 				}
 			}
@@ -612,24 +623,35 @@ public class Game {
 				}
 				else
 				{
-					command = space.getp(new ActualField(Integer.class), new ActualField(ClientCommands.buyCard), new ActualField(Card.class));
+					command = space.getp(new ActualField(Integer.class), new ActualField(ClientCommands.buyCard), new ActualField(String.class));
 					if (command != null)
 					{
 						
 						Integer playerNum = (Integer) command[0];
-						Card card = (Card) command[2];
+						String cardName = (String) command[2];
 						if (playerNum == turn)
 						{
-							if (currPlayer.buy(card, phase))
+							Card buying = board.canGain(cardName);
+							if (buying != null)
 							{
-								sendMessage("You bought " + card.getName(), playerNum);
-								break;
+								if (currPlayer.buy(buying, phase))
+								{
+									board.cardRemove(cardName);
+									sendMessageAll(currPlayer.getName() + " bought " + cardName + " copies left: " + board.getCopiesLeft(cardName));
+								}
+								else
+								{
+									sendInvalid("You can't buy this card.", playerNum);
+								}
+							}
+							else
+							{
+								sendInvalid("You can't buy this card.", playerNum);
 							}
 						}
 						else
 						{
-							//If a player tries to cheat...
-							sendMessage("You cannot buy whilst its not your turn.", playerNum);
+							sendInvalid("You cannot buy whilst its not your turn.", playerNum);
 						}
 					}
 				}
