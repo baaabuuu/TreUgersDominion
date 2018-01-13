@@ -24,6 +24,25 @@ public class Player {
 	
 	private boolean connected = true;
 	private String name = "";
+	private int id;
+	
+	/**
+	 * Creates a player with the ID
+	 * @param val
+	 */
+	public Player(int val)
+	{
+		id = val;
+	}
+	
+	/**
+	 * Returns the ID of a player.
+	 * @return
+	 */
+	public int getID()
+	{
+		return id;
+	}
 	
 	/**
 	 * Draw n cards - if the deck is empty try to reshuffle, if that can't be done stop drawing.
@@ -49,6 +68,13 @@ public class Player {
 	{
 		Log.log(getName() + " added the effect " + effect);
 		effects.add(effect);
+	}
+	public ArrayList<String> getEffects() {
+		
+		return effects;
+	}
+	public void removeEffect(String effectName){
+		effects.remove(effectName);
 	}
 	/**
 	 * Removes a card from the hand with the selected index.
@@ -144,8 +170,41 @@ public class Player {
 		return actions > 0;
 	}
 	
+	
 	/**
-	 * Needs to send network code or smth.
+	 * Plays a card using an int
+	 * @param index - index on hand
+	 * @param phase - game phase 0 for actions, 1 for treasure
+	 * @return
+	 */
+	public boolean playCard(int index, int phase)
+	{
+		if (index >= 0 && index < hand.size() )
+		{
+			Card card = getHand().get(index);
+			List<String> types = Arrays.asList(card.getDisplayTypes());
+			if (types.contains("Action") && phase == 0 && canPlayAction())
+			{
+				actions--;
+				removeFromHand(card);
+				discardCard(card);
+				Log.log(getName() + " played the action card " + card.getName());
+				return true;
+			}
+			else
+			{
+				if (types.contains("Treasure") && phase == 1)
+				{
+					addMoney(card.getMoney());
+					Log.log(getName() + " played the treasure card " + card.getName());
+					return true;
+				}
+			}
+		}		
+		return false;
+	}
+	
+	/**
 	 * @param card
 	 * @return
 	 */

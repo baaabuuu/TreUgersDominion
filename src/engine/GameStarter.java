@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.jspace.Space;
+
 import cards.Card;
 import cards.CardReader;
 import log.Log;
+import network.Writer;
 
 /**
  * Starts a game
@@ -28,20 +31,22 @@ public class GameStarter
 		String[] playerNames = {"Hillary Rodham Clinton", "Donald J. Trump"};
 		ArrayList<String> expansions = new ArrayList<String>();
 		expansions.add("base");
-		new GameStarter(2, playerNames, new CardReader(), expansions, new Random()).startDummyGame();
+		//new GameStarter(2, playerNames, new CardReader(), expansions, new Random()).startDummyGame();
 	}
 	/**
 	 * @param cards
+	 * @param safeSpace 
+	 * @param writer 
 	 * @param random2 
 	 * @throws IOException
 	 */
-	public GameStarter(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random)
+	public GameStarter(int playerCount, String[] playerNames, CardReader cards, ArrayList<String> sets, Random random, Writer writer, Space safeSpace)
 	{
 		this.cards = cards;
 		this.random = random;
 		setupRandomCards(sets);
 		board = new Board(playerCount, gameCards, cards.getSetup());
-		game = new Game(board, playerNames, playerCount, random.nextInt(playerCount));
+		game = new Game(board, playerNames, playerCount, random.nextInt(playerCount), writer, safeSpace);
 	}
 	
 	/**
@@ -54,8 +59,9 @@ public class GameStarter
 	
 	/**
 	 * Starts a game
+	 * @throws InterruptedException 
 	 */
-	public void startGame()
+	public void startGame() throws InterruptedException
 	{
 		game.start();
 	}
