@@ -352,6 +352,8 @@ public class Game {
 		writer.sendMessage(new Tuple(playerID, ServerCommands.setPlayerHand, hand));
 	}
 	
+	
+	
 	/**
 	 * Updates the turn values - displayed to 1 player
 	 * @param playerID
@@ -476,7 +478,12 @@ public class Game {
 	}
 
 	public void start() {
-		// TODO Auto-generated method stub
+		space.get(arg0)
+		while(Boolean.TRUE)
+		{
+			//Init game
+			
+		}
 	}
 
 }
