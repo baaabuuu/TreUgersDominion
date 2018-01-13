@@ -363,12 +363,13 @@ public class Game {
 	/**
 	 * Go to next phase
 	 */
-	public void nextPhase()
+	public boolean nextPhase()
 	{
 		Log.log("Switching to next phase");
 		phase++;
 		if (phase > 1)
-			newTurn();
+			return newTurn();
+		return false;
 	}
 	
 	/**
@@ -426,7 +427,7 @@ public class Game {
 	 * Sends the playerHand to the player
 	 * @throws InterruptedException 
 	 */
-	public void sendPlayerHand(int targetID, int playerID) throws InterruptedException
+	public void sendPlayerHand(int playerID, int targetID) throws InterruptedException
 	{
 		Log.log("Transmitting playerHand of " + players[targetID].getName() + "#" + targetID + " to " + players[playerID] + "#" + playerID);
 		PlayerHand hand = new PlayerHand(players[targetID].getHand());
@@ -545,7 +546,7 @@ public class Game {
 		}
 	}
 	
-	private void takeAction() throws InterruptedException
+	private boolean takeTurn() throws InterruptedException
 	{
 		sendTakeTurn(turn);
 		int counter = 0;
@@ -564,7 +565,16 @@ public class Game {
 					boolean result = currPlayer.playCard(card, phase);
 					if (result == Boolean.TRUE)
 					{
-						Log.log("succesfully played it");
+						String[] types = card.getTypes();
+						int typeCount = card.getTypeCount();
+						for (int i = 0; i < typeCount; i++)
+						{
+							if (types[i].equals("action"))
+							{
+								int code = card.getEffectCode()[i];
+								effects.triggerEffect(code, currPlayer, card, board, players);
+							}
+						}
 						sendMessageAll(currPlayer.getName() + " played " + card.getName());
 						break;
 					}
@@ -588,12 +598,39 @@ public class Game {
 					Integer playerNum = (Integer) command[0];
 					if (playerNum == turn)
 					{
-						nextPhase();
+						if (nextPhase())
+						{
+							return true;
+						}
+						break;
 					}
 					else
 					{
 						//If a player tries to cheat...
 						sendMessage("You cannot force the player to change phase when its not your face", playerNum);
+					}
+				}
+				else
+				{
+					command = space.getp(new ActualField(Integer.class), new ActualField(ClientCommands.buyCard), new ActualField(Card.class));
+					if (command != null)
+					{
+						
+						Integer playerNum = (Integer) command[0];
+						Card card = (Card) command[2];
+						if (playerNum == turn)
+						{
+							if (currPlayer.buy(card, phase))
+							{
+								sendMessage("You bought " + card.getName(), playerNum);
+								break;
+							}
+						}
+						else
+						{
+							//If a player tries to cheat...
+							sendMessage("You cannot buy whilst its not your turn.", playerNum);
+						}
 					}
 				}
 			}
@@ -607,12 +644,10 @@ public class Game {
 				break;
 			}
 			Thread.sleep(10);
-		}	
+		}
+		return false;
 	}
-	private void takeBuy() {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	public void start() throws InterruptedException {
 		space.get(new ActualField(ServerCommands.gameStart));
@@ -620,17 +655,10 @@ public class Game {
 		startGameActions();
 		while(Boolean.TRUE)
 		{
-			if (phase == 0)
-			{
-				takeAction();
-			}
-			if (phase == 1)
-			{
-				takeBuy();
-			}
-			
-			
+			if (takeTurn());
+				break;
 		}
+		Log.important("Start finished");
 	}
 
 	
