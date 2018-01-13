@@ -442,7 +442,7 @@ public class EffectHandler
 		
 		
 		
-		int i=0; //number of discards
+		; //number of discards
 		if(player.getHandSize()==0)
 		{
 			game.sendMessage("You cannot discard cards from a hand with size 0", player.getID());
@@ -451,6 +451,17 @@ public class EffectHandler
 		{
 			game.sendCardOption(player.getID(), "Discard as many cards as you would like, then draw the same amount", player.getHandSize(), player.getHand(), true);
 			//Reponse contains cards to be discarded
+			ArrayList<Integer> response = new ArrayList<Integer>();
+			ArrayList<Card> responseToCard = new ArrayList<Card>();
+			ArrayList<Card> tempHand =player.getHand();
+			int i= response.size();
+			for(int index:response) {
+				responseToCard.add(tempHand.get(index));
+			}
+			for(Card c: responseToCard) {
+				player.discardCard(c);
+				player.removeFromHand(c);
+			}
 			
 			player.drawCard(i);
 			//condition here
