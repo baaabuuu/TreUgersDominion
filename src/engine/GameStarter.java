@@ -26,13 +26,6 @@ public class GameStarter
 	private ArrayList<Card> gameCards = new ArrayList<Card>();
 	private Random random;
 	
-	public static void main(String[] args) throws IOException
-	{
-		String[] playerNames = {"Hillary Rodham Clinton", "Donald J. Trump"};
-		ArrayList<String> expansions = new ArrayList<String>();
-		expansions.add("base");
-		//new GameStarter(2, playerNames, new CardReader(), expansions, new Random()).startDummyGame();
-	}
 	/**
 	 * @param cards
 	 * @param safeSpace 

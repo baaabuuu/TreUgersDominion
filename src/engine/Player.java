@@ -21,6 +21,8 @@ public class Player {
 	private LinkedBlockingDeque <Card> discard = new LinkedBlockingDeque<Card>();
 	private ArrayList<Card> hand = new ArrayList<Card>();
 	private ArrayList<String> effects = new ArrayList<String>();
+	private ArrayList<Card> playArea = new ArrayList<Card>();
+	
 	
 	private boolean connected = true;
 	private String name = "";
@@ -48,8 +50,10 @@ public class Player {
 	 * Draw n cards - if the deck is empty try to reshuffle, if that can't be done stop drawing.
 	 * @param n - cards to draw
 	 */
-	public void drawCard(int n)
+	public String[] drawCard(int n)
 	{
+		String[] draw = new String[n];
+		
 		for (int i = 0; i < n; i++)
 		{
 			if (deck.isEmpty())
@@ -59,9 +63,12 @@ public class Player {
 				reshuffleDeck();
 			}
 			Card drawn = deck.poll();
+			draw[i] = drawn.getName();
 			hand.add(drawn);
 			Log.log(getName() + " has drawn " + drawn.getName());
+			n--;
 		}
+		return draw;
 	}
 	
 	public void addEffect(String effect)
@@ -215,7 +222,7 @@ public class Player {
 		{
 			actions--;
 			removeFromHand(card);
-			discardCard(card);
+			putIntoPlay(card);
 			Log.log(getName() + " played the action card " + card.getName());
 			return true;
 		}
@@ -247,7 +254,6 @@ public class Player {
 	 */
 	public boolean buy(Card card, int phase)
 	{
-		
 		if (phase == 1 && getBuys() > 0 && canPay(card.getCost()))
 		{
 			Log.log(getName() + " bought " + card.getName());
@@ -455,15 +461,8 @@ public class Player {
 		return deck.size();
 	}
 	
-	/**
-	 * Selects a card form a list of cards
-	 * <p>Very generic method - dosnt utilize any Player variables?
-	 * @param list - List of cards
-	 * @param index - Card to be taken
-	 */
-	public Card select(List<Card> list,int index) {
-		Card selected = list.get(index);
-		Log.log(getName() + "Card selected: " + selected.getName());
-		return selected;
+	public void putIntoPlay(Card card)
+	{
+		playArea.add(card);
 	}
 }
