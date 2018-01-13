@@ -59,8 +59,9 @@ public class GameStarter
 	
 	/**
 	 * Starts a game
+	 * @throws InterruptedException 
 	 */
-	public void startGame()
+	public void startGame() throws InterruptedException
 	{
 		game.start();
 	}

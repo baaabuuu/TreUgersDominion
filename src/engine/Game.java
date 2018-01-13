@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.jspace.ActualField;
 import org.jspace.Space;
 import org.jspace.Tuple;
 
@@ -12,6 +13,7 @@ import log.Log;
 import network.Writer;
 import objects.BoardState;
 import objects.CardOption;
+import objects.ClientCommands;
 import objects.PlayerHand;
 import objects.ServerCommands;
 import objects.TurnValues;
@@ -34,15 +36,52 @@ public class Game {
 	
 	
 	private final String[] phases = {"Action Phase", "Buy phase", "Clean-up Phase"};
-
-
-	 
-	public void sendTurnValues(int playerID) throws InterruptedException
+	
+	/**
+	 * Transmits turn values of that player to them
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendDisconnect(int playerID) throws InterruptedException
 	{
 		Player player = players[playerID];
-		Log.log("Transmitting turnvalues to " + player.getName() + "#" + playerID);
+		player.setConnected(false);
+		Log.log("Disconnected player " + player.getName() + "#" + playerID);
+		writer.sendMessage(new Tuple(playerID, ServerCommands.newConnection));
+	}
+	
+	/**
+	 * Transmit to the player they have to take a turn.
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	private void sendTakeTurn(int playerID) throws InterruptedException
+	{
+		int boardSize = board.getBoardSize();
+		ArrayList<String> boardNames = board.getBoardNamesList();
+		int[] shopCount = new int[boardSize];
+		for (int i = 0; i < boardSize; i++)
+		{
+			shopCount[i] = board.getCopiesLeft(boardNames.get(i));
+		}
+		int[] handCount = new int[players.length];
+		int[] deckCount = new int[players.length];
+		int[] discardCount = new int[players.length];
+		int[] vpCount = new int[players.length];
+		for (int i = 0; i < players.length; i++)
+		{
+			handCount[i] = players[i].getHandSize();
+			deckCount[i] = players[i].getDeckSize();
+			discardCount[i] = players[i].getDiscardSize();
+			vpCount[i] = players[i].getVictoryPoints();
+		}
+		int trashCount = board.getTrashSize();		
+		BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
+		Player player = players[playerID];
+		PlayerHand hand = new PlayerHand(players[playerID].getHand());
 		TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
-		writer.sendMessage(new Tuple(playerID, ServerCommands.turnValues, values));
+		Log.log("Transmitting takeTurn to " + player.getName() + "#" + playerID);
+		writer.sendMessage(new Tuple(playerID, ServerCommands.takeTurn, boardState, hand, values));
 	}
 	
 	/**
@@ -52,13 +91,36 @@ public class Game {
 	 */
 	public void sendMessage(String message, int target) throws InterruptedException
 	{
-		Log.log("Sending message to " + players[target].getName() + " - " + "\n" + message);
-		writer.sendMessage(new Tuple(target, ServerCommands.message, message));
+		if (players[target].isConnected())
+		{
+			Log.log("Sending message to " + players[target].getName() + "\n" + message);
+			writer.sendMessage(new Tuple(target, ServerCommands.message, message));
+		}
+		
 	}
+	
+	/**
+	 * Updates the turn values - displayed to all connected players
+	 * @param playerID
+	 * @throws InterruptedException
+	 */
+	public void sendMessageAll(String message) throws InterruptedException
+	{		
+		Log.log("Sending message to all players" + "\n" + message);
+		for (int i = 0; i < players.length; i++)
+		{
+			if (players[i].isConnected())
+			{
+				writer.sendMessage(new Tuple(i, ServerCommands.message, message));
+			}
+		}
+		
+	}
+	
+	
 	/**
 	 * This method is used to test a dummy game on 1/7/2018
 	 */
-
 	@SuppressWarnings("unchecked")
 	public void dummyGame()
 	{
@@ -303,6 +365,7 @@ public class Game {
 	 */
 	public void nextPhase()
 	{
+		Log.log("Switching to next phase");
 		phase++;
 		if (phase > 1)
 			newTurn();
@@ -340,7 +403,6 @@ public class Game {
 			{
 				Log.log("Transmitting BoardState to " + players[playerID].getName()+ "#" + playerID);
 				writer.sendMessage(new Tuple(playerID, ServerCommands.setBoardState, boardState));
-
 			}
 		}
 	}
@@ -405,7 +467,7 @@ public class Game {
 		
 		for (int i = 0; i < playerCount; i++)
 		{	
-			players[i] = new Player();
+			players[i] = new Player(i);
 			for (int a = 0; a < 3; a++)
 			{
 				players[i].addCardDecktop(estate.copyOf());
@@ -469,12 +531,99 @@ public class Game {
 	{
 		return players;
 	}
-
-	public void start() {
-		space.get(new Object);
+	
+	/**
+	 * Sends the player game actions
+	 * @throws InterruptedException
+	 */
+	private void startGameActions() throws InterruptedException
+	{
+		Log.log("Sending start values to players");
+		for (int i = 0; i < playerCount; i++)
+		{
+			sendPlayerHand(i, i);
+		}
+	}
+	
+	private void takeAction() throws InterruptedException
+	{
+		sendTakeTurn(turn);
+		int counter = 0;
 		while(Boolean.TRUE)
 		{
-			//Init game
+			//Check if its a playCard
+			Object[] command = space.getp(new ActualField(Integer.class), new ActualField(ClientCommands.playCard), new ActualField(Integer.class));
+			if (command != null)
+			{
+				Integer playerNum = (Integer) command[0];
+				Integer cardNum = (Integer) command[2];
+				Card card = players[playerNum].getHand().get(cardNum);
+				Log.log(players[playerNum] + "#" + playerNum + " played " + card.getName());
+				if (playerNum == turn)
+				{
+					boolean result = currPlayer.playCard(card, phase);
+					if (result == Boolean.TRUE)
+					{
+						Log.log("succesfully played it");
+						sendMessageAll(currPlayer.getName() + " played " + card.getName());
+						break;
+					}
+					else 
+					{
+						Log.log("failed to play it");
+						sendMessage("You cannot play this card.", playerNum);
+					}
+				}
+				else
+				{
+					sendMessage("You cannot play a card when its not your turn", playerNum);
+					Log.log("It wasn't their turn though.");
+				}
+			}
+			else
+			{
+				command = space.getp(new ActualField(Integer.class), new ActualField(ClientCommands.changePhase));
+				if (command != null)
+				{
+					Integer playerNum = (Integer) command[0];
+					if (playerNum == turn)
+					{
+						nextPhase();
+					}
+					else
+					{
+						//If a player tries to cheat...
+						sendMessage("You cannot force the player to change phase when its not your face", playerNum);
+					}
+				}
+			}
+			counter++;
+			if (counter > 6000)
+			{
+				Log.important(currPlayer.getName() + "#" + turn + " didnt take their action!");
+				sendDisconnect(turn);
+				break;
+			}
+			Thread.sleep(10);
+		}
+		
+	}
+
+	public void start() throws InterruptedException {
+		space.get(new ActualField(ServerCommands.gameStart));
+		Log.important("Game started");
+		startGameActions();
+		while(Boolean.TRUE)
+		{
+			if (phase == 0)
+			{
+				takeAction();
+			}
+			if (phase == 1)
+			{
+				takeBuy();
+			}
+			
 			
 		}
 	}

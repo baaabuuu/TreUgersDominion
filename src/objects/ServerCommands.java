@@ -11,8 +11,8 @@ public enum ServerCommands {
 	setLobby,
 	setNames,
 	message,
+	invalid,
 	gameStart,
 	gameEnd,
-	newConnection,
-	turnValues
+	newConnection
 }
