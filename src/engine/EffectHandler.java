@@ -1,5 +1,6 @@
 package engine;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
@@ -12,16 +13,20 @@ public class EffectHandler
 		this.game=game;
 		
 	}
-	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) {
+	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
 		boolean counter;
 		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
 		for(Player p: players) {
 			counter = false;
+			if(!player.isConnected()) break;
 			for(Card c : p.getHand()) {
-				
+				//Reaction card handling
 				switch(c.getName()) {
-				case "Moat":
-					//ask if we counter
+				
+				case "Moat": 
+					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
+					
+					//Based on result, set counter to true or false
 					break;
 				}
 				
@@ -61,9 +66,10 @@ public class EffectHandler
 	 * @param card - The card that was played.
 	 * @param board - current board state
 	 * @param players - List of playerObjects
+	 * @throws InterruptedException 
 	 */
 	
-	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players){
+	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players) throws InterruptedException{
 		//First check if playing this card would trigger any other effect
 		for(Player p: players) {
 			if(p.getEffects().size()== 0) {
@@ -185,6 +191,8 @@ public class EffectHandler
 				break;//Invalid effect error here;
 
 		}
+		//After every effect, update player hand
+		game.sendPlayerHand(player.getID(), player.getID());
 	}
 	private void gainGoldOthersReveal(Player player, Board board, Player[] players) {
 		Card gold =board.canGain("Gold");
@@ -407,7 +415,7 @@ public class EffectHandler
 		}
 		
 	}
-	private void playActionFromHandtwice(Player player,Board board,Player[] players) {
+	private void playActionFromHandtwice(Player player,Board board,Player[] players) throws InterruptedException {
 		//NETWORK
 		//Select card to be played twice or if none 
 		boolean placeholder=false;
@@ -428,30 +436,23 @@ public class EffectHandler
 			}
 		}
 	}
-	private void discardNDrawN(Player player)
+	private void discardNDrawN(Player player) throws InterruptedException
 	{
+		
+		
+		
+		
 		int i=0; //number of discards
 		if(player.getHandSize()==0)
 		{
-			//Display "invalid action"
+			game.sendMessage("You cannot discard cards from a hand with size 0", player.getID());
 		}
 		else
 		{
-			//counter to determine draws
-			//NETWORK
-			//access connected spacenetwork
-			//wait for pspace with identifier
-			//if discard, then then discard+increment counter
-			//else draw equal to counter
-
-			if(false)
-			{
-
-			}
-			else 
-			{
-								player.drawCard(i);
-			}
+			game.sendCardOption(player.getID(), "Discard as many cards as you would like, then draw the same amount", player.getHandSize(), player.getHand(), true);
+			//Reponse contains cards to be discarded
+			
+			player.drawCard(i);
 			//condition here
 
 		}
