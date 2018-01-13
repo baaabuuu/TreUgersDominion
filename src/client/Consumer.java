@@ -4,10 +4,6 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import objects.BoardState;
-import objects.ClientCommands;
-import objects.OotAction;
-import objects.PlayerHand;
 import objects.*;
 
 public class Consumer implements Runnable {
@@ -42,9 +38,9 @@ public class Consumer implements Runnable {
 							break;
 					case takeTurn: action.takeTurn(clientSpace, hostSpace);
 							break;
-					case nonTurnAction: input = clientSpace.get(new ActualField(name), 
-								new FormalField(OotAction.class));
-							action.nonTurnAction((OotAction)input[1], hostSpace);
+					case playerSelect: input = clientSpace.get(new ActualField(name), 
+								new FormalField(CardOption.class));
+							action.playerSelect((CardOption)input[1], hostSpace);
 							break;
 					case setPlayerHand: input = clientSpace.get(new ActualField(name), 
 								new FormalField(PlayerHand.class));

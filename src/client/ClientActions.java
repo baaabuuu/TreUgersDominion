@@ -12,7 +12,6 @@ import cards.Card;
 import log.Log;
 import objects.BoardState;
 import objects.ClientCommands;
-import objects.OotAction;
 import objects.PlayerHand;
 import objects.TurnValues;
 import objects.*;
@@ -229,18 +228,6 @@ public class ClientActions {
 					break;
 			}
 		}
-	}
-	/**
-	 * An action affecting the players hand, while it is not the players turn.
-	 * @param OotAction
-	 * @throws InterruptedException 
-	 */
-	public void nonTurnAction(OotAction input, Space hostSpace) throws InterruptedException {
-		System.out.println("\n" + input.getMessage());
-		System.out.println("Your hand contains: ");
-		printCards(playerHand);
-		selectCard(input.getAmount(),playerHand, hostSpace);
-		
 	}
 	/**
 	 * An action that provides the player a choice of cards.

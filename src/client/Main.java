@@ -17,29 +17,41 @@ import log.Log;
 import objects.*;
 
 public class Main {
+	
 	public static void main(String[] args) {
-		String userName;
-		String host;
-		int port = 8181;
+		MainFrame mainFrame;
+		ConnectionHandler connectionHandler;
+		
+		
+		Space clientSpace;
 		
 		Scanner input = new Scanner(System.in);
 		boolean lock = true;
 		boolean lock2;
 		Object[] obj;
 		
+		connectionHandler = new ConnectionHandler();
+		
+		mainFrame = new MainFrame();
+		mainFrame.setVisible(true);
+		mainFrame.setSize(1280,650);
+		
+		
 		while(lock) {
 			lock2 = true;
-			Space clientSpace = new SequentialSpace();
+			
 			System.out.print("Write a username: ");
 			userName = input.next();
 			System.out.print("Type in the IP address of a Server: ");
 			host = input.next();
 			
+			String uri = "tcp://" + host + ":" + port + "/board?conn";
+			
 			while(lock2) {
-				String uri = "tcp://" + host + ":" + port + "/board?conn";
 				
 		        Space hostSpace;
 				try {
+					clientSpace = new SequentialSpace();
 					hostSpace = new RemoteSpace(uri);
 					Log.important("Connected to port: " + port);
 					
@@ -50,11 +62,11 @@ public class Main {
 					
 					try {
 						clientSpace.get(new ActualField(userName), new ActualField(ServerCommands.newConnection));
-						obj = clientSpace.get(new ActualField(userName), new FormalField(PortNumber.class));
+						obj = clientSpace.get(new ActualField(userName), new FormalField(Uri.class));
 						consumer.interrupt();
 						receiver.interrupt();
 						Log.important("Disconnected from port: " + port);
-						port = ((PortNumber)obj[1]).getPort();
+						uri = ((Uri)obj[1]).getUri();
 						
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
