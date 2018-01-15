@@ -298,7 +298,25 @@ public class EffectHandler
 		}
 		
 	}
-	private void trashFromHandGainPlus2(Player player, Board board) {
+	private void trashFromHandGainPlus2(Player player, Board board) throws InterruptedException {
+	
+		ArrayList<Card> tempHand = player.getHand();
+		game.sendCardOption(player.getID(), "Choose a card to trash",1, tempHand, false);
+		
+		ArrayList<Integer> response=null;
+		Card trashCard = tempHand.get(response.get(0));
+		board.trashCard(trashCard);
+		ArrayList<Card> choice = null;
+		for(String s:board.getBoardNamesList()) {
+			Card c = board.canGain(s);
+			if(c != null) {
+				if(c.getCost()<=trashCard.getCost()+2) {
+				
+				choice.add(c);
+				}
+			}
+		}
+		game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
 	//NETWORK
 	//Query: Want to trash?
 	//If yes, trash card, 
