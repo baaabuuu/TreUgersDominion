@@ -462,8 +462,12 @@ public class EffectHandler
 				player.discardCard(c);
 				player.removeFromHand(c);
 			}
-			
-			player.drawCard(i);
+			String allCards="";
+			//The call drawCard returns a list of the names drawn
+			for(String s:player.drawCard(i)) {
+				allCards+=" "+s+" ";
+			}
+			game.sendMessage("You have drawn: "+allCards, player.getID());
 			//condition here
 
 		}
