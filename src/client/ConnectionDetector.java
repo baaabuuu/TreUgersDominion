@@ -7,7 +7,12 @@ import org.jspace.Space;
 import log.Log;
 import objects.ServerCommands;
 import objects.Uri;
-
+/**
+ * Detects when the server commands the client to make a new connection and .
+ * @param Space (local)
+ * @param Space (remote)
+ * @throws InterruptedException 
+ */
 public class ConnectionDetector implements Runnable {
 	private Space clientSpace;
 	private int playerID;

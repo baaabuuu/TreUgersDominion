@@ -6,6 +6,9 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import log.Log;
+
 import java.awt.Font;
 import java.awt.Color;
 
@@ -15,11 +18,19 @@ public class ServerPanel extends JPanel implements ActionListener{
 	private JTextField serverField, socketField;
 	private JLabel lblServer, lblSocket, lblError;
 	private JButton btnConnect, btnExit;
+	
+	private int port;
+	private String host;
+	private ConnectionHandler handler;
+	
 	// The JPanel contains a reference to the main Frame.
 	private MainFrame main;
 	
-	public ServerPanel(MainFrame main) {
+	public ServerPanel(MainFrame main, int port, String host, ConnectionHandler handler) {
 		this.main = main;
+		this.port = port;
+		this.host = host;
+		this.handler = handler;
 		
 		// Contains no layout and has no background.
 		setLayout(null);
@@ -34,7 +45,7 @@ public class ServerPanel extends JPanel implements ActionListener{
         btnConnect.setFont(new Font("Tahoma", Font.BOLD, 12)); // Sets font.
         btnConnect.addActionListener(new ActionListener() {	// Adds actionListener containing the following...
             public void actionPerformed(ActionEvent e) {
-            	
+            	attemptConnection();
             }
         });
 		add(btnConnect); // Add to JPanel.
@@ -72,7 +83,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		// Text fields.
 		serverField = new JTextField(20);
 		serverField.setBounds(610, 300, 130, 20);
-		serverField.setText("127.0.0.1");
+		serverField.setText(host);
 		// On enter press, sets focus to socket field.
 		serverField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -83,7 +94,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		
 		socketField = new JTextField(20);
 		socketField.setBounds(610, 335, 130, 20);
-		socketField.setText("8181");
+		socketField.setText(""+port);
 		// On enter press, do the same as connect button.
 		socketField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -96,21 +107,21 @@ public class ServerPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {}
 	private void attemptConnection(){
 		if(serverField.getText().matches("[0-9.]+") && serverField.getText().length() < 17
-    			&& socketField.getText().matches("[0-9]+") && socketField.getText().length() < 5){
+				&& socketField.getText().matches("[0-9]+") && socketField.getText().length() == 4){
+			
+    		host = serverField.getText();
+    		port = Integer.parseInt(socketField.getText());
     		
-    		main.host = serverField.getText();
-    		main.port = Integer.parseInt(socketField.getText());
-    		
-    		main.attemptConnect();
-    		
-    		
-    		
+    		handler.attemptConnection("tcp://" + host + ":" + port + "/board?conn");
     	// Error for wrong characters.
-    	}else if(serverField.getText().length() < 17 && socketField.getText().length() < 5){
-    		lblError.setText("Numbers and dots only!");
+    	}else if(serverField.getText().length() < 17 && socketField.getText().length() == 4){
+    		lblError.setText("Numbers and dots only.");
     	// Error for too many characters.
     	}else{
-    		lblError.setText("A field is too long!");
+    		lblError.setText("Fields are wrong length.");
     	}
+	}
+	public void setError(String error) {
+		lblError.setText(error);
 	}
 }

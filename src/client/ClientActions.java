@@ -78,28 +78,31 @@ public class ClientActions {
 		Object[] input;
 		boolean lock = true;
 		while(lock) {
+			//Wait for a server command
 			objs = clientSpace.get(new ActualField(playerName), 
 					new FormalField(ServerCommands.class));
-			
+			//Reacy dependent on which command was received.
 			switch ((ServerCommands)objs[1]) {
+				// Display the received message.
 				case message: Log.log("Recieved message command");
 						input = clientSpace.get(new ActualField(playerName), 
 							new FormalField(String.class));
+						System.out.println((String)input[1]);
+						break;
+				case invalid: Log.log("Recieved invalid command");
+						input = clientSpace.get(new ActualField(playerName), 
+								new FormalField(String.class));
 						System.out.println((String)input[1]);
 						lock = false;
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
 						input = clientSpace.get(new ActualField(playerName), 
-							new FormalField(BoardState.class));
-						displayBoardState((BoardState)input[1]);
+								new FormalField(Object[].class));
 						
-						input = clientSpace.get(new ActualField(playerName), 
-							new FormalField(PlayerHand.class));
-						setPlayerHand((PlayerHand)input[1]);
+						displayBoardState((BoardState)(((Object[])input[1])[0]));
+						setPlayerHand((PlayerHand)(((Object[])input[1])[1]));
+						setTurnValues((TurnValues)(((Object[])input[1])[2]));
 						
-						input = clientSpace.get(new ActualField(playerName), 
-							new FormalField(TurnValues.class));
-						setTurnValues((TurnValues)input[1]);
 						System.out.println("Your hand contains: ");
 						printCards(playerHand);
 						lock = false;
@@ -239,9 +242,11 @@ public class ClientActions {
 		System.out.println("\n" + input.getMessage());
 		System.out.println("Your options are: ");
 		printCards(input.getCards());
-		selectCard(input.getAmount(),input.getCards(), hostSpace);
-	}
-	private void selectCard(int count, List<Card> list, Space hostSpace) throws InterruptedException {
+		
+		if(input.getMay()) {
+			System.out.println("You can choose to stop selecting cards by typing '0'.");
+		}
+		
 		scan = new Scanner(System.in);
 		
 		ArrayList<Integer> selected = new ArrayList<Integer>();
@@ -249,23 +254,30 @@ public class ClientActions {
 		int value;
 		boolean locked;
 		// For the amount of cards that is to be removed
-		for(int i = 1; i<=count;i++) {
+		for(int i = 0; i<input.getAmount();i++) {
 			// Until a valid input is given, this code will run.
 			locked = true;
 			while(locked) {
-				System.out.println("Select card " + i + ": ");
+				System.out.println("Select card " + (i+1) + ": ");
 				number = scan.nextLine();
 				// Test if integer.
 				try {
 					value = Integer.parseInt(number);
-					// If integer is not representing a card in hand.
-					if(value <= 0 || value > playerHand.size()) {
+					//If getMay is true and if integer is not either a value representing a card or 0.
+					if(input.getMay() && (value < 0 || value > input.getCards().size())) {
+						System.out.println("Input is not a valid card.");
+					// if getMay is false and if integer is not a value representing a card.
+					} else if(!input.getMay() && (value <= 0 || value > input.getCards().size())){
 						System.out.println("Input is not a valid card.");
 					} else { // If an integer not already in list, add to list and unlock while loop.
 						if(selected.contains(value)) {
 							System.out.println("That card has already been selected.");
 						}else {
-							selected.add(value);
+							if(value == 0) {
+								i = input.getAmount();
+							} else {
+								selected.add(value);
+							}
 							locked = false;
 						}
 					}
@@ -273,9 +285,9 @@ public class ClientActions {
 					System.out.println("Input is not a valid integer.");
 				}
 			}
-			hostSpace.put(playerName, ClientCommands.selectCard);
-			hostSpace.put(playerName, selected);
 		}
+		hostSpace.put(playerName, ClientCommands.selectCard);
+		hostSpace.put(playerName, selected);
 	}
 	public void setNames(String[] names) {
 		this.names = names;
@@ -294,9 +306,6 @@ public class ClientActions {
 			System.out.println("Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "//4 players.");
 		}
 		System.out.println("Server sent a list of lobbies: ");
-	}
-	public void displayLobby() {
-		
 	}
 	public void gameEnd() {
 		

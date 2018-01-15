@@ -1,10 +1,12 @@
 package client;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import log.Log;
@@ -21,7 +23,12 @@ public class ConnectionHandler {
 	private Thread receiver;
 	private Thread connecterDetector;
 	
-	MainFrame mainFrame;
+	private MainFrame mainFrame;
+	private GamePanel gamePanel;
+	private GameBackground gameBG;
+	private ServerPanel serverPanel;
+	
+	private ConnectionHandler connectionHandler = this;
 	
 	public ConnectionHandler(int port, String host){
 		this.port = port;
@@ -29,27 +36,29 @@ public class ConnectionHandler {
 	}
 	public void run() {
 		
-		connecterDetector = new Thread(new ConnectionDetector(clientSpace, this));
+		clientSpace = new SequentialSpace();
+		
+		connecterDetector = new Thread(new ConnectionDetector(clientSpace, connectionHandler));
 		connecterDetector.start();
 		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					// Start new main and set size. 
+					// Create new mainFrame and set its size. 
 					mainFrame = new MainFrame();
 					mainFrame.setVisible(true);
 					mainFrame.setSize(1280,650);
-					// start game and add a reference to main.
-					//game = new Cl_Game(mainFrame);
+					// Create new gamePanel.
+					gamePanel = new GamePanel(mainFrame);
 					// Start game background and set layout.
-					//G_BG = new Game_Background();
-					//G_BG.setLayout(new BorderLayout());
+					gameBG = new GameBackground();
+					gameBG.setLayout(new BorderLayout());
 					// Start server selection and add a reference to main.
-					//server = new Cl_Ser(mainFrame);
+					serverPanel = new ServerPanel(mainFrame, port, host, connectionHandler);
 					// Add server selection to background pane
-					//G_BG.add(server, BorderLayout.CENTER);
+					gameBG.add(serverPanel, BorderLayout.CENTER);
 					// Add background pane to main.
-					//mainFrame.setContentPane(G_BG);
+					mainFrame.setContentPane(gameBG);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -57,8 +66,23 @@ public class ConnectionHandler {
 		});
 		
 	}
-	public void attemptConnection() {
+	public void attemptConnection(String newUri) {
 		
+		try {
+			hostSpace = new RemoteSpace(newUri);
+			
+			receiver = new Thread(new Receiver(clientSpace, userName, hostSpace));
+			consumer = new Thread(new Consumer(clientSpace, userName, hostSpace));
+			consumer.start();
+			receiver.start();
+			
+		} catch (UnknownHostException e) {
+			Log.important("UnknownHostException");
+			serverPanel.setError("Host was not found.");
+		} catch (IOException e) {
+			Log.important("IOException");
+			serverPanel.setError("Host was not found.");
+		}
 	}
 	
 	public void newConnection(String newUri) {
@@ -75,9 +99,16 @@ public class ConnectionHandler {
 			receiver.start();
 			
 		} catch (UnknownHostException e) {
-			Log.important("Host not found!");
+			Log.important("UnknownHostException");
+			gameBG.remove(gamePanel);
+			gameBG.add(serverPanel, BorderLayout.CENTER);
+			serverPanel.setError("Host was not found.");
+			
 		} catch (IOException e) {
-			e.printStackTrace();
+			Log.important("IOException");
+			gameBG.remove(gamePanel);
+			gameBG.add(serverPanel, BorderLayout.CENTER);
+			serverPanel.setError("Host was not found.");
 		}
 	}
 	

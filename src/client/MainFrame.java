@@ -12,7 +12,6 @@ public class MainFrame extends JFrame {
 	
 	static MainFrame mainFrame;
 	
-	
 	private JPanel contentPane;
 
 	/**
@@ -48,9 +47,3 @@ public class MainFrame extends JFrame {
 
 }
 
-class Game_Background extends JPanel{
-	Image bg = new ImageIcon(MainFrame.class.getResource("BackgroundImage.jpg")).getImage();
-    public void paintComponent(Graphics g) {
-        g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
-    }
-}
