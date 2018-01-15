@@ -1,4 +1,4 @@
-package client;
+package clientUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -6,8 +6,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
-import log.Log;
 
 import java.awt.Font;
 import java.awt.Color;
@@ -21,16 +19,13 @@ public class ServerPanel extends JPanel implements ActionListener{
 	
 	private int port;
 	private String host;
-	private ConnectionHandler handler;
 	
-	// The JPanel contains a reference to the main Frame.
-	private MainFrame main;
+	private UIController controller;
 	
-	public ServerPanel(MainFrame main, int port, String host, ConnectionHandler handler) {
-		this.main = main;
+	public ServerPanel(UIController controller, int port, String host) {
+		this.controller = controller;
 		this.port = port;
 		this.host = host;
-		this.handler = handler;
 		
 		// Contains no layout and has no background.
 		setLayout(null);
@@ -112,7 +107,7 @@ public class ServerPanel extends JPanel implements ActionListener{
     		host = serverField.getText();
     		port = Integer.parseInt(socketField.getText());
     		
-    		handler.attemptConnection("tcp://" + host + ":" + port + "/board?conn");
+    		controller.attemptConnection("tcp://" + host + ":" + port + "/board?conn");
     	// Error for wrong characters.
     	}else if(serverField.getText().length() < 17 && socketField.getText().length() == 4){
     		lblError.setText("Numbers and dots only.");

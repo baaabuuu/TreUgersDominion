@@ -16,8 +16,8 @@ import objects.Uri;
 public class ConnectionDetector implements Runnable {
 	private Space clientSpace;
 	private int playerID;
-	private ConnectionHandler handler;
-	public ConnectionDetector(Space clientSpace, ConnectionHandler handler) {
+	private ClientController handler;
+	public ConnectionDetector(Space clientSpace, ClientController handler) {
 		this.clientSpace = clientSpace;
 		this.handler = handler;
 	}

@@ -1,4 +1,4 @@
-package client;
+package clientUI;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -24,10 +24,10 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	MainFrame() {
+	public MainFrame() {
 		// Add title, icon, set resize and exit on close.
 		setTitle("Dominion: The blatant ripoff");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/client/IconImage.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource("/clientUI/IconImage.png")));
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
