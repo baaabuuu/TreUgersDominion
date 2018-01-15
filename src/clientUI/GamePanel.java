@@ -30,6 +30,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.metal.MetalScrollBarUI;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 
@@ -170,6 +171,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			actionArea.setToolTipText("Type me!");
 			actionArea.addKeyListener(this);
 			actionArea.setBounds(10, 500, 500, 75);
+			actionArea.setEditable(false);
 			actionArea.setDocument(docAction);
 			add(actionArea);
 			
@@ -286,11 +288,29 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblRemainingWordsChat.setText((255 -docChat.getLength()) + " characters remaining");
 		}
     }
-	public void updBuyList(Card[] cards){
+	public void updBuyList(Card[] cards, int[] amounts){
 		listModel.clear();
 		for(int i = 0; i < cards.length; i++) {
-			listModel.addElement(cards[i].getName());
+			listModel.addElement(cards[i].getName() + ": " + amounts[i]);
 		}
+	}
+	private String eventAreaInfo;
+	/**
+	 * Update event area, by adding input text to the current text.
+	 */
+	public void updEventArea(String text){
+		if(eventArea.getLineCount() > 39){
+			try {
+				eventArea.replaceRange("", 0, eventArea.getLineEndOffset(0));
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		eventAreaInfo = eventArea.getText();
+		eventAreaInfo += "\n" + text;
+		
+		eventArea.setText(eventAreaInfo);
 	}
 	public void keyTyped(KeyEvent e) {}
 	private String actionAreaTemp;
@@ -310,9 +330,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		//On ENTER release from actionArea, update eventArea with temporary
 		//text and reset actionArea.
 		if(e.getSource() == actionArea && e.getKeyCode() == KeyEvent.VK_ENTER){
-			//Message must be more than 0 character.
-			if(actionAreaTemp != null && actionAreaTemp.length() > 0){
-				
+			//Message must be more than 0 and less than 4 characters.
+			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
+				controller.eventOutput(actionAreaTemp);
+				actionArea.setEditable(false);
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatTypArea && e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -327,9 +348,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	}
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == actionSend){
-			//Message must be more than 0 character.
-			if(actionAreaTemp != null && actionAreaTemp.length() > 0){
-				
+			//Message must be more than 0 and less than 4 characters.
+			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
+				controller.eventOutput(actionAreaTemp);
+				actionArea.setEditable(false);
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatSend){

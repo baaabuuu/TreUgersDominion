@@ -9,6 +9,7 @@ import org.jspace.FormalField;
 import org.jspace.Space;
 
 import cards.Card;
+import clientUI.UIController;
 import log.Log;
 import objects.BoardState;
 import objects.ClientCommands;
@@ -24,9 +25,13 @@ public class ClientActions {
 	private List<Card> playerHand;
 	static Scanner scan;
 	
+	Space userSpace;
+	private UIController userInterface;
 	
-	public ClientActions(String playerName){
+	public ClientActions(String playerName, Space userSpace, UIController userInterface){
 		this.playerName = playerName;
+		this.userSpace = userSpace;
+		this.userInterface = userInterface;
 	}
 	
 	public void displayBoardState(BoardState input) {
@@ -40,23 +45,24 @@ public class ClientActions {
 	 */
 	public void takeTurn(Space clientSpace, Space hostSpace) throws InterruptedException {
 		
-		System.out.println("\n----------------------");
-		System.out.println("\nYOUR TURN HAS BEGUN!");
-		System.out.println("Your hand contains: ");
+		userSpace.put("client","message","\\n----------------------");
+		userSpace.put("client","message","");
+		userSpace.put("client","message","\nYOUR TURN HAS BEGUN!");
+		userSpace.put("client","message","Your hand contains: ");
 		printCards(playerHand);
 		setTurnValues(new TurnValues(1,1,0));
 		printTurnValues(playerValues);
-		System.out.println("\n----------------------");
-		System.out.println("The Buy Area contains: ");
+		userSpace.put("client","message","\n----------------------");
+		userSpace.put("client","message","The Buy Area contains: ");
 		printBuyArea();
-		System.out.println("ACTION PHASE");
+		userSpace.put("client","message","ACTION PHASE");
 		actionPhase(clientSpace, hostSpace);
 		
-		System.out.println("BUY PHASE");
+		userSpace.put("client","message","BUY PHASE");
 		buyPhase(clientSpace, hostSpace);
 		
-		System.out.println("CLEANUP PHASE");
-		System.out.println("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
+		userSpace.put("client","message","CLEANUP PHASE");
+		userSpace.put("client","message","Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
 		clientSpace.get(new ActualField(playerName), new ActualField(ServerCommands.setPlayerHand));
 		Object[] objs = clientSpace.get(new ActualField(playerName), 
@@ -64,7 +70,7 @@ public class ClientActions {
 		
 		setPlayerHand((PlayerHand)objs[1]);
 		
-		System.out.println("Your hand contains: ");
+		userSpace.put("client","message","Your hand contains: ");
 		printCards(playerHand);
 	}
 	/**
@@ -87,12 +93,12 @@ public class ClientActions {
 				case message: Log.log("Recieved message command");
 						input = clientSpace.get(new ActualField(playerName), 
 							new FormalField(String.class));
-						System.out.println((String)input[1]);
+						userSpace.put("client","message",(String)input[1]);
 						break;
 				case invalid: Log.log("Recieved invalid command");
 						input = clientSpace.get(new ActualField(playerName), 
 								new FormalField(String.class));
-						System.out.println((String)input[1]);
+						userSpace.put("client","message",(String)input[1]);
 						lock = false;
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
@@ -103,7 +109,7 @@ public class ClientActions {
 						setPlayerHand((PlayerHand)(((Object[])input[1])[1]));
 						setTurnValues((TurnValues)(((Object[])input[1])[2]));
 						
-						System.out.println("Your hand contains: ");
+						userSpace.put("client","message","Your hand contains: ");
 						printCards(playerHand);
 						lock = false;
 						break;
@@ -129,18 +135,18 @@ public class ClientActions {
 		int value;
 		boolean lock = true;
 		while(lock) {
-			System.out.println("Play an Action Card, or skip the action phase by typing '0'.");
+			userSpace.put("client","message","Play an Action Card, or skip the action phase by typing '0'.");
 			number = scan.nextLine();
 			
 			try {
 				value = Integer.parseInt(number);
 				
 				if(value < 0 || value > playerHand.size()) {
-					System.out.println("Input is not a valid card.");
+					userSpace.put("client","message","Input is not a valid card.");
 				
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
-					System.out.println("Action phase has ended.");
+					userSpace.put("client","message","Action phase has ended.");
 					hostSpace.put(playerName, ClientCommands.changePhase);
 					lock = false;
 				}else {
@@ -149,7 +155,7 @@ public class ClientActions {
 					resolvePlay(clientSpace, hostSpace);
 				}
 			}catch(NumberFormatException e) {
-				System.out.println("Input is not a valid integer.");
+				userSpace.put("client","message","Input is not a valid integer.");
 			}
 		}
 	}
@@ -169,24 +175,24 @@ public class ClientActions {
 		
 		while(lock) {
 			lock2 = true;
-			System.out.println("Either play non-action cards or buy cards, or skip the Buy phase by typing '0'.");
-			System.out.println("To play cards type 'p', to buy cards type 'b'.");
+			userSpace.put("client","message","Either play non-action cards or buy cards, or skip the Buy phase by typing '0'.");
+			userSpace.put("client","message","To play cards type 'p', to buy cards type 'b'.");
 			scanInput = scan.nextLine();
 			switch(scanInput) {
 				case "p":
 					printCards(playerHand);					
 					while(lock2) {
-						System.out.println("Play a non-action card from your hand, type '0' when done playing cards: ");
+						userSpace.put("client","message","Play a non-action card from your hand, type '0' when done playing cards: ");
 						scanInput = scan.nextLine();
 						try {
 							value = Integer.parseInt(scanInput);
 							
 							if(value < 0 || value > playerHand.size()) {
-								System.out.println("Input is not a valid card.");
+								userSpace.put("client","message","Input is not a valid card.");
 							
 							//If player wants to get out of Action phase
 							} else if(value == 0) {
-								System.out.println("");
+								userSpace.put("client","message","");
 								lock2 = false;
 							}else {
 								hostSpace.put(playerName, ClientCommands.playCard);
@@ -194,24 +200,24 @@ public class ClientActions {
 								resolvePlay(clientSpace, hostSpace);
 							}
 						}catch(NumberFormatException e) {
-							System.out.println("Input is not a valid integer.");
+							userSpace.put("client","message","Input is not a valid integer.");
 						}
 					}
 					break;
 				case "b":
 					while(lock2) {
-						System.out.println("Select a card to buy, type '0' when done playing cards: ");
+						userSpace.put("client","message","Select a card to buy, type '0' when done playing cards: ");
 						printBuyArea();
 						scanInput = scan.nextLine();
 						try {
 							value = Integer.parseInt(scanInput);
 							
 							if(value < 0 || value > buyArea.length) {
-								System.out.println("Input is not a valid card.");
+								userSpace.put("client","message","Input is not a valid card.");
 							
 							//If player wants to get out of Action phase
 							} else if(value == 0) {
-								System.out.println("");
+								userSpace.put("client","message","");
 								lock2 = false;
 							}else {
 								hostSpace.put(playerName, ClientCommands.buyCard);
@@ -219,15 +225,15 @@ public class ClientActions {
 								resolvePlay(clientSpace, hostSpace);
 							}
 						}catch(NumberFormatException e) {
-							System.out.println("Input is not a valid integer.");
+							userSpace.put("client","message","Input is not a valid integer.");
 						}
 					}
 					break;
 				case "0":
-					System.out.println("Buy phase has ended.");
+					userSpace.put("client","message","Buy phase has ended.");
 					hostSpace.put(playerName, ClientCommands.changePhase);
 					lock = false;
-				default: System.out.println("Not a valid input!");
+				default: userSpace.put("client","message","Not a valid input!");
 					break;
 			}
 		}
@@ -239,12 +245,12 @@ public class ClientActions {
 	 * @throws InterruptedException 
 	 */
 	public void playerSelect(CardOption input, Space hostSpace) throws InterruptedException {
-		System.out.println("\n" + input.getMessage());
-		System.out.println("Your options are: ");
+		userSpace.put("client","message","\n" + input.getMessage());
+		userSpace.put("client","message","Your options are: ");
 		printCards(input.getCards());
 		
 		if(input.getMay()) {
-			System.out.println("You can choose to stop selecting cards by typing '0'.");
+			userSpace.put("client","message","You can choose to stop selecting cards by typing '0'.");
 		}
 		
 		scan = new Scanner(System.in);
@@ -258,20 +264,20 @@ public class ClientActions {
 			// Until a valid input is given, this code will run.
 			locked = true;
 			while(locked) {
-				System.out.println("Select card " + (i+1) + ": ");
+				userSpace.put("client","message","Select card " + (i+1) + ": ");
 				number = scan.nextLine();
 				// Test if integer.
 				try {
 					value = Integer.parseInt(number);
 					//If getMay is true and if integer is not either a value representing a card or 0.
 					if(input.getMay() && (value < 0 || value > input.getCards().size())) {
-						System.out.println("Input is not a valid card.");
+						userSpace.put("client","message","Input is not a valid card.");
 					// if getMay is false and if integer is not a value representing a card.
 					} else if(!input.getMay() && (value <= 0 || value > input.getCards().size())){
-						System.out.println("Input is not a valid card.");
+						userSpace.put("client","message","Input is not a valid card.");
 					} else { // If an integer not already in list, add to list and unlock while loop.
 						if(selected.contains(value)) {
-							System.out.println("That card has already been selected.");
+							userSpace.put("client","message","That card has already been selected.");
 						}else {
 							if(value == 0) {
 								i = input.getAmount();
@@ -282,7 +288,7 @@ public class ClientActions {
 						}
 					}
 				}catch(NumberFormatException e) {
-					System.out.println("Input is not a valid integer.");
+					userSpace.put("client","message","Input is not a valid integer.");
 				}
 			}
 		}
@@ -292,36 +298,37 @@ public class ClientActions {
 	public void setNames(String[] names) {
 		this.names = names;
 	}
-	public void setPlayerHand(PlayerHand input) {
+	public void setPlayerHand(PlayerHand input) throws InterruptedException {
 		playerHand = input.getCards();
-		System.out.println("Your new hand contains: ");
+		userSpace.put("client","message","Your new hand contains: ");
 		printCards(playerHand);
 	}
 	public void setBuyArea(Card[] input) {
 		this.buyArea = input;
 	}
-	public void displayLaunge(Launge lobbies) {
-		System.out.println("Server sent a list of lobbies: ");
+	public void displayLaunge(Launge lobbies) throws InterruptedException {
+		userSpace.put("client","message","Server sent a list of lobbies: ");
 		for(int i = 0 ; i < lobbies.getLobbies().length; i++) {
-			System.out.println("Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "//4 players.");
+			userSpace.put("client","message","Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "//4 players.");
 		}
-		System.out.println("Server sent a list of lobbies: ");
+		userSpace.put("client","message","Server sent a list of lobbies: ");
 	}
 	public void gameEnd() {
 		
 	}
-	public void serverMessage(String message) {
-		System.out.println("Server says: " + message);
+	public void serverMessage(String message) throws InterruptedException {
+		userSpace.put("client","message","Server says: " + message);
 	}
 	/**
 	 * Prints out the given list of cards.
 	 * @param List<Card>
+	 * @throws InterruptedException 
 	 */
-	private void printCards(List<Card> playerHand) {
+	private void printCards(List<Card> playerHand) throws InterruptedException {
 		
 		// Simple print of current hand.
 		for(int i = 0; i < playerHand.size(); i++){
-			System.out.println("Card " + (i+1) + ": " + playerHand.get(i).getName());
+			userSpace.put("client","message","Card " + (i+1) + ": " + playerHand.get(i).getName());
 		}
 		/*
 		// More detailed print of current hand.
@@ -332,19 +339,17 @@ public class ClientActions {
 		}
 		*/		
 	}
-	private void printBuyArea() {
+	private void printBuyArea() throws InterruptedException {
 		for(int i = 0; i < buyArea.length; i++){
-			System.out.println("Card " + (i+1) + ": " + buyArea[i].getName() + "\nCost: "
+			userSpace.put("client","message","Card " + (i+1) + ": " + buyArea[i].getName() + "\nCost: "
 					+ buyArea[i].getCost() + "\nDescription: \n" + buyArea[i].getDesc() + "\n");
 		}
 	}
 	private void setTurnValues(TurnValues values) {
 		this.playerValues = values;
 	}
-	private void printTurnValues(TurnValues values) {
-		System.out.println("Actions: " + values.getAction());
-		System.out.println("Buys: " + values.getBuy());
-		System.out.println("Money: " + values.getMoney());
+	private void printTurnValues(TurnValues values) throws InterruptedException {
+		userInterface.newTurnValues(values);
 	}
 	
 	

@@ -3,10 +3,15 @@ package clientUI;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
+import org.jspace.Space;
+
 import cards.Card;
 import client.ClientController;
+import log.Log;
+import objects.BoardState;
+import objects.TurnValues;
 
-public class UIController {
+public class UIController implements client.UIControllerInter {
 	private MainFrame mainFrame;
 	private GamePanel gamePanel;
 	private GameBackground gameBG;
@@ -14,10 +19,13 @@ public class UIController {
 	private ClientController client;
 	private UIController controller = this;
 	
+	private Space userSpace;
 	private Card[] buyArea;
 	
-	public UIController(int port, String host, ClientController client) {
+	public UIController(int port, String host, ClientController client, Space userSpace) {
 		this.client = client;
+		this.userSpace = userSpace;
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -58,30 +66,39 @@ public class UIController {
 	}
 	public void newBuyArea(Card[] buyArea){
 		this.buyArea = buyArea;
-		gamePanel.updBuyList(buyArea);
 	}
 	public void newPlayers(){
 		
 	}
-	public void newTurnValues(){
-		
+	public void newTurnValues(TurnValues values){
+		gamePanel.lblActions.setText("Actions: " + values.getAction());
+		gamePanel.lblActions.setText("buys: " + values.getBuy());
+		gamePanel.lblActions.setText("Money in play: " + values.getMoney());
 	}
-	public void newBoardState(){
+	public void newBoardState(BoardState input){
 		
+		gamePanel.updBuyList(buyArea,input.getShopArea());
 	}
 	public void newPlayerHand(){
 		
 	}
 	public void chatInput(){
-		
+		//Implement chat
 	}
 	public void chatOutput(){
-		
+		//Implement chat
 	}
-	public void eventInput(){
-		
+	public void awaitingUserInput() {
+		gamePanel.actionArea.setEditable(true);
 	}
-	public void eventOutput(){
-		
+	public void eventInput(String input){
+		gamePanel.updEventArea(input);
+	}
+	public void eventOutput(String input){
+		try {
+			userSpace.put("UI",input);
+		} catch (InterruptedException e) {
+			Log.important("InterruptedException");
+		}
 	}
 }

@@ -10,13 +10,14 @@ import org.jspace.Space;
 import clientUI.UIController;
 import log.Log;
 
-public class ClientController {
+public class ClientController implements ClientControllerInter{
 	private String userName;
 	private String host;
 	private int port;
 	private String uri;
 	private Space clientSpace;
 	private Space hostSpace;
+	private Space userSpace;
 	
 	private Thread consumer;
 	private Thread receiver;
@@ -31,12 +32,13 @@ public class ClientController {
 	}
 	public void run() {
 		
+		userSpace = new SequentialSpace();
 		clientSpace = new SequentialSpace();
 		
 		connecterDetector = new Thread(new ConnectionDetector(clientSpace, clientController));
 		connecterDetector.start();
 		
-		userInterface = new UIController(port, host, clientController);
+		userInterface = new UIController(port, host, clientController, userSpace);
 		
 	}
 	public void attemptConnection(String newUri) {
@@ -45,7 +47,7 @@ public class ClientController {
 			hostSpace = new RemoteSpace(newUri);
 			
 			receiver = new Thread(new Receiver(clientSpace, userName, hostSpace));
-			consumer = new Thread(new Consumer(clientSpace, userName, hostSpace));
+			consumer = new Thread(new Consumer(clientSpace, userName, hostSpace, userSpace, userInterface));
 			consumer.start();
 			receiver.start();
 			
@@ -66,7 +68,7 @@ public class ClientController {
 			hostSpace = new RemoteSpace(uri);
 			
 			receiver = new Thread(new Receiver(clientSpace, userName, hostSpace));
-			consumer = new Thread(new Consumer(clientSpace, userName, hostSpace));
+			consumer = new Thread(new Consumer(clientSpace, userName, hostSpace, userSpace, userInterface));
 			consumer.start();
 			receiver.start();
 			
