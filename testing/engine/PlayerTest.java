@@ -11,13 +11,18 @@ import org.mockito.MockitoAnnotations;
 
 import cards.Card;
 import engine.Player;
+import log.Log;
 
+/**
+ * Tests the base engine ensuring everything works
+ * @author s164166
+ */
 public class PlayerTest
 {	
 	@Test
 	public void drawCardNoDeck()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
 		player.drawCard(1);
 		assertEquals("No cards drawn - deck is empty - hand size is 0", 0, player.getHandSize());
@@ -26,7 +31,7 @@ public class PlayerTest
 	@Test
 	public void drawACard()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
 		player.drawCard(1);
@@ -38,12 +43,14 @@ public class PlayerTest
 	@Test
 	public void drawNCards()
 	{
+		Log.important("testing drawNcards");
 		int n = 2;
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		player.addCardDeckBottom(new Card());
 		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
-		player.drawCard(n);
+		player.drawCard(2);
+		assertEquals("Deck size is now 0", 0, player.getDeckSize());
 		assertEquals("n cards drawn - hand size is n", n, player.getHandSize());
 		player.drawCard(n);
 		assertEquals("no cards drawn - hand size is still n", n, player.getHandSize());
@@ -52,7 +59,7 @@ public class PlayerTest
 	@Test
 	public void drawReshuffle()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		player.discardCard(new Card());
 		assertEquals("No cards drawn - hand size is 0", 0, player.getHandSize());
@@ -68,7 +75,7 @@ public class PlayerTest
 	@Test
 	public void removeNoCards()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		Boolean result = player.removeFromHand(0);
 		assertFalse("Cannot remove if no card in at index 0", result);
 		 result = player.removeFromHand(new Card());
@@ -78,7 +85,7 @@ public class PlayerTest
 	@Test
 	public void removeFromHandUnderIndex()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.getHand().add(new Card());
 		Boolean result = player.removeFromHand(-1);
 		assertFalse("Cannot remove if index under 0", result);
@@ -87,7 +94,7 @@ public class PlayerTest
 	@Test
 	public void removeFromHand()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.getHand().add(new Card());
 		Boolean result = player.removeFromHand(0);
 		assertTrue("Card Removed", result);
@@ -96,7 +103,7 @@ public class PlayerTest
 	@Test
 	public void removeSpecificCard()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		Card card = new Card();
 		player.getHand().add(card);
 		Boolean result = player.removeFromHand(card);
@@ -106,7 +113,7 @@ public class PlayerTest
 	@Test
 	public void buyNoBuys()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addMoney(Integer.MAX_VALUE);
 		assertEquals("Player has enough money", player.getMoney(), Integer.MAX_VALUE); 
 		assertEquals("Player has no buys", player.getBuys(), 0);
@@ -117,7 +124,7 @@ public class PlayerTest
 	@Test
 	public void buyNoMoney()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addMoney(Integer.MIN_VALUE);
 		player.addBuys(Integer.MAX_VALUE);
 		assertEquals("Player has MIN_value money", player.getMoney(), Integer.MIN_VALUE); 
@@ -129,7 +136,7 @@ public class PlayerTest
 	@Test
 	public void buyWrongPhase()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addMoney(Integer.MAX_VALUE);
 		player.addBuys(Integer.MAX_VALUE);
 		assertEquals("Player has MAX_value money", player.getMoney(), Integer.MAX_VALUE); 
@@ -141,7 +148,7 @@ public class PlayerTest
 	@Test
 	public void buy()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addMoney(Integer.MAX_VALUE);
 		player.addBuys(Integer.MAX_VALUE);
 		assertEquals("Player has MAX_value money", player.getMoney(), Integer.MAX_VALUE); 
@@ -153,7 +160,7 @@ public class PlayerTest
 	@Test
 	public void shuffleDeckNoCards()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		assertEquals("Deck size = 0", 0, player.getDeckSize());
 		player.shuffleDeck();
 		assertEquals("Deck size = 0", 0, player.getDeckSize());
@@ -161,7 +168,7 @@ public class PlayerTest
 	@Test
 	public void shuffleDeck()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		assertEquals("Deck size = 1", 1, player.getDeckSize());
 		player.shuffleDeck();
@@ -171,7 +178,7 @@ public class PlayerTest
 	@Test
 	public void reshuffleNoDiscardNoDeck()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		assertEquals("Deck size = 0", 0, player.getDeckSize());
 		assertEquals("Discard size = 0", 0, player.getDiscardSize());
 		player.reshuffleDeck();
@@ -182,7 +189,7 @@ public class PlayerTest
 	@Test
 	public void reshuffleNoDiscard()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		assertEquals("Deck size = 1", 1, player.getDeckSize());
 		assertEquals("Discard size = 0", 0, player.getDiscardSize());
@@ -194,7 +201,7 @@ public class PlayerTest
 	@Test
 	public void reshuffleNoDeck()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.discardCard(new Card());
 		assertEquals("Deck size = 0", 0, player.getDeckSize());
 		assertEquals("Discard size = 1", 1, player.getDiscardSize());
@@ -206,7 +213,7 @@ public class PlayerTest
 	@Test
 	public void reshuffle()
 	{
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addCardDeckBottom(new Card());
 		player.discardCard(new Card());
 		assertEquals("Deck size = 1", 1, player.getDeckSize());
@@ -223,7 +230,7 @@ public class PlayerTest
 		Card actionMock = mock(Card.class);
 	    String[] bc = {"Action"};
 	    when(actionMock.getDisplayTypes()).thenReturn(bc);
-		Player player = new Player();
+		Player player = new Player(0);
 		player.playCard(actionMock, 0);
 		assertEquals("Action size = 0", 0, player.getActions());
 	}
@@ -235,7 +242,7 @@ public class PlayerTest
 		Card actionMock = mock(Card.class);
 	    String[] bc = {"Action"};
 	    when(actionMock.getDisplayTypes()).thenReturn(bc);
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addActions(1);
 		player.playCard(actionMock, 1);
 
@@ -249,7 +256,7 @@ public class PlayerTest
 		Card treasureMock = mock(Card.class);
 	    String[] bc = {"Treasure"};                                    
 		when(treasureMock.getDisplayTypes()).thenReturn(bc);
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addActions(1);
 		player.playCard(treasureMock, 0);
 
@@ -263,7 +270,7 @@ public class PlayerTest
 		Card actionMock = mock(Card.class);
 	    String[] bc = {"Action"};
 	    when(actionMock.getDisplayTypes()).thenReturn(bc);
-		Player player = new Player();
+		Player player = new Player(0);
 		player.addActions(1);
 		assertEquals("Action size = 1", 1, player.getActions());
 		player.playCard(actionMock, 0);
@@ -278,7 +285,7 @@ public class PlayerTest
 	    String[] bc = {"Treasure"};                                    
 		when(treasureMock.getDisplayTypes()).thenReturn(bc);
 		when(treasureMock.getMoney()).thenReturn(1);
-		Player player = new Player();
+		Player player = new Player(0);
 		assertEquals("Money = 0", 0, player.getMoney());
 		player.playCard(treasureMock, 0);
 		assertEquals("Money = 0", 0, player.getMoney());
@@ -292,7 +299,7 @@ public class PlayerTest
 	    String[] bc = {"Treasure"};                                    
 		when(treasureMock.getDisplayTypes()).thenReturn(bc);
 		when(treasureMock.getMoney()).thenReturn(1);
-		Player player = new Player();
+		Player player = new Player(0);
 		assertEquals("Money = 0", 0, player.getMoney());
 		player.playCard(treasureMock, 1);
 		assertEquals("Money = 1", 1, player.getMoney());

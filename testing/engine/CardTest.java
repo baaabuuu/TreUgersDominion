@@ -6,7 +6,11 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 import cards.Card;
-
+/**
+ *  Used to test copy Non identical and minCosting.
+ *  Non-identical was mainly to get higher coverage.
+ * @author s164166
+ */
 public class CardTest
 {	
 	@Test

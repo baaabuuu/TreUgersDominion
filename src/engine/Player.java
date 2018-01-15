@@ -53,7 +53,6 @@ public class Player {
 	public String[] drawCard(int n)
 	{
 		String[] draw = new String[n];
-		
 		for (int i = 0; i < n; i++)
 		{
 			if (deck.isEmpty())
@@ -66,7 +65,6 @@ public class Player {
 			draw[i] = drawn.getName();
 			hand.add(drawn);
 			Log.log(getName() + " has drawn " + drawn.getName());
-			n--;
 		}
 		return draw;
 	}
@@ -268,6 +266,8 @@ public class Player {
 	
 	/**
 	 * Buy effects, used to run effects that do something instead of putting it ontop of the discard pile.
+	 * Note, none of these are used as non in the base game utilize such as an effect
+	 * However, the skeleton for it is here.
 	 * @param card
 	 */
 	private void buyEffects(Card card)
@@ -464,5 +464,13 @@ public class Player {
 	public void putIntoPlay(Card card)
 	{
 		playArea.add(card);
+	}
+	
+	public int getFirstIndexOf(String cardName)
+	{
+		for (int i = 0; i < hand.size(); i++)
+			if (hand.get(i).getName().equals(cardName))
+				return i;
+		return -1;
 	}
 }
