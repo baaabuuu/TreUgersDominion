@@ -181,7 +181,7 @@ public class EffectHandler
 				draw1Action1Look2(player);
 				break;
 			case 24:
-				draw2OthersCurse(player,affectedPlayers);
+				draw2OthersCurse(player,affectedPlayers, board);
 				break;
 			case 25:
 				gainPlus5(player,board);
@@ -322,7 +322,7 @@ public class EffectHandler
 	//Loop end
 		
 	}
-	private void discardPerEmptySupply(Player player, Board board) {
+	private void discardPerEmptySupply(Player player, Board board) throws InterruptedException {
 		int count =0;
 		for (String cardName : board.getBoardNamesArray())
 		{
@@ -332,59 +332,125 @@ public class EffectHandler
 			}
 				
 		}
-		Log.log(player+ " needs to discard "+count+ " cards.");
-		//NETWORK
-		//Ask player to discard "count" cards
-		//Reponse
-		
-		for(int i =0;i<count;i++) {
-			//discard cards chosen
-		}
+	game.sendCardOption(player.getID(), "Choose "+count+" cards to discard", count, player.getHand(), false);
+	ArrayList<Integer> response = null; // Response here
+	ArrayList<Card> toDiscard = new ArrayList<Card>();
+	ArrayList<Card> tempHand = player.getHand();
+	for(int i: response) {
+		toDiscard.add(tempHand.get(i));
+	}
+	for(Card c: toDiscard) {
+		tempHand.remove(c);
+	}
+	player.setHand(tempHand);
+	//Hand setting happens at the endof the effect trigger
 		
 	}
-	private void mayTrashCopperGain2(Player player,Board board) {
+	private void mayTrashCopperGain2(Player player,Board board) throws InterruptedException {
 		for(Card copper: player.getHand()) {
 			if(copper.getName().equals("Copper")) {
-				//Only network if player has copper
-				//NETWORK 
-				//Ask if player wants to trash if yes
-				 ArrayList<Card> tempHand = player.getHand();
-				tempHand.remove(copper);
-				board.trashCard(copper);
-				player.setHand(tempHand);
-				break;
 				
+				ArrayList<Card> copperList = new ArrayList<Card>();
+				copperList.add(copper);
+				game.sendCardOption(player.getID(), "Trash copper to gain card costing 2 more?(You can cancel if you do not want any of the available cards)", 1, copperList, true);
+				ArrayList<Integer> response= null;
+				if(response.get(0)==-1){
+					break;
+				}else {
+					ArrayList<Card> choice = new ArrayList<Card>();
+				for(String s:board.getBoardNamesList()) {
+					Card c = board.canGain(s);
+					if(c != null) {
+						if(c.getCost()<=copper.getCost()+2) {
+						choice.add(c);
+						}
+					}
+				}
+				if(choice.size()==0) {
+					game.sendMessage("No cards meeting requirements available", player.getID());
+					break;
+				}
+				else {
+					game.sendCardOption(player.getID(), "Select the card you would like to gain", 1, choice, false);
+					response=null;
+					//We already checked that atleast one copy is available in the deck
+					player.discardCard(board.canGain(choice.get(response.get(0)).getName()));
+					board.cardRemove(choice.get(response.get(0)).getName());
+					
+					ArrayList<Card> tempHand = player.getHand();
+					tempHand.remove(copper);
+					board.trashCard(copper);
+					player.setHand(tempHand);
+					game.sendPlayerHand(player.getID(), player.getID());
+					
+					break;
+				}
+				
+				}
 			}
 		}
 		//Tell player: You don't have copper
 	}
-	private void draw2OthersCurse(Player player, Player[] players) {
+	private void draw2OthersCurse(Player player, Player[] players,Board board) throws InterruptedException {
 		player.drawCard(2);
 		for(Player other: players) {
 			if(other.equals(player)) {
 				continue;
 			}
-			//NETWORK
-			//Gain curse for everyone else
+			game.sendMessage("Gained a Curse from "+player.getName()+"'s card", other.getID());
+			Card curse = board.canGain("Curse");
+			if(curse != null){
+				other.discardCard(curse);
+				board.cardRemove("Curse");
+			}
+			
 		}
 		
 		
 	}
-	private void draw1Action1Look2(Player player) {
+	private void draw1Action1Look2(Player player) throws InterruptedException { //This method is bound to have errors, remember this for testing
 		 LinkedBlockingDeque<Card> tempDeck = player.getDeck();
+		 ArrayList<Card> choice = new ArrayList<Card>();
 		player.drawCard(1);
 		player.addActions(1);
 		Card card1 = tempDeck.pollFirst();
 		Card card2 = tempDeck.pollFirst();
-		//Ask what cards to discard
-		//Ask what cards to trash
+		choice.add(card1);
+		choice.add(card2);
 		
-		//Discard Routine based on input from NETWORK
-		//Trash Routine based on input from NETWORK
+		game.sendCardOption(player.getID(), "Select the cards you would like to discard if any(In order)", 2, choice, true);
 		
-		//Place remaining cards back on top of the deck in chosen order
-		//player.setDeck();
-	}
+		ArrayList<Integer> response = null; // response here
+		
+		List<Card> choice2 = choice;
+		if(response.get(0)!=-1) {
+			for(int i: response ) {
+				player.discardCard(choice.get(i));
+				choice2.remove(choice.get(i));
+				
+			}
+		}
+		if (response.size()!=2) {
+			game.sendCardOption(player.getID(), "Select the cards you would like to trash if any(In order)", response.size(), choice2, true);
+			ArrayList<Integer> response2 = null; //response here
+			List<Card> choice3 = choice2;
+			if(response2.get(0)!=-1) {
+				for(int i: response2 ) {
+				player.discardCard(choice2.get(i));
+				choice3.remove(choice2.get(i));
+					}
+			}
+			if(response2.size()!=2) {
+			game.sendCardOption(player.getID(), "Select the order you would like to put the remaining cards back in", response2.size(), choice3, false);
+			ArrayList<Integer> response3 = null; //response here		
+				for(int i: response3) {
+							tempDeck.addFirst(choice3.get(i));
+				}
+			}
+		}
+		
+		player.setDeck(tempDeck);
+	}	
 	private void draw1Action1Buy1Tempmoney(Player player) {
 		player.drawCard(1);
 		player.addActions(1);
@@ -402,38 +468,54 @@ public class EffectHandler
 		player.addMoney(2);
 		
 	}
-	private void draw4Buy1OthersDraw(Player player, Player[] players) {
+	private void draw4Buy1OthersDraw(Player player, Player[] players) throws InterruptedException {
 		player.drawCard(4);
 		player.addBuys(1);
 		//NETWORK 
 		//Allow all others to draw one card
+		
 		for(Player other: players) {
 			if(other.equals(player)) {
 				continue;
 			}
-			//Do some tuple magic here
+			game.sendMessage("Drawing one card from the effect of "+player.getName()+"'s card", other.getID());
+			other.drawCard(1);
+			game.sendPlayerHand(other.getID(), other.getID());
 		}
+		
 		
 	}
 	private void playActionFromHandtwice(Player player,Board board,Player[] players) throws InterruptedException {
-		//NETWORK
-		//Select card to be played twice or if none 
-		boolean placeholder=false;
-		if(placeholder) {
-			
+		
+		ArrayList<Card> actionInHand = new ArrayList<Card>();
+		for(Card c : player.getHand()) {
+			for(String s : c.getDisplayTypes()) {
+				if (s.equals("Action")){
+					actionInHand.add(c);
+				}
+			}
+		}
+		if(actionInHand.size()==0) {
+			game.sendMessage("No action card found in hand", player.getID());
 		}
 		else {
-		//If wants to play action w/ double battlecry
-			
+		game.sendCardOption(player.getID(), "Select an action to be played twice", 1, actionInHand, true);
+		}
 		
-		int selected =0; //Response form networking goes here.
-		Card cardSelected = player.select(player.getHand(), selected);
+		
+		int selected =-1; //Response form networking goes here.
+		if(selected == -1) {
+			//Maybe tell the player that no card has been played?
+		}
+		else {
+		Card cardSelected = player.getHand().get(selected);
 		//Do the twice
 			for(int o =0;o<2;o++) {
 				for(int i:cardSelected.getEffectCode()) {
 				triggerEffect(i,player, cardSelected, board, players);					
 				}
 			}
+			player.putIntoPlay(cardSelected);
 		}
 	}
 	private void discardNDrawN(Player player) throws InterruptedException
@@ -450,7 +532,6 @@ public class EffectHandler
 		else
 		{
 			game.sendCardOption(player.getID(), "Discard as many cards as you would like, then draw the same amount", player.getHandSize(), player.getHand(), true);
-			//Reponse contains cards to be discarded
 			ArrayList<Integer> response = new ArrayList<Integer>();
 			ArrayList<Card> responseToCard = new ArrayList<Card>();
 			ArrayList<Card> tempHand =player.getHand();
@@ -468,7 +549,7 @@ public class EffectHandler
 				allCards+=" "+s+" ";
 			}
 			game.sendMessage("You have drawn: "+allCards, player.getID());
-			//condition here
+			
 
 		}
 	}
@@ -553,7 +634,6 @@ public class EffectHandler
 	private void silverOnDeckRevealVC(Player player,Board board, Player[] players)
 	{
 			board.canGain("Silver");
-			
 	}
 	private void get2TempOthersDiscard(Player player, Player[] players)
 	{
