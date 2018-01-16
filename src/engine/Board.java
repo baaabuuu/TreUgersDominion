@@ -2,6 +2,7 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 import org.jspace.Tuple;
 
@@ -194,6 +195,17 @@ public class Board
 	public int getTrashSize()
 	{
 		return trash.size();
+	}
+	
+	/**
+	 * Returns the board as a Stream.
+	 * Object[n][0] = copies left
+	 * Object[n][1] = Card
+	 * @return
+	 */
+	public Stream<Object[]> getBoard()
+	{
+		return board.values().stream();
 	}
 
 }

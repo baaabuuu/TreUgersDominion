@@ -22,8 +22,8 @@ import objects.TurnValues;
  * The game - Handles actual game knowledge - is starting through StartGame
  * @author s164166
  */
-public class Game {
-
+public class Game
+{
 	private Player[] players;
 	private Player currPlayer;
 	private Board board;

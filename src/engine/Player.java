@@ -58,7 +58,10 @@ public class Player {
 			if (deck.isEmpty())
 			{
 				if (discard.isEmpty())
+				{
+					draw[i] = null;
 					break;
+				}
 				reshuffleDeck();
 			}
 			Card drawn = deck.poll();
@@ -188,11 +191,13 @@ public class Player {
 		{
 			Card card = getHand().get(index);
 			List<String> types = Arrays.asList(card.getDisplayTypes());
+			Log.important("contains actions: " + types.contains("Action") + " phase is " + phase
+					+ " action playable: " + canPlayAction());
 			if (types.contains("Action") && phase == 0 && canPlayAction())
 			{
 				actions--;
 				removeFromHand(card);
-				discardCard(card);
+				putIntoPlay(card);
 				Log.log(getName() + " played the action card " + card.getName());
 				return true;
 			}

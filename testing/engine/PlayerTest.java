@@ -250,20 +250,6 @@ public class PlayerTest
 	}
 	
 	@Test
-	public void playCardWrongType()
-	{
-		MockitoAnnotations.initMocks(this);
-		Card treasureMock = mock(Card.class);
-	    String[] bc = {"Treasure"};                                    
-		when(treasureMock.getDisplayTypes()).thenReturn(bc);
-		Player player = new Player(0);
-		player.addActions(1);
-		player.playCard(treasureMock, 0);
-
-		assertEquals("Action size = 1", 1, player.getActions());
-	}
-	
-	@Test
 	public void playCardAction()
 	{
 		MockitoAnnotations.initMocks(this);
@@ -306,6 +292,80 @@ public class PlayerTest
 	}
 	
 	@Test
+	public void playActionCardNoActionIndex()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
+		Player player = new Player(0);
+		boolean result = player.playCard(0, 0);
+		assertFalse("Card wasnt played: ", result);
+		assertEquals("Action size = 0", 0, player.getActions());
+	}
+	
+	@Test
+	public void playCardWrongPhaseIndex()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
+		Player player = new Player(0);
+		player.addActions(1);
+		boolean result = player.playCard(0, 1);
+		assertFalse("Card wasnt played: ", result);
+		assertEquals("Action size = 1", 1, player.getActions());
+	}
+	
+	@Test
+	public void playCardActionIndex()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card actionMock = mock(Card.class);
+	    String[] bc = {"Action"};
+	    when(actionMock.getDisplayTypes()).thenReturn(bc);
+		Player player = new Player(0);
+		player.addActions(1);
+		assertEquals("Action size = 1", 1, player.getActions());
+		player.getHand().add(actionMock);
+		player.playCard(0, 0);
+		assertEquals("Action size = 0", 0, player.getActions());
+	}
+	
+	@Test
+	public void playTreasureWrongPhaseIndex()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card treasureMock = mock(Card.class);
+	    String[] bc = {"Treasure"};                                    
+		when(treasureMock.getDisplayTypes()).thenReturn(bc);
+		when(treasureMock.getMoney()).thenReturn(1);
+		
+		Player player = new Player(0);
+		player.getHand().add(treasureMock);
+
+		assertEquals("Money = 0", 0, player.getMoney());
+		player.playCard(0, 0);
+		assertEquals("Money = 0", 0, player.getMoney());
+	}
+	
+	@Test
+	public void playTreasureIndex()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card treasureMock = mock(Card.class);
+	    String[] bc = {"Treasure"};                                    
+		when(treasureMock.getDisplayTypes()).thenReturn(bc);
+		when(treasureMock.getMoney()).thenReturn(1);
+		Player player = new Player(0);
+		assertEquals("Money = 0", 0, player.getMoney());
+		player.getHand().add(treasureMock);
+		player.playCard(0, 1);
+		assertEquals("Money = 1", 1, player.getMoney());
+	}
+	
+	@Test
 	public void getFirstIndexOf()
 	{
 		MockitoAnnotations.initMocks(this);
@@ -316,6 +376,7 @@ public class PlayerTest
 		int i = player.getFirstIndexOf("Dummy");
 		assertEquals("i is equal to 0", i, 0);
 	}
+	
 	@Test
 	public void getFirstIndexNonExistant()
 	{
@@ -327,5 +388,6 @@ public class PlayerTest
 		int i = player.getFirstIndexOf("nonexistant");
 		assertEquals("i is equal to -1", i, -1);
 	}
+
 
 }
