@@ -593,35 +593,24 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 
 		}
 	}
-	private void browseDiscard1OnTop(Player player)
+	private void browseDiscard1OnTop(Player player) throws InterruptedException
 	{
 		if(player.getDiscardSize() == 0)
 		{
-			//Display invalid action
+			game.sendMessage("Your discard pile is empty", player.getID());
 		}
-		else
-		{
-			LinkedBlockingDeque<Card> discardTemp= player.getDiscard();
-			for (Card card: discardTemp)
-			{
-				//UI show card
+		else {
+		
+		ArrayList<Card> choice=	new ArrayList<Card>(player.getDiscard());
+		game.sendCardOption(player.getID(), "Select a card to put on top of your deck(if any)", 1, choice, true);
+		ArrayList<Integer> response = null;
+		Card selection =choice.get(response.get(0));
+		choice.remove(selection);
+		player.addCardDecktop(selection);
+		player.setDiscard(new LinkedBlockingDeque<Card>(choice));
 			}
-			int select = 0; //Error suppression, does not actually need to be initialized
-			//NETWORK either get number or "no"
-			//either do nothing or add
-			//Create temp discard pile.
-			LinkedBlockingDeque<Card> tempDiscard = player.getDiscard();
-			//Convert playerinput to Card object
-			Card selectedCard= player.select(new ArrayList<Card>(tempDiscard), select);
-			//Remove selected card fom temp discard
-			tempDiscard.remove(selectedCard);
-			//Set players discardpile to the temp pile
-			player.setDiscard(tempDiscard);
-			//Finally add the selected card on top of the deck
-			player.addCardDecktop(selectedCard);
 		}
-	}
-	private void discardTopPlayAction(Player player)
+	private void discardTopPlayAction(Player player) throws InterruptedException
 	{
 		//Assume card drawn is not action card
 		boolean discard = true;
@@ -634,16 +623,25 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		{
 			if(type.equals("Action"))
 			{
+				ArrayList<Card> tempChoice = new ArrayList<Card>();
+				tempChoice.add(topCard);
+				game.sendCardOption(player.getID(), "You drew a "+topCard.getName()+" do you wish to play it?", 1,tempChoice , true);
 				//If action card, play it
+				ArrayList<Integer>response = null;
+				
+				if(response.get(0) != -1) {
 				player.playCard(topCard, 0);
 				//Don't discard it
 				discard = false;
+				}
+				
 				break;
 			}
 		}
 		if(discard)
 		{
 			//Discard if not action card
+			player.removeFromHand(topCard);
 			player.discardCard(topCard);
 		}
 	}
@@ -653,41 +651,73 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		player.addActions(2);
 	}
 
-	private void gain1MaxCost4(Player player, Board board)
+	private void gain1MaxCost4(Player player, Board board) throws InterruptedException
 	{
-		
-		//NETWORK
-		//Ask players what card to gain
-		String cardName = "Placeholder";
-		
-		Card gainedCard = board.canGain(cardName);
-		if(gainedCard.getCost() >4)
-		{
-			//Figure out how we do repetition with NETWORKING
+		ArrayList<Card> choice = getChoice(c-> c.getCost()<=4,board);
+		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
+		ArrayList<Integer> response= null;
+		Card selection = choice.get(response.get(0));
+		board.cardRemove(selection.getName());
+		player.discardCard(selection);
+	
+	}
+	private void silverOnDeckRevealVC(Player player,Board board, Player[] players) throws InterruptedException
+	{
+		Card silver =board.canGain("Silver");
+		if (silver != null) {
+			player.addCardDecktop(silver);
 		}
-		else 
-		{
-			player.discardCard(gainedCard);
-			board.cardRemove(cardName);
+		for(Player other: players) {
+			if(other.equals(player)) {
+				continue;
+				}
+			//Find out if has any victory cards in hand
+			ArrayList<Card> choice =(ArrayList<Card>) other.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) ).collect(Collectors.toList());
+			if (choice.size()==0) {
+				String handToString ="";
+				for(Card c :other.getHand()) {
+					handToString+=" "+c.getName();
+				}
+				game.sendMessageAll(other.getName()+" reveals a hand with NO vicotry cards: "+handToString);
+			}
+			else if(choice.size()==1) {
+				Card tempCard = choice.get(0);
+				game.sendMessageAll(other.getName()+" reveals a "+tempCard.getName());
+				other.removeFromHand(tempCard);
+				other.addCardDecktop(tempCard);
+			}
+			else {
+				//ask player what card to reveal
+				game.sendCardOption(other.getID(), "Select a victory card to reveal", 1, choice, false);
+				ArrayList<Integer> response =null;
+				
+				Card tempCard = choice.get(response.get(0));
+				game.sendMessageAll(other.getName()+" reveals a "+tempCard.getName());
+				other.removeFromHand(tempCard);
+				other.addCardDecktop(tempCard);
+			}
+		
 		}
 	}
-	private void silverOnDeckRevealVC(Player player,Board board, Player[] players)
-	{
-			board.canGain("Silver");
-	}
-	private void get2TempOthersDiscard(Player player, Player[] players)
+	private void get2TempOthersDiscard(Player player, Player[] players) throws InterruptedException
 	{
 		player.addMoney(2);
 		for(Player other: players) {
 			//Player should not discard
 			if(other.equals(player))
 				continue;
-
-			else {
-				//NETWORK
-				//Ask other players what cards they want to discard
+			ArrayList<Card> tempHand = other.getHand();
+			if(tempHand.size()<= 3) {
+				continue;
+			}else {
+			game.sendCardOption(other.getID(), "Select 3 cards to keep, the rest is discarded", 3, tempHand, false);
+			ArrayList<Integer> response = null;
+			ArrayList<Card> newHand = new ArrayList<Card>();
+			for(int i: response) {
+				newHand.add(tempHand.get(i));
 			}
-
+			other.setHand(newHand);
+			}
 		}
 	}
 
