@@ -319,10 +319,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblRemainingWordsChat.setText((255 -docChat.getLength()) + " characters remaining");
 		}
     }
-	public void updBuyList(Card[] cards, int[] amounts){
+	public void updBuyList(Card[] cards, Integer[] integers){
 		listModel.clear();
 		for(int i = 0; i < cards.length; i++) {
-			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + amounts[i] + "  ");
+			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + integers[i] + "  ");
 		}
 	}
 	private String eventAreaInfo;

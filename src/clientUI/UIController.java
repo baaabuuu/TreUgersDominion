@@ -62,7 +62,7 @@ public class UIController implements client.UIControllerInter {
 					CardReader cards = new CardReader();
 					Card[] card = {cards.getBase().get(2),cards.getBase().get(6),cards.getBase().get(8),cards.getBase().get(14)};
 					newBuyArea(card);
-					int[] a = {1,2,3,4};
+					Integer[] a = {1,2,3,4};
 					gamePanel.updBuyList(buyArea,a);
 					
 					
