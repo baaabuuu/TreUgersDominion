@@ -17,8 +17,8 @@ public class ServerPanel extends JPanel implements ActionListener{
 	 */
 	private static final long serialVersionUID = -7310174635182053798L;
 	// JPanel contains following items:
-	private JTextField serverField, socketField;
-	private JLabel lblServer, lblSocket, lblError;
+	private JTextField nameField,serverField, socketField;
+	private JLabel lblUsername, lblServer, lblSocket, lblError;
 	private JButton btnConnect, btnExit;
 	
 	private int port;
@@ -76,7 +76,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		
 		lblError = new JLabel(" ");
 		lblError.setForeground(Color.RED);
-		lblError.setBounds(540, 275, 200, 14);
+		lblError.setBounds(540, 244, 257, 14);
 		add(lblError);
 		
 		// Text fields.
@@ -101,24 +101,41 @@ public class ServerPanel extends JPanel implements ActionListener{
             }
         });
 		add(socketField);
+		
+		nameField = new JTextField(20);
+		nameField.setBounds(610, 269, 130, 20);
+		add(nameField);
+		
+		lblUsername = new JLabel("Name");
+		lblUsername.setForeground(Color.WHITE);
+		lblUsername.setBounds(540, 269, 65, 14);
+		add(lblUsername);
 	}
 	// Required to be there by ActionListener implement.
 	public void actionPerformed(ActionEvent e) {}
 	private void attemptConnection(){
-		if(serverField.getText().matches("[0-9.]+") && serverField.getText().length() < 17
-				&& socketField.getText().matches("[0-9]+") && socketField.getText().length() == 4){
-			
-    		host = serverField.getText();
-    		port = Integer.parseInt(socketField.getText());
-    		
-    		controller.attemptConnection("tcp://" + host + ":" + port + "/board?conn");
-    	// Error for wrong characters.
-    	}else if(serverField.getText().length() < 17 && socketField.getText().length() == 4){
-    		lblError.setText("Numbers and dots only.");
-    	// Error for too many characters.
-    	}else{
-    		lblError.setText("Fields are wrong length.");
-    	}
+		if(!nameField.getText().matches("[A-Za-z]+")) {
+			lblError.setText("Name must use alphabetic characters.");
+		}else if(nameField.getText().length() > 10){
+			lblError.setText("Name must be less than 11 characters.");
+		}else if(nameField.getText().length() < 3){
+			lblError.setText("Name must be at least 3 characters.");
+		}else {
+			if(serverField.getText().matches("[0-9.]+") && serverField.getText().length() < 17
+					&& socketField.getText().matches("[0-9]+") && socketField.getText().length() == 4){
+				
+	    		host = serverField.getText();
+	    		port = Integer.parseInt(socketField.getText());
+	    		
+	    		controller.attemptConnection("tcp://" + host + ":" + port + "/board?conn", nameField.getText());
+	    	// Error for wrong characters.
+	    	}else if(serverField.getText().length() < 17 && socketField.getText().length() == 4){
+	    		lblError.setText("Numbers and dots only.");
+	    	// Error for too many characters.
+	    	}else{
+	    		lblError.setText("Fields are wrong length.");
+	    	}
+		}
 	}
 	public void setError(String error) {
 		lblError.setText(error);

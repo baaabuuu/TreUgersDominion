@@ -17,22 +17,17 @@ import objects.TurnValues;
 import objects.*;
 
 public class ClientActions {
-	private String playerName;
+	private int playerID;
 	private Card[] buyArea;
-	private String[] names;
 	private List<Card> playerHand;
 	
 	Space userSpace;
 	private UIController userInterface;
 	
-	public ClientActions(String playerName, Space userSpace, UIController userInterface){
-		this.playerName = playerName;
+	public ClientActions(int playerID, Space userSpace, UIController userInterface){
+		this.playerID = playerID;
 		this.userSpace = userSpace;
 		this.userInterface = userInterface;
-	}
-	
-	public void displayBoardState(BoardState input) {
-		
 	}
 	/**
 	 * Runs the player turn.
@@ -57,8 +52,8 @@ public class ClientActions {
 		userInterface.eventInput("CLEANUP PHASE");
 		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
-		clientSpace.get(new ActualField(playerName), new ActualField(ServerCommands.setPlayerHand));
-		Object[] objs = clientSpace.get(new ActualField(playerName), 
+		clientSpace.get(new ActualField(playerID), new ActualField(ServerCommands.setPlayerHand));
+		Object[] objs = clientSpace.get(new ActualField(playerID), 
 				new FormalField(PlayerHand.class));
 		
 		setPlayerHand((PlayerHand)objs[1]);
@@ -78,27 +73,27 @@ public class ClientActions {
 		boolean lock = true;
 		while(lock) {
 			//Wait for a server command
-			objs = clientSpace.get(new ActualField(playerName), 
+			objs = clientSpace.get(new ActualField(playerID), 
 					new FormalField(ServerCommands.class));
 			//Reacy dependent on which command was received.
 			switch ((ServerCommands)objs[1]) {
 				// Display the received message.
 				case message: Log.log("Recieved message command");
-						input = clientSpace.get(new ActualField(playerName), 
+						input = clientSpace.get(new ActualField(playerID), 
 							new FormalField(String.class));
 						userInterface.eventInput((String)input[1]);
 						break;
 				case invalid: Log.log("Recieved invalid command");
-						input = clientSpace.get(new ActualField(playerName), 
+						input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(String.class));
 						userInterface.eventInput((String)input[1]);
 						lock = false;
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
-						input = clientSpace.get(new ActualField(playerName), 
+						input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(Object[].class));
 						
-						displayBoardState((BoardState)(((Object[])input[1])[0]));
+						userInterface.newBoardState((BoardState)(((Object[])input[1])[0]));
 						setPlayerHand((PlayerHand)(((Object[])input[1])[1]));
 						setTurnValues((TurnValues)(((Object[])input[1])[2]));
 						
@@ -107,7 +102,7 @@ public class ClientActions {
 						lock = false;
 						break;
 				case playerSelect: Log.log("Recieved playerSelect command");
-						input = clientSpace.get(new ActualField(playerName), 
+						input = clientSpace.get(new ActualField(playerID), 
 							new FormalField(CardOption.class));
 						playerSelect((CardOption)input[1],hostSpace);
 						break;
@@ -139,11 +134,11 @@ public class ClientActions {
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
 					userInterface.eventInput("Action phase has ended.");
-					hostSpace.put(playerName, ClientCommands.changePhase);
+					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
 				}else {
-					hostSpace.put(playerName, ClientCommands.playCard);
-					hostSpace.put(playerName, value);
+					hostSpace.put(playerID, ClientCommands.playCard);
+					hostSpace.put(playerID, value);
 					resolvePlay(clientSpace, hostSpace);
 				}
 			}catch(NumberFormatException e) {
@@ -188,8 +183,8 @@ public class ClientActions {
 								userInterface.eventInput("");
 								lock2 = false;
 							}else {
-								hostSpace.put(playerName, ClientCommands.playCard);
-								hostSpace.put(playerName, value);
+								hostSpace.put(playerID, ClientCommands.playCard);
+								hostSpace.put(playerID, value);
 								resolvePlay(clientSpace, hostSpace);
 							}
 						}catch(NumberFormatException e) {
@@ -212,8 +207,8 @@ public class ClientActions {
 								userInterface.eventInput("");
 								lock2 = false;
 							}else {
-								hostSpace.put(playerName, ClientCommands.buyCard);
-								hostSpace.put(playerName, buyArea[value-1].getName());
+								hostSpace.put(playerID, ClientCommands.buyCard);
+								hostSpace.put(playerID, buyArea[value-1].getName());
 								resolvePlay(clientSpace, hostSpace);
 							}
 						}catch(NumberFormatException e) {
@@ -223,7 +218,7 @@ public class ClientActions {
 					break;
 				case "0":
 					userInterface.eventInput("Buy phase has ended.");
-					hostSpace.put(playerName, ClientCommands.changePhase);
+					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
 				default: userInterface.eventInput("Not a valid input!");
 					break;
@@ -283,19 +278,19 @@ public class ClientActions {
 				}
 			}
 		}
-		hostSpace.put(playerName, ClientCommands.selectCard);
-		hostSpace.put(playerName, selected);
+		hostSpace.put(playerID, ClientCommands.selectCard);
+		hostSpace.put(playerID, selected);
 	}
 	public void setNames(String[] names) {
-		this.names = names;
+		userInterface.newPlayers(names);
 	}
 	public void setPlayerHand(PlayerHand input) throws InterruptedException {
 		playerHand = input.getCards();
-		userInterface.eventInput("Your new hand contains: ");
 		userInterface.newPlayerHand(input);
 	}
 	public void setBuyArea(Card[] input) {
 		this.buyArea = input;
+		userInterface.newBuyArea(input);
 	}
 	public void displayLaunge(Launge lobbies) throws InterruptedException {
 		userInterface.eventInput("Server sent a list of lobbies: ");

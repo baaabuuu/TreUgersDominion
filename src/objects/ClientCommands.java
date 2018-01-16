@@ -7,5 +7,7 @@ public enum ClientCommands {
 	selectCard,
 	enterLobby,
 	createLobby,
-	getLobbies
+	getLobbies,
+	newPlayer,
+	playerName
 }

@@ -8,12 +8,12 @@ import log.Log;
 
 public class Receiver implements Runnable {
 	private Space clientSpace;
-	private String userName;
+	private int playerID;
 	private Space hostSpace;
 	
-	public Receiver(Space clientSpace, String userName, Space hostSpace) {
+	public Receiver(Space clientSpace, int playerID, Space hostSpace) {
 		this.clientSpace = clientSpace;
-		this.userName = userName;
+		this.playerID = playerID;
 		this.hostSpace = hostSpace;
 	}
 
@@ -22,12 +22,11 @@ public class Receiver implements Runnable {
 		
 		while(true) {
 			try {
-				Object[] input = hostSpace.get(new ActualField(userName), new FormalField(Object.class));
+				Object[] input = hostSpace.get(new ActualField(playerID), new FormalField(Object.class));
 				clientSpace.put(input);
-				Log.log("Recieved package from host marked for: " + userName);
+				Log.log("Recieved package from host marked for: " + playerID);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.important("InterruptedException");
 			}
 		}
 	}

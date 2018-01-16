@@ -4,22 +4,30 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
+import cards.Card;
 import clientUI.UIController;
 import objects.*;
 
 public class Consumer implements Runnable {
 	private Space clientSpace;
 	private Space hostSpace;
-	private String name;
+	private int playerID;
 	private ClientActions action;
+	private UIController userInterface;
 	
-	public Consumer(Space space, String name, Space hostSpace, Space userSpace, UIController userInterface) {
+	/**
+	 * Consumes relevant data from the servers space and places it into the clients space.
+	 */
+	public Consumer(Space space, int playerID, Space hostSpace, Space userSpace, UIController userInterface) {
 		this.clientSpace = space;
-		this.name = name;
+		this.playerID = playerID;
 		this.hostSpace = hostSpace;
-		this.action = new ClientActions(name, userSpace, userInterface);
+		this.userInterface = userInterface;
+		this.action = new ClientActions(playerID, userSpace, userInterface);
 	}
-	
+	/**
+	 * Runs the consumer.  
+	 */
 	@Override
 	public void run() {
 		
@@ -27,35 +35,39 @@ public class Consumer implements Runnable {
 		Object[] input;
 		while(true) {
 			try {
-				
-				objs = clientSpace.get(new ActualField(name), 
+				//Consumes all tuples that contains a playerID and a value from the ServerCommands class.
+				objs = clientSpace.get(new ActualField(playerID), 
 						new FormalField(ServerCommands.class));
 				
 				
 				switch ((ServerCommands)objs[1]) {
-					case setBoardState: input = clientSpace.get(new ActualField(name), 
+					case setBoardState: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(BoardState.class));
-							action.displayBoardState((BoardState) input[1]);
+							userInterface.newBoardState((BoardState) input[1]);
 							break;
 					case takeTurn: action.takeTurn(clientSpace, hostSpace);
 							break;
-					case playerSelect: input = clientSpace.get(new ActualField(name), 
+					case playerSelect: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(CardOption.class));
 							action.playerSelect((CardOption)input[1], hostSpace);
 							break;
-					case setPlayerHand: input = clientSpace.get(new ActualField(name), 
+					case setPlayerHand: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(PlayerHand.class));
 							action.setPlayerHand((PlayerHand)input[1]);
 							break;
-					case message: input = clientSpace.get(new ActualField(name), 
+					case message: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(String.class));
 							action.serverMessage((String)input[1]);
 							break;
-					case setNames: input = clientSpace.get(new ActualField(name), 
+					case setNames: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(String[].class));
 							action.setNames((String[])input[1]);
 							break;
-					case setLaunge: input = clientSpace.get(new ActualField(name), 
+					case setBuyArea: input = clientSpace.get(new ActualField(playerID), 
+								new FormalField(Card[].class));
+							action.setBuyArea((Card[])input[1]);
+							break;
+					case setLaunge: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(Launge.class));
 							action.displayLaunge((Launge)input[1]);
 							break;

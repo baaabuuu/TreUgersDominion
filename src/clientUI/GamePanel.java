@@ -49,13 +49,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public JLabel lblP1, lblP2, lblP3, lblP4;
 	public JLabel lblUsername, lblP1VP, lblP2VP, lblP3VP, lblP4VP;
 	public JLabel lblActions, lblBuys, lblMoney, lblList;
+	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand;
 	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea;
 	public JList<String> itemList;
 	public DefaultListModel<String> listModel;
 	private DefaultStyledDocument docAction, docChat;
 	
 	private UIController controller;
-
+	
+	
 	/**
 	 * Create the panel.
 	 * @param mainFrame 
@@ -120,7 +122,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			chatAreaScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			chatAreaScroll.setOpaque(false);
 			chatAreaScroll.getViewport().setOpaque(false);
-			chatAreaScroll.setBounds(800, 51, 465, 440);
+			chatAreaScroll.setBounds(880, 51, 385, 440);
 			chatAreaScroll.setBackground(new Color(219, 142, 27));
 			sbChat = chatAreaScroll.getVerticalScrollBar();
 	        sbChat.setUI(new MyScrollbarUI());
@@ -139,7 +141,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			itemScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			itemScroll.setOpaque(false);
 			itemScroll.getViewport().setOpaque(false);
-			itemScroll.setBounds(620, 221, 170, 150);
+			itemScroll.setBounds(620, 221, 250, 150);
 			itemScroll.setBackground(new Color(219, 142, 27));
 			sbItem = itemScroll.getVerticalScrollBar();
 			sbItem.setUI(new MyScrollbarUI());
@@ -161,7 +163,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			listScroll.setOpaque(false);
 			listScroll.getViewport().setOpaque(false);
-			listScroll.setBounds(620, 395, 170, 180);
+			listScroll.setBounds(620, 395, 250, 180);
 			listScroll.setBackground(new Color(219, 142, 27));
 			sbList = listScroll.getVerticalScrollBar();
 			sbList.setUI(new MyScrollbarUI());
@@ -186,7 +188,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			chatTypArea.setWrapStyleWord(true);
 			chatTypArea.setToolTipText("Type me!");
 			chatTypArea.addKeyListener(this);
-			chatTypArea.setBounds(800, 500, 365, 75);
+			chatTypArea.setBounds(880, 500, 285, 75);
 			chatTypArea.setDocument(docChat);
 			add(chatTypArea);
 			
@@ -223,22 +225,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			// Middle Area Labels.
 			lblP1 = new JLabel("P1: ");
 			lblP1.setForeground(Color.white);
-			lblP1.setBounds(620, 76, 120, 14);
+			lblP1.setBounds(620, 76, 100, 14);
 			add(lblP1);
 			
 			lblP2 = new JLabel("P2: ");
 			lblP2.setForeground(Color.white);
-			lblP2.setBounds(620, 96, 120, 14);
+			lblP2.setBounds(620, 96, 100, 14);
 			add(lblP2);
 			
 			lblP3 = new JLabel("P3: ");
 			lblP3.setForeground(Color.white);
-			lblP3.setBounds(620, 116, 120, 14);
+			lblP3.setBounds(620, 116, 100, 14);
 			add(lblP3);
 			
 			lblP4 = new JLabel("P4: ");
 			lblP4.setForeground(Color.white);
-			lblP4.setBounds(620, 136, 120, 14);
+			lblP4.setBounds(620, 136, 100, 14);
 			add(lblP4);
 			
 			lblActions = new JLabel("Actions: ");
@@ -258,22 +260,22 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			
 			lblP1VP = new JLabel("VP: ");
 			lblP1VP.setForeground(Color.white);
-			lblP1VP.setBounds(750, 76, 45, 14);
+			lblP1VP.setBounds(825, 76, 45, 14);
 			add(lblP1VP);
 			
 			lblP2VP = new JLabel("VP: ");
 			lblP2VP.setForeground(Color.WHITE);
-			lblP2VP.setBounds(750, 96, 45, 14);
+			lblP2VP.setBounds(825, 96, 45, 14);
 			add(lblP2VP);
 			
 			lblP3VP = new JLabel("VP: ");
 			lblP3VP.setForeground(Color.WHITE);
-			lblP3VP.setBounds(750, 116, 45, 14);
+			lblP3VP.setBounds(825, 116, 45, 14);
 			add(lblP3VP);
 			
 			lblP4VP = new JLabel("VP: ");
 			lblP4VP.setForeground(Color.WHITE);
-			lblP4VP.setBounds(750, 136, 45, 14);
+			lblP4VP.setBounds(825, 136, 45, 14);
 			add(lblP4VP);
 			
 			lblList = new JLabel("Select card to get description.");
@@ -285,6 +287,26 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblUsername.setForeground(Color.WHITE);
 			lblUsername.setBounds(620, 56, 120, 14);
 			add(lblUsername);
+			
+			lblP1Hand = new JLabel("Card Count: ");
+			lblP1Hand.setForeground(Color.WHITE);
+			lblP1Hand.setBounds(730, 76, 85, 14);
+			add(lblP1Hand);
+			
+			lblP2Hand = new JLabel("Card Count: ");
+			lblP2Hand.setForeground(Color.WHITE);
+			lblP2Hand.setBounds(730, 96, 85, 14);
+			add(lblP2Hand);
+			
+			lblP3Hand = new JLabel("Card Count: ");
+			lblP3Hand.setForeground(Color.WHITE);
+			lblP3Hand.setBounds(730, 116, 85, 14);
+			add(lblP3Hand);
+			
+			lblP4Hand = new JLabel("Card Count: ");
+			lblP4Hand.setForeground(Color.WHITE);
+			lblP4Hand.setBounds(730, 136, 85, 14);
+			add(lblP4Hand);
 			
 			// Update remainingWords labels.
 			updateCount(1);
@@ -300,7 +322,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public void updBuyList(Card[] cards, int[] amounts){
 		listModel.clear();
 		for(int i = 0; i < cards.length; i++) {
-			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + amounts[i]);
+			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + amounts[i] + "  ");
 		}
 	}
 	private String eventAreaInfo;
@@ -323,6 +345,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public void keyTyped(KeyEvent e) {}
 	private String actionAreaTemp;
 	private String chatTypAreaTemp;
+	
 	public void keyPressed(KeyEvent e) {
 		//On ENTER pressed in actionArea, create temporary string without newline
 		//and update actionArea without newline.
@@ -340,8 +363,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		if(e.getSource() == actionArea && e.getKeyCode() == KeyEvent.VK_ENTER){
 			//Message must be more than 0 and less than 4 characters.
 			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
-				controller.eventOutput(actionAreaTemp);
 				actionArea.setEditable(false);
+				controller.eventOutput(actionAreaTemp);
+				
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatTypArea && e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -358,8 +382,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		if(e.getSource() == actionSend){
 			//Message must be more than 0 and less than 4 characters.
 			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
-				controller.eventOutput(actionAreaTemp);
 				actionArea.setEditable(false);
+				controller.eventOutput(actionAreaTemp);
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatSend){

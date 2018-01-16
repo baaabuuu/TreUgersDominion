@@ -12,7 +12,11 @@ import client.ClientController;
 import log.Log;
 import objects.BoardState;
 import objects.TurnValues;
-
+/**
+ * The UIController contains all functions that the client will
+ * communicate with. It implements UIControllerInter, which ensures
+ * this class contains all functions the client uses.
+ */
 public class UIController implements client.UIControllerInter {
 	private MainFrame mainFrame;
 	private GamePanel gamePanel;
@@ -23,8 +27,14 @@ public class UIController implements client.UIControllerInter {
 	
 	private Space userSpace;
 	private Card[] buyArea;
-	private String playerName;
 	
+	/**
+	 * The constructor of UIController.
+	 * @param int port
+	 * @param String host
+	 * @param ClientController client
+	 * @param Space userSpace
+	 */
 	public UIController(int port, String host, ClientController client, Space userSpace) {
 		this.client = client;
 		this.userSpace = userSpace;
@@ -48,13 +58,13 @@ public class UIController implements client.UIControllerInter {
 					// Add background pane to main.
 					mainFrame.setContentPane(gameBG);
 					
-					/*
+					
 					CardReader cards = new CardReader();
 					Card[] card = {cards.getBase().get(2),cards.getBase().get(6),cards.getBase().get(8),cards.getBase().get(14)};
 					newBuyArea(card);
 					int[] a = {1,2,3,4};
 					gamePanel.updBuyList(buyArea,a);
-					*/
+					
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,15 +72,31 @@ public class UIController implements client.UIControllerInter {
 			}
 		});
 	}
+	/**
+	 * Gets buyArea Card array.
+	 * @return Card[] buyArea
+	 */
 	public Card[] getBuyArea() {
 		return buyArea;
 	}
-	public void attemptConnection(String newUri){
+	/**
+	 * Client is prompted to make a new connection.
+	 * @param String newUri
+	 * @param String userName
+	 */
+	public void attemptConnection(String newUri, String userName){
+		setUsername(userName);
 		client.attemptConnection(newUri);
 	}
+	/**
+	 * Displays a connection error to the user.
+	 */
 	public void connectionError() {
 		serverPanel.setError("Host was not found.");
 	}
+	/**
+	 * Displays a connection error to the user, when.
+	 */
 	public void newConnectionError() {
 		gameBG.remove(gamePanel);
 		gameBG.add(serverPanel, BorderLayout.CENTER);
@@ -80,16 +106,18 @@ public class UIController implements client.UIControllerInter {
 		this.buyArea = buyArea;
 	}
 	public void newPlayers(String[] names){
-		if(names[0] != "") {
+		//Set text in relevant fields depending on player names.
+		//Check if the array contains a field before trying to access it.
+		if((0 >= 0) && (0 < names.length)) {
 			gamePanel.lblP1.setText("P1: " + names[0]);
 		}
-		if(names[1] != "") {
+		if((1 >= 0) && (1 < names.length)) {
 			gamePanel.lblP2.setText("P2: " + names[1]);
 		}
-		if(names[2] != "") {
+		if((2 >= 0) && (2 < names.length)) {
 			gamePanel.lblP3.setText("P3: " + names[2]);
 		}
-		if(names[3] != "") {
+		if((3 >= 0) && (3 < names.length)) {
 			gamePanel.lblP4.setText("P4: " + names[3]);
 		}
 	}
@@ -100,12 +128,20 @@ public class UIController implements client.UIControllerInter {
 	}
 	public void newBoardState(BoardState input){
 		
+		gamePanel.lblP1Hand.setText("Card Count: " + input.getHandCount()[0]);
+		gamePanel.lblP2Hand.setText("Card Count: " + input.getHandCount()[1]);
+		gamePanel.lblP3Hand.setText("Card Count: " + input.getHandCount()[2]);
+		gamePanel.lblP4Hand.setText("Card Count: " + input.getHandCount()[3]);
+		
 		gamePanel.updBuyList(buyArea,input.getShopArea());
 	}
 	public void newPlayerHand(List<Card> playerHand){
+		eventInput("Your new hand contains: ");
+		String output = "";
 		for(int i = 0; i < playerHand.size(); i++){
-			eventInput("Card " + (i+1) + ": " + playerHand.get(i).getName());
+			output += (i+1) + ". " + playerHand.get(i).getName() + " - ";
 		}
+		eventInput(output);
 	}
 	public void chatInput(){
 		//Implement chat
@@ -126,7 +162,7 @@ public class UIController implements client.UIControllerInter {
 			Log.important("InterruptedException");
 		}
 	}
-	public void setUserName(String name) {
-		this.playerName = name;
+	public void setUsername(String username) {
+		gamePanel.lblUsername.setText(username);
 	}
 }

@@ -3,16 +3,14 @@ package objects;
 public enum ServerCommands {
 	setBoardState,
 	takeTurn,
-	nonTurnAction,
 	playerSelect,
 	setPlayerHand,
+	message,
+	setNames,
 	setBuyArea,
 	setLaunge,
-	setLobby,
-	setNames,
-	message,
 	invalid,
-	gameStart,
-	gameEnd,
-	newConnection
+	newConnection,
+	serverKey,
+	playerID
 }
