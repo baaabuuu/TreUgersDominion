@@ -541,4 +541,9 @@ public class Player {
 				return i;
 		return -1;
 	}
+	
+	public ArrayList<Card> getAllCards()
+	{
+		return secretStack;
+	}
 }
