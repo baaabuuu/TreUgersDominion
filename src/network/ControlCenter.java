@@ -48,7 +48,7 @@ public class ControlCenter extends Thread {
 						safeSpace.put(name,(Card) secondInput[0]);
 				case playCard:
 				case selectCard:
-						secondInput = clientSpace.get(new FormalField(int.class));
+						secondInput = clientSpace.get(new FormalField(Integer.class));
 					
 						safeSpace.put(name, cmd);
 						safeSpace.put(name, (int) secondInput[0]);
