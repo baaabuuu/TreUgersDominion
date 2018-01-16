@@ -445,7 +445,7 @@ public class Game
 				sendDisconnect(turn);
 				return newTurn();
 			}
-			Thread.sleep(10);
+			Thread.sleep(1);
 		}
 		return false;
 	}
