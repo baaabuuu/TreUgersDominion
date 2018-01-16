@@ -304,5 +304,28 @@ public class PlayerTest
 		player.playCard(treasureMock, 1);
 		assertEquals("Money = 1", 1, player.getMoney());
 	}
+	
+	@Test
+	public void getFirstIndexOf()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card dummy = mock(Card.class);
+		when(dummy.getName()).thenReturn("Dummy");
+		Player player = new Player(0);
+		player.getHand().add(dummy);
+		int i = player.getFirstIndexOf("Dummy");
+		assertEquals("i is equal to 0", i, 0);
+	}
+	@Test
+	public void getFirstIndexNonExistant()
+	{
+		MockitoAnnotations.initMocks(this);
+		Card dummy = mock(Card.class);
+		when(dummy.getName()).thenReturn("Dummy");
+		Player player = new Player(0);
+		player.getHand().add(dummy);
+		int i = player.getFirstIndexOf("nonexistant");
+		assertEquals("i is equal to -1", i, -1);
+	}
 
 }

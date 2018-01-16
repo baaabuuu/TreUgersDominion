@@ -267,7 +267,7 @@ public class Player {
 	/**
 	 * Buy effects, used to run effects that do something instead of putting it ontop of the discard pile.
 	 * Note, none of these are used as non in the base game utilize such as an effect
-	 * However, the skeleton for it is here.
+	 * However, the skeleton for it is here and an example is given for a card
 	 * @param card
 	 */
 	private void buyEffects(Card card)
