@@ -13,6 +13,43 @@ public class EffectHandler
 		this.game=game;
 		
 	}
+	/**
+	 * Helper function to return list of available cards on the board costing N more than a played card
+	 */
+	private ArrayList<Card> getChoice(int n,int cost, Board board) {
+		
+		ArrayList<Card> choice = new ArrayList<Card>();
+		for(String s:board.getBoardNamesList()) {
+			Card c = board.canGain(s);
+			if(c != null) {
+				if(c.getCost()<=cost+n) {
+				
+				choice.add(c);
+				}
+			}
+		}
+		return choice;
+	}
+private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
+	 
+	/*
+		ArrayList<Card> choice = new ArrayList<Card>();
+		for(String s:board.getBoardNamesList()) {
+			Card c = board.canGain(s);
+			if(c != null) {
+				for(String dispType:c.getDisplayTypes()) {
+					if(type.equals(dispType)) {
+						if(c.getCost()<=cost+n) {
+				
+							choice.add(c);
+						}
+					}
+				}
+			}
+		}
+		*/
+		return choice;
+	}
 	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
 		boolean counter;
 		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
@@ -206,83 +243,69 @@ public class EffectHandler
 			//And discard the others
 		
 	}
-	private void gainPlus5(Player player, Board board) {
-		//NETWORK
-		//loop
-		//What card to gain
-		String cardName ="Placeholder";
-		Card gainedCard =board.canGain(cardName);
-		if(gainedCard != null && gainedCard.getCost()<=5) {
-		board.cardRemove(cardName);
-		}
-		else {
-			//Invalid card break networking loop
-		}
-	//loopend
-	//NETWORK select a card
-		int input =0; //Placeholder value. Should be player choice
-	
-		Card selected =player.select(player.getHand(), input);
-		player.removeFromHand(selected);
-		player.addCardDecktop(selected);
+	private void gainPlus5(Player player, Board board) throws InterruptedException {
+		ArrayList<Card> choice = getChoice(5,0,board);
+		
+		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, true);
+		response = null;
+		
 	}
-	private void mayTrashTreasure(Player player, Board board) {
-		//NETWORK
-		//Query: Want to trash?
-		//If yes, trash card from hand
-		//Check of card is valid
-		Card placeholder = new Card();
-		for(String type: placeholder.getDisplayTypes()) {
-			if(type.equals("Treasure")) {
-				board.trashCard(placeholder);
+	private void mayTrashTreasure(Player player, Board board) throws InterruptedException {
+		ArrayList<Card> choice = new ArrayList<Card>();
+		for(Card c : player.getHand()) {
+			for(String type: c.getDisplayTypes()) {
+				if(type.equals("Treasure")) {
+				choice.add(c);
 				break;
+				}
 			}
-			
 		}
-		
-		
-		//Query: What card to gain?
-		
-		//Some kind of loop here
-		
-		String placeholder2= "placeholder";
-		Card gainedCard=board.canGain(placeholder2);
-		for(String type: gainedCard.getDisplayTypes()) {
-			if(type.equals("Treasure")) {
+		if(choice.size() > 0) {
+			
+		game.sendCardOption(player.getID(), "Trash treasure to gain treasure costing upto 3 more?", 1, choice, true);
+		ArrayList<Integer> response = null;
+			if(response.get(0) !=-1) {
+				Card c = choice.get(response.get(0));
 				
-				if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+3) {
-					board.cardRemove(placeholder2);
-					ArrayList<Card> tempHand = player.getHand();
-					tempHand.add(gainedCard);
-					player.setHand(tempHand);
-					}
-					else {
-						//Error, request new card
-						
-					}
-				break;
+				choice = getChoice(3,c.getCost(),board,"Treasure");
+				if(choice.size() >0) {
+				game.sendCardOption(player.getID(), "Choose a card to gain", 1, choice, false);
+				response = null;
+				Card c2 = choice.get(response.get(0));
+				player.discardCard(c2);
+				board.cardRemove(c2.getName());
+				board.trashCard(c);
+				player.removeFromHand(c);
+				}
+				else {
+					game.sendMessage("No cards to gain, your treasure has not been trashed", player.getID());
+				}
 			}
-			
+		else {
+			game.sendMessage("No treasure in hand", player.getID());
+			}
 		}
-		
-		
 	}
 	
-	private void drawTill7(Player player) {
+	private void drawTill7(Player player) throws InterruptedException {
 		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
-		while(player.getHandSize() <7 || player.getDeckSize()>0) {
+		while(player.getHandSize() <7 || (player.getDeckSize()>0 && player.getDiscardSize()>0)) {
 			player.drawCard(1);
-			Card currentDraw =player.select(player.getHand(), player.getHandSize()-1);
+			game.sendPlayerHand(player.getID(), player.getID());
+			Card currentDraw =player.getHand().get(player.getHandSize()-1);
+			
+			
 			for(String dispType: currentDraw.getDisplayTypes()) {
 				if(dispType.equals("Action")) {
-					//NETWORK
-					//Ask if discard or keep
-					boolean placeholder =true; //Keep card?
-					if(placeholder) {
+					ArrayList<Card> choice = new ArrayList<Card>();
+					ArrayList<Integer> response = new ArrayList<Integer>();
+					choice.add(currentDraw);
+					game.sendCardOption(player.getID(), "Do you wish to keep "+currentDraw.getName()+" ?", 1, choice, true);
+					
+					if(response.get(0)!= -1) {
 						break;
 					}
 					else {
-						ArrayList<Card> tempHand = player.getHand();
 						player.removeFromHand(currentDraw);
 						toBeDiscarded.add(currentDraw);
 					}
@@ -301,43 +324,24 @@ public class EffectHandler
 	private void trashFromHandGainPlus2(Player player, Board board) throws InterruptedException {
 	
 		ArrayList<Card> tempHand = player.getHand();
+		if(tempHand.size()> 0) {
 		game.sendCardOption(player.getID(), "Choose a card to trash",1, tempHand, false);
 		
 		ArrayList<Integer> response=null;
 		Card trashCard = tempHand.get(response.get(0));
 		board.trashCard(trashCard);
-		ArrayList<Card> choice = null;
-		for(String s:board.getBoardNamesList()) {
-			Card c = board.canGain(s);
-			if(c != null) {
-				if(c.getCost()<=trashCard.getCost()+2) {
-				
-				choice.add(c);
-				}
-			}
-		}
-		game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
-	//NETWORK
-	//Query: Want to trash?
-	//If yes, trash card, 
-	Card placeholder = new Card();
-	board.trashCard(placeholder);
-	//Query: What card to gain?
-	
-	//Some kind of loop here
-	
-	String placeholder2= "placeholder";
-	Card gainedCard=board.canGain(placeholder2);
-	if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+2) {
-	board.cardRemove(placeholder2);
-	player.discardCard(gainedCard);
-	}
-	else {
-		//Error, request new card
+		ArrayList<Card> choice = getChoice(2,trashCard.getCost(),board);
 		
-	}
-	
-	//Loop end
+		game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
+		response = null;
+		//Since we only ask for one choice, we always know where it is.
+		Card c =choice.get(response.get(0));
+		player.discardCard(c);
+		board.cardRemove(c.getName());
+		}
+		else {
+			game.sendMessage("No cards in hand, nothing to trash", player.getID());
+		}
 		
 	}
 	private void discardPerEmptySupply(Player player, Board board) throws InterruptedException {
@@ -375,15 +379,7 @@ public class EffectHandler
 				if(response.get(0)==-1){
 					break;
 				}else {
-					ArrayList<Card> choice = new ArrayList<Card>();
-				for(String s:board.getBoardNamesList()) {
-					Card c = board.canGain(s);
-					if(c != null) {
-						if(c.getCost()<=copper.getCost()+2) {
-						choice.add(c);
-						}
-					}
-				}
+					ArrayList<Card> choice = getChoice(2,copper.getCost(),board);
 				if(choice.size()==0) {
 					game.sendMessage("No cards meeting requirements available", player.getID());
 					break;
