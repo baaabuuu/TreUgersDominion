@@ -1,28 +1,52 @@
 package network;
 
 
+import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import cards.CardReader;
 import log.Log;
+import objects.ClientCommands;
+import objects.PortNumber;
+import objects.ServerCommands;
 
 
 public class Lounge {
 	//Setup
-	private static Lobby[] gamesRunning = new Lobby[1000];
-	private static int indexID;
+	private int noOfGamesAllowed = 1000;
+	private int noOfPlayersAllowed = 5*noOfGamesAllowed;
+	private Lobby[] gamesRunning = new Lobby[noOfGamesAllowed];
+	private int[] numberOfPlayers = new int[noOfGamesAllowed]; 
+	private String[] playerNames = new String[noOfGamesAllowed];
+	private int indexID;
+	
+	
+	
 	
 	//Setup the uri
-	private static int port = 8181;
-	private static String host = "localhost";
-	private static String uri = "tcp://"+ host + ":" + port + "/?keep";
+	private int port = 8181;
+	private String host = "localhost";
+	private String uri = "tcp://"+ host + ":" + port + "/?keep";
 	
-	public static void lobby(CardReader cardReader) throws InterruptedException{
+	
+	public static void main(String[] args) throws InterruptedException{
+		new Lounge().Start();
+	}
+	
+	public void Start() throws InterruptedException{
 		
 		
 		indexID = 0;
@@ -31,44 +55,111 @@ public class Lounge {
 		repository.addGate(uri);
 		
 		//Setup the lobby
-		Space lobby = new SequentialSpace();
-		repository.add("lobby", lobby);
+		Space lounge	 = new SequentialSpace();
+		repository.add("lounge", lounge);
 		
 		//Setting up value holders
-		String name = "";
-		ClientCommand cmd 	= "";
-		String tempURI = "";
-		int gameID = 0;
+		int playerID;
+		ClientCommands cmd;
+		String tempURI;
+		int gameID;
 		
+		//Setting up private/public key
+		PrivateKey privKey = null;
+		PublicKey pubKey = null;
+		try {
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");//Uses Digtial Signature Algorithm and thhe deafult SUN provider.
+			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+			keyGen.initialize(1024, random);
+			
+			KeyPair pair = keyGen.generateKeyPair();
+			privKey = pair.getPrivate();
+			pubKey = pair.getPublic();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		
+		//Puts the public key in the jSpace
+		lounge.put(ServerCommands.serverKey, pubKey);
+		
+		//Set up cardReader
+		CardReader cardReader = null;
+		try {
+			cardReader = new CardReader();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		
 		
 		//Wait for command
 		while(true){
 			//Reads command
-			lobby.get(new ActualField(name),new ActualField(cmd));
+			Object[] firstInput = lounge.get(new FormalField(String.class),new FormalField(ClientCommands.class));
+			playerID = (int) firstInput[0];
+			cmd = (ClientCommands) firstInput[1];
 			
+			Object[] secondInput;
 			//Obeys command
 			switch(cmd){
-			case "enter":		
-				lobby.get(new ActualField(name), new ActualField(gameID));
-				
+			case enterLobby:		
+				secondInput = lounge.get(new ActualField(playerID), new FormalField(int.class));
+				gameID = (int) secondInput[1];
 				
 				if(indexID < gameID){
-					lobby.put("roomURI", name, gameID, gamesRunning[gameID].getURI());
+					lounge.put(playerID, ServerCommands.newConnection);
+					lounge.put(playerID, gamesRunning[gameID].getURI());
 				} else {
-					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(gameID),new ActualField("gameNotFoundException"));
+					lounge.put(playerID, ServerCommands.newConnection, gameID, new ActualField("gameNotFoundException"));
 				}
-			case "create":
-				if(indexID < 1000){
-					tempURI = "tcp://"+ host + ":" + port + "/" + indexID +"?keep";
-					Lobby tempInit = new Lobby(tempURI, cardReader);
-					gamesRunning[indexID] = tempInit;
-					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(indexID),new ActualField(tempURI));
-					indexID++;
-				} else {
-					lobby.put(new ActualField("roomURI"),new ActualField(name),new ActualField(1000),new ActualField("toManyGamesException"));
+				
+				playerNames[playerID] = null;
+			case createLobby:
+				for(int i = 0; i<noOfGamesAllowed; i++){
+					if(gamesRunning[i] != null){
+						
+						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
+						Lobby tempInit = new Lobby(tempURI, cardReader);
+						gamesRunning[i] = tempInit;
+						lounge.put(playerID, ServerCommands.newConnection);
+						lounge.put(playerID, tempURI);
+					}
 				}
+			case getLobbies:
+				for(int i = 0; i< noOfGamesAllowed; i++){
+					
+					if (gamesRunning[i] != null & !gamesRunning[i].isAlive()){
+						
+						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
+					}
+					
+					lounge.put(playerID, ServerCommands.setLaunge);
+					lounge.put(playerID, gamesRunning, numberOfPlayers);
+					
+					
+				}
+			case newPlayer:	
+				int ID;
+				for(ID = 0; ID < noOfPlayersAllowed; ID++){
+					if(playerNames[ID] == null){
+						lounge.put(ServerCommands.playerID, ID);
+						
+						playerNames[ID] = "";
+						break;
+					}
+				}
+			case playerName:
+				secondInput = lounge.get(new FormalField(int.class), new FormalField(String.class));
+				if(playerNames[(int) secondInput[0]] == ""){
+					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
+				}
+				
 			default:
 				
 			}

@@ -13,5 +13,6 @@ public enum ServerCommands {
 	message,
 	gameStart,
 	gameEnd,
-	newConnection
+	newConnection,
+	serverKey
 }
