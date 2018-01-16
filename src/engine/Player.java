@@ -53,20 +53,21 @@ public class Player {
 	public String[] drawCard(int n)
 	{
 		String[] draw = new String[n];
-		
 		for (int i = 0; i < n; i++)
 		{
 			if (deck.isEmpty())
 			{
 				if (discard.isEmpty())
+				{
+					draw[i] = null;
 					break;
+				}
 				reshuffleDeck();
 			}
 			Card drawn = deck.poll();
 			draw[i] = drawn.getName();
 			hand.add(drawn);
 			Log.log(getName() + " has drawn " + drawn.getName());
-			n--;
 		}
 		return draw;
 	}
@@ -190,11 +191,13 @@ public class Player {
 		{
 			Card card = getHand().get(index);
 			List<String> types = Arrays.asList(card.getDisplayTypes());
+			Log.important("contains actions: " + types.contains("Action") + " phase is " + phase
+					+ " action playable: " + canPlayAction());
 			if (types.contains("Action") && phase == 0 && canPlayAction())
 			{
 				actions--;
 				removeFromHand(card);
-				discardCard(card);
+				putIntoPlay(card);
 				Log.log(getName() + " played the action card " + card.getName());
 				return true;
 			}
@@ -268,6 +271,8 @@ public class Player {
 	
 	/**
 	 * Buy effects, used to run effects that do something instead of putting it ontop of the discard pile.
+	 * Note, none of these are used as non in the base game utilize such as an effect
+	 * However, the skeleton for it is here and an example is given for a card
 	 * @param card
 	 */
 	private void buyEffects(Card card)
@@ -464,5 +469,13 @@ public class Player {
 	public void putIntoPlay(Card card)
 	{
 		playArea.add(card);
+	}
+	
+	public int getFirstIndexOf(String cardName)
+	{
+		for (int i = 0; i < hand.size(); i++)
+			if (hand.get(i).getName().equals(cardName))
+				return i;
+		return -1;
 	}
 }

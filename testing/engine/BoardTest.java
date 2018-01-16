@@ -21,6 +21,10 @@ import cards.Card;
 import engine.Board;
 
 @RunWith(MockitoJUnitRunner.class)
+/**
+ * Tests board behavior.
+ * @author s164166
+ */
 public class BoardTest
 {	
 	@Mock
