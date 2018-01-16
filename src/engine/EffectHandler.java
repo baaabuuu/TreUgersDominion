@@ -210,6 +210,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		if(gold != null) {
 			player.discardCard(gold);
 			board.cardRemove("Gold");
+			player.gain(gold);
 		}
 		for(Player p : players) {
 			if(p.equals(player)) {
@@ -229,16 +230,10 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				tempCards.add(p.getHand().get(p.getHandSize()-i));
 				p.removeFromHand(p.getHand().get(p.getHandSize()-i));
 			}
-			boolean hasTreasure =false;
+			
 			//See if cards are treasure
-			for(Card c:tempCards) {
-				for(String s:c.getDisplayTypes()) {
-					if(s.equals("Treasure")&& !c.getName().equals("Copper")) {
-						hasTreasure =true;
-						break;
-					}
-				}
-			}
+		boolean hasTreasure= tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) &&!c.getName().equals("Copper"));
+			
 			if(hasTreasure) {
 				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
@@ -246,6 +241,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				Card selection =tempCards.get(response.get(0));
 				board.trashCard(selection);
 				tempCards.remove(selection);
+				p.trash(selection);
 				
 				Card nullCheck = tempCards.get(0);
 				if (nullCheck != null) {
@@ -261,15 +257,19 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 	}
 	private void gainPlus5(Player player, Board board) throws InterruptedException {
 		ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=5, board);
-		
-		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
-		
 		ArrayList<Integer> response = null;
-		Card c =choice.get(response.get(0));
-		board.cardRemove(c.getName());
 		ArrayList<Card> tempHand = player.getHand();
-		tempHand.add(c);
-		player.setHand(tempHand);
+		Card c;
+		if(choice.size()>0) {
+			game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
+			c =choice.get(response.get(0));
+			board.cardRemove(c.getName());
+			tempHand.add(c);
+			player.setHand(tempHand);
+			player.gain(c);
+		}
+		
+		
 		game.sendCardOption(player.getID(), "Select a card to put on top of deck", 1, tempHand, false);
 		response =null;
 		c = tempHand.get(response.get(0));
@@ -277,15 +277,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		player.addCardDecktop(c);
 	}
 	private void mayTrashTreasure(Player player, Board board) throws InterruptedException {
-		ArrayList<Card> choice = new ArrayList<Card>();
-		for(Card c : player.getHand()) {
-			for(String type: c.getDisplayTypes()) {
-				if(type.equals("Treasure")) {
-				choice.add(c);
-				break;
-				}
-			}
-		}
+		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure") ) ).collect(Collectors.toList());
 		if(choice.size() > 0) {
 			
 		game.sendCardOption(player.getID(), "Trash treasure to gain treasure costing upto 3 more?", 1, choice, true);
@@ -300,7 +292,9 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				Card c2 = choice.get(response.get(0));
 				player.discardCard(c2);
 				board.cardRemove(c2.getName());
+				player.gain(c2);
 				board.trashCard(c);
+				player.trash(c);
 				player.removeFromHand(c);
 				}
 				else {
@@ -356,6 +350,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		ArrayList<Integer> response=null;
 		Card trashCard = tempHand.get(response.get(0));
 		board.trashCard(trashCard);
+		player.trash(trashCard);
 		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost()<= trashCard.getCost()+2,board);
 		
 		game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
@@ -364,6 +359,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		Card c =choice.get(response.get(0));
 		player.discardCard(c);
 		board.cardRemove(c.getName());
+		player.gain(c);
 		}
 		else {
 			game.sendMessage("No cards in hand, nothing to trash", player.getID());
@@ -414,12 +410,15 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 					game.sendCardOption(player.getID(), "Select the card you would like to gain", 1, choice, false);
 					response=null;
 					//We already checked that atleast one copy is available in the deck
-					player.discardCard(board.canGain(choice.get(response.get(0)).getName()));
-					board.cardRemove(choice.get(response.get(0)).getName());
+					Card cardToGain = board.canGain(choice.get(response.get(0)).getName());
+					player.discardCard(cardToGain);
+					board.cardRemove(cardToGain.getName());
+					player.gain(cardToGain);
 					
 					ArrayList<Card> tempHand = player.getHand();
 					tempHand.remove(copper);
 					board.trashCard(copper);
+					player.trash(copper);
 					player.setHand(tempHand);
 					game.sendPlayerHand(player.getID(), player.getID());
 					
@@ -442,6 +441,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 			if(curse != null){
 				other.discardCard(curse);
 				board.cardRemove("Curse");
+				other.gain(curse);
 			}
 			
 		}
@@ -659,6 +659,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		Card selection = choice.get(response.get(0));
 		board.cardRemove(selection.getName());
 		player.discardCard(selection);
+		player.gain(selection);
 	
 	}
 	private void silverOnDeckRevealVC(Player player,Board board, Player[] players) throws InterruptedException
