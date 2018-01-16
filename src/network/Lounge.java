@@ -17,6 +17,7 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import cards.CardReader;
+import log.Log;
 import objects.ClientCommands;
 import objects.ServerCommands;
 
