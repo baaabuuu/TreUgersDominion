@@ -1,7 +1,7 @@
 package engine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.jspace.ActualField;
@@ -35,10 +35,18 @@ public class Game
 	private Writer writer;
 	
 	/**
-	 * In seconds this is how much time each player has for their turns.
+	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private int waitTime = 4;
+	private final int waitTime = 4000;
 	
+	/**
+	 * Returns how long time a time is allowed.
+	 * @return
+	 */
+	public int getWaitTime()
+	{
+		return waitTime;
+	}
 		
 	/**
 	 * Transmits turn values of that player to them
@@ -227,6 +235,15 @@ public class Game
 	}
 	
 	/**
+	 * Returns the space - used for getting data
+	 * @return
+	 */
+	public Space getSpace()
+	{
+		return space;
+	}
+	
+	/**
 	 * Start a game - runs the turns
 	 * @throws InterruptedException
 	 */
@@ -240,6 +257,46 @@ public class Game
 				break;
 		}
 		Log.important("Game has ended.");
+		calcVictory();
+	}
+	
+	
+	private void calcVictory() throws InterruptedException
+	{
+		Player[] victor = new Player[playerCount];
+		Arrays.sort(players, Comparator.comparingInt(Player::getVictoryPoints));
+		String[] places = {"1st ", "2nd", "3rd", "4th"};
+		int count = 0;
+		for (int i = 0; i < players.length; i++)
+		{
+			sendMessage("Congratulations, you placed " + places[i], i);
+		}
+		for (Player player : victor)
+		{
+			StringBuilder builder = new StringBuilder();
+			builder.append("In ");
+			builder.append(places[count]);
+			builder.append(" we have ");
+			builder.append(player.getName());
+			builder.append("#");
+			builder.append(player.getID());
+			builder.append(" with ");
+			builder.append(player.getVictoryPoints());
+			builder.append(" victory points! Their deck consisted of:\n");
+			String[] cardNames = (String[]) player.getAllCards().stream().map(card -> card.getName()).distinct().toArray();
+			for (int i = 0; i < cardNames.length; i++)
+			{
+				String name = cardNames[i];
+				builder.append(name);
+				builder.append("x");
+				builder.append((int) player.getAllCards().stream().filter(card -> card.getName().equals(name)).count());
+				builder.append(" ");
+			}
+			builder.setLength(builder.length() - 1);
+			sendMessageAll(builder.toString());
+			count++;
+		}
+		
 	}
 	
 	/**
@@ -381,7 +438,7 @@ public class Game
 				}
 			}
 			counter++;
-			if (counter > waitTime)
+			if (counter > getWaitTime())
 			{
 				Log.important(currPlayer.getName() + "#" + turn + " didnt take their action!");
 				sendDisconnect(turn);
