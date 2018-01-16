@@ -240,6 +240,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				}
 			}
 			if(hasTreasure) {
+				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
 				ArrayList<Integer> response = null;
 				Card selection =tempCards.get(response.get(0));
