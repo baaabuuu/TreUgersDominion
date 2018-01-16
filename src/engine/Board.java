@@ -57,17 +57,6 @@ public class Board
 		Log.log(card.getName() + " was trashed.");
 		trash.add(card);
 	}
-		
-	
-	/**
-	 * Transmits the tuple further.
-	 * @param tuple
-	 * @return
-	 */
-	public Tuple sendTuple(Tuple tuple)
-	{
-		return tuple;
-	}
 	
 	/**
 	 * Remove the card if it contains

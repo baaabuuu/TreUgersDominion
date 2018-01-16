@@ -138,8 +138,9 @@ public class ClientController {
 	 */
 	private void initiateCommunication() throws InterruptedException {
 		Object[] input;
-		
-		hostSpace.put(ClientCommands.newPlayer, -1);
+		boolean check = true;
+		String out;
+		hostSpace.put(ClientCommands.newPlayer, -1);		
 		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
 		playerID = (int)input[1];

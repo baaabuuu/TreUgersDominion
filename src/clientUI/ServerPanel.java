@@ -127,7 +127,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 	    		host = serverField.getText();
 	    		port = Integer.parseInt(socketField.getText());
 	    		
-	    		controller.attemptConnection("tcp://" + host + ":" + port + "/board?conn", nameField.getText());
+	    		controller.attemptConnection("tcp://" + host + ":" + port + "/lounge?conn", nameField.getText());
 	    	// Error for wrong characters.
 	    	}else if(serverField.getText().length() < 17 && socketField.getText().length() == 4){
 	    		lblError.setText("Numbers and dots only.");
