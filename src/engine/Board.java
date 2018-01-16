@@ -1,7 +1,10 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jspace.Tuple;
@@ -203,9 +206,17 @@ public class Board
 	 * Object[n][1] = Card
 	 * @return
 	 */
-	public Stream<Object[]> getBoard()
+	public Stream<Object[]> getBoardStream()
 	{
 		return board.values().stream();
 	}
-
+	
+	/**
+	 * returns a stream that consists of the cards allowing for lambda expressions
+	 * @return board card stream
+	 */
+	public Stream<Card> getCardStream()
+	{
+		return board.values().stream().map(input -> (Card) input[1]);
+	}
 }
