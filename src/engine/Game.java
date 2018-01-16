@@ -55,7 +55,7 @@ public class Game
 	 * @param playerID
 	 * @throws InterruptedException
 	 */
-	public void sendDisconnect(int playerID) throws InterruptedException
+	public void sendDisconnect(Integer playerID) throws InterruptedException
 	{
 		Player player = players[playerID];
 		if (player.isConnected())
@@ -72,7 +72,7 @@ public class Game
 	 * @param target
 	 * @throws InterruptedException
 	 */
-	public void sendInvalid(String message, int target) throws InterruptedException
+	public void sendInvalid(String message, Integer target) throws InterruptedException
 	{
 		if (players[target].isConnected())
 		{
@@ -86,7 +86,7 @@ public class Game
 	 * @param playerID
 	 * @throws InterruptedException
 	 */
-	public void sendMessage(String message, int target) throws InterruptedException
+	public void sendMessage(String message, Integer target) throws InterruptedException
 	{
 		if (players[target].isConnected())
 		{
@@ -103,7 +103,7 @@ public class Game
 	public void sendMessageAll(String message) throws InterruptedException
 	{		
 		Log.log("Sending message to all players" + "\n" + message);
-		for (int i = 0; i < players.length; i++)
+		for (Integer i = 0; i < players.length; i++)
 		{
 			if (players[i].isConnected())
 			{
