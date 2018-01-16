@@ -120,8 +120,8 @@ public class Lounge {
 					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, "gameNotFoundException");
 				}
-				
 				playerNames[playerID] = null;
+				break;
 			case createLobby:
 				for(int i = 0; i<noOfGamesAllowed; i++){
 					if(gamesRunning[i] != null){
@@ -133,6 +133,7 @@ public class Lounge {
 						lounge.put(playerID, tempURI);
 					}
 				}
+				break;
 			case getLobbies:
 				for(int i = 0; i< noOfGamesAllowed; i++){
 					
@@ -146,6 +147,7 @@ public class Lounge {
 					
 					
 				}
+				break;
 			case newPlayer:	
 				int ID;
 				for(ID = 0; ID < noOfPlayersAllowed; ID++){
@@ -156,14 +158,15 @@ public class Lounge {
 						break;
 					}
 				}
+				break;
 			case playerName:
 				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(String.class));
 				if(playerNames[(int) secondInput[0]] == "" && (String) secondInput[1] != ""){
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
-				
+				break;
 			default:
-				
+				break;
 			}
 		}
 	

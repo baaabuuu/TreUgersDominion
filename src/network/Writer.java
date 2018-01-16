@@ -29,11 +29,14 @@ public class Writer {
 		case newConnection:
 			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
 			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1), uri);
+			break;
 		case takeTurn: 
 			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			break;
 		default:	
 			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
 			clientSpace.put(tuple);
+			break;
 		}
 	}
 	

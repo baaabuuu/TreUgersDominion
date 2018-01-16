@@ -45,15 +45,18 @@ public class ControlCenter extends Thread {
 						
 						safeSpace.put(name, cmd);
 						safeSpace.put(name,(Card) secondInput[0]);
+						break;
 				case playCard:
 				case selectCard:
 						secondInput = clientSpace.get(new FormalField(Integer.class));
 					
 						safeSpace.put(name, cmd);
 						safeSpace.put(name, (int) secondInput[0]);
+						break;
 				
 				default:
 						safeSpace.put(name, cmd);
+						break;
 				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
