@@ -37,11 +37,14 @@ public class Game
 	private Writer writer;
 	
 	/**
-	 * In seconds this is how much time each player has for their turns.
+	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 0;
+	private final int waitTime = 4000;
 	
-	
+	/**
+	 * Returns how long time a time is allowed.
+	 * @return
+	 */
 	public int getWaitTime()
 	{
 		return waitTime;
@@ -230,6 +233,15 @@ public class Game
 	public Player[] getPlayers()
 	{
 		return players;
+	}
+	
+	/**
+	 * Returns the space - used for getting data
+	 * @return
+	 */
+	public Space getSpace()
+	{
+		return space;
 	}
 	
 	/**
@@ -427,7 +439,7 @@ public class Game
 				}
 			}
 			counter++;
-			if (counter > waitTime)
+			if (counter > getWaitTime())
 			{
 				Log.important(currPlayer.getName() + "#" + turn + " didnt take their action!");
 				sendDisconnect(turn);
