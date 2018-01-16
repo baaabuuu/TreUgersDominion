@@ -1,7 +1,10 @@
 package engine;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import cards.Card;
 import log.Log;
@@ -14,40 +17,11 @@ public class EffectHandler
 		
 	}
 	/**
-	 * Helper function to return list of available cards on the board costing N more than a played card
+	 * Helper function to return list of available cards based on a predicate
 	 */
-	private ArrayList<Card> getChoice(int n,int cost, Board board) {
-		
-		ArrayList<Card> choice = new ArrayList<Card>();
-		for(String s:board.getBoardNamesList()) {
-			Card c = board.canGain(s);
-			if(c != null) {
-				if(c.getCost()<=cost+n) {
-				
-				choice.add(c);
-				}
-			}
-		}
-		return choice;
-	}
-private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
+private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
+	ArrayList<Card> choice =(ArrayList<Card>) board.getCardStream().filter(p).collect(Collectors.toList());
 	 
-	/*
-		ArrayList<Card> choice = new ArrayList<Card>();
-		for(String s:board.getBoardNamesList()) {
-			Card c = board.canGain(s);
-			if(c != null) {
-				for(String dispType:c.getDisplayTypes()) {
-					if(type.equals(dispType)) {
-						if(c.getCost()<=cost+n) {
-				
-							choice.add(c);
-						}
-					}
-				}
-			}
-		}
-		*/
 		return choice;
 	}
 	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
@@ -231,24 +205,75 @@ private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
 		//After every effect, update player hand
 		game.sendPlayerHand(player.getID(), player.getID());
 	}
-	private void gainGoldOthersReveal(Player player, Board board, Player[] players) {
+	private void gainGoldOthersReveal(Player player, Board board, Player[] players) throws InterruptedException {
 		Card gold =board.canGain("Gold");
 		if(gold != null) {
 			player.discardCard(gold);
 			board.cardRemove("Gold");
 		}
-			//reveal 2 top cards
-			//if revealed and is Treasure
-			//not equal tó copper, trash one of them
-			//And discard the others
-		
+		for(Player p : players) {
+			if(p.equals(player)) {
+				continue;
+			}
+			String[]drawn = p.drawCard(2);
+			//Measure to avoid index out of bounds in case of empty discard and deck
+			String drawnToString="";
+			for(String s:drawn) {
+				drawnToString+= s+" ";
+			}
+				
+			game.sendMessageAll(p.getName()+" has revealed "+drawnToString);
+			//Remove cards from hand
+			ArrayList<Card> tempCards = new ArrayList<Card>();
+			for(int i =1;i<=drawn.length;i++) {
+				tempCards.add(p.getHand().get(p.getHandSize()-i));
+				p.removeFromHand(p.getHand().get(p.getHandSize()-i));
+			}
+			boolean hasTreasure =false;
+			//See if cards are treasure
+			for(Card c:tempCards) {
+				for(String s:c.getDisplayTypes()) {
+					if(s.equals("Treasure")&& !c.getName().equals("Copper")) {
+						hasTreasure =true;
+						break;
+					}
+				}
+			}
+			if(hasTreasure) {
+				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
+				ArrayList<Integer> response = null;
+				Card selection =tempCards.get(response.get(0));
+				board.trashCard(selection);
+				tempCards.remove(selection);
+				
+				Card nullCheck = tempCards.get(0);
+				if (nullCheck != null) {
+					p.discardCard(nullCheck);
+				}
+				
+			}else {
+				for(int i =tempCards.size()-1;i >= 0 ;i--) {
+					p.addCardDecktop(tempCards.get(i));
+				}
+			}
+		}
 	}
 	private void gainPlus5(Player player, Board board) throws InterruptedException {
-		ArrayList<Card> choice = getChoice(5,0,board);
+		ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=5, board);
 		
-		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, true);
-		response = null;
+		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
 		
+		ArrayList<Integer> response = null;
+		Card c =choice.get(response.get(0));
+		board.cardRemove(c.getName());
+		ArrayList<Card> tempHand = player.getHand();
+		tempHand.add(c);
+		player.setHand(tempHand);
+		game.sendCardOption(player.getID(), "Select a card to put on top of deck", 1, tempHand, false);
+		response =null;
+		c = tempHand.get(response.get(0));
+		player.removeFromHand(c);
+		player.addCardDecktop(c);
 	}
 	private void mayTrashTreasure(Player player, Board board) throws InterruptedException {
 		ArrayList<Card> choice = new ArrayList<Card>();
@@ -267,7 +292,7 @@ private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
 			if(response.get(0) !=-1) {
 				Card c = choice.get(response.get(0));
 				
-				choice = getChoice(3,c.getCost(),board,"Treasure");
+				choice = getChoice(bcard ->bcard.getCost()<=c.getCost()+3&& Arrays.stream(bcard.getDisplayTypes()).anyMatch(type -> type.equals("Treasure")), board);
 				if(choice.size() >0) {
 				game.sendCardOption(player.getID(), "Choose a card to gain", 1, choice, false);
 				response = null;
@@ -330,7 +355,7 @@ private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
 		ArrayList<Integer> response=null;
 		Card trashCard = tempHand.get(response.get(0));
 		board.trashCard(trashCard);
-		ArrayList<Card> choice = getChoice(2,trashCard.getCost(),board);
+		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost()<= trashCard.getCost()+2,board);
 		
 		game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
 		response = null;
@@ -379,7 +404,7 @@ private ArrayList<Card> getChoice(int n, int cost, Board board,String type) {
 				if(response.get(0)==-1){
 					break;
 				}else {
-					ArrayList<Card> choice = getChoice(2,copper.getCost(),board);
+					ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=copper.getCost()+2,board);
 				if(choice.size()==0) {
 					game.sendMessage("No cards meeting requirements available", player.getID());
 					break;
