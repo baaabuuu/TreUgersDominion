@@ -22,6 +22,7 @@ public class Player {
 	private ArrayList<Card> hand = new ArrayList<Card>();
 	private ArrayList<String> effects = new ArrayList<String>();
 	private ArrayList<Card> playArea = new ArrayList<Card>();
+	private ArrayList<Card> secretStack = new ArrayList<Card>();
 	
 	
 	private boolean connected = true;
@@ -278,6 +279,18 @@ public class Player {
 	private void buyEffects(Card card)
 	{
 		//Used to mark whether the buy action was affected by the placement.
+		for (int i = 0; i < card.getTypeCount(); i++)
+		{
+			if (card.getTypes()[i].equals("buyEffect"))
+			{
+				switch(card.getEffectCode()[i])
+				{
+					default:
+						break;
+				}
+			}
+		}
+		
 		Boolean deckPlacementEffect = false;
 		for (String effect : effects)
 		{
@@ -297,7 +310,57 @@ public class Player {
 			discardCard(card);
 		}
 	}
+	
+	/**
+	 * puts a card in the secret stack used to calculate totalsizes and victory Points
+	 * @param card
+	 */
+	public void gain(Card card)
+	{
+		secretStack.add(card);
+		calcVictory();
+	}
+	
+	/**
+	 * When a trash.
+	 * @param card
+	 */
+	public void trash(Card card)
+	{
+		secretStack.remove(card);
+		calcVictory();
+	}
 
+	/**
+	 * Calculates victory Points for the player
+	 */
+	public void calcVictory()
+	{
+		int size = secretStack.size();
+		victoryPoints = 0;
+		for (Card card: secretStack)
+		{
+			for (int i = 0; i < card.getTypeCount(); i++)
+			{
+				if (card.getTypes()[i].equals("victory"))
+				{
+					victoryPoints += card.getVP();
+				}
+				else if (card.getTypes()[i].equals("victoryEffect"))
+				{
+					switch (card.getEffectCode()[i])
+					{
+					case 10 : //Garden
+						victoryPoints += Math.floorDiv(size, 10);
+						break;
+					default :
+						break;
+					}
+				}					
+			}
+		}
+		Log.log("Calculated " + getName() + "'s victory points to " + victoryPoints);
+	}
 
 	public int getActions()
 	{
