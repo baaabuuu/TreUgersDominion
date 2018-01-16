@@ -44,7 +44,7 @@ public class Lounge {
 	}
 	
 	public void Start() throws InterruptedException{
-		
+		Log.log("Starting server");
 		
 		indexID = 0;
 		//Setup the Repository
@@ -62,28 +62,28 @@ public class Lounge {
 		int gameID;
 		
 		//Setting up private/public key
-		PrivateKey privKey = null;
-		PublicKey pubKey = null;
-		try {
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");//Uses Digtial Signature Algorithm and thhe deafult SUN provider.
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-			keyGen.initialize(1024, random);
-			
-			KeyPair pair = keyGen.generateKeyPair();
-			privKey = pair.getPrivate();
-			pubKey = pair.getPublic();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
-		
-		//Puts the public key in the jSpace
-		lounge.put(ServerCommands.serverKey, pubKey);
-		
+//		PrivateKey privKey = null;
+//		PublicKey pubKey = null;
+//		try {
+//			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");//Uses Digtial Signature Algorithm and thhe deafult SUN provider.
+//			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
+//			keyGen.initialize(1024, random);
+//			
+//			KeyPair pair = keyGen.generateKeyPair();
+//			privKey = pair.getPrivate();
+//			pubKey = pair.getPublic();
+//		} catch (NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (NoSuchProviderException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} 
+//		
+//		
+//		//Puts the public key in the jSpace
+//		lounge.put(ServerCommands.serverKey, pubKey);
+//		
 		//Set up cardReader
 		CardReader cardReader = null;
 		try {
@@ -97,23 +97,27 @@ public class Lounge {
 		
 		//Wait for command
 		while(true){
+			Log.log("Waiting for new Message");
 			//Reads command
-			Object[] firstInput = lounge.get(new FormalField(String.class),new FormalField(ClientCommands.class));
-			playerID = (int) firstInput[0];
-			cmd = (ClientCommands) firstInput[1];
+			Object[] firstInput = lounge.get(new FormalField(ClientCommands.class), new FormalField(Integer.class));
+			cmd = (ClientCommands) firstInput[0];
+			playerID = (int) firstInput[1];
+			
+			Log.log("Message recived: " + cmd.toString() + ", from: " + playerID);
 			
 			Object[] secondInput;
 			//Obeys command
 			switch(cmd){
 			case enterLobby:		
-				secondInput = lounge.get(new ActualField(playerID), new FormalField(int.class));
+				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
 				if(indexID < gameID){
-					lounge.put(playerID, ServerCommands.newConnection);
+					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, gamesRunning[gameID].getURI());
 				} else {
-					lounge.put(playerID, ServerCommands.newConnection, gameID, new ActualField("gameNotFoundException"));
+					lounge.put(ServerCommands.newConnection, playerID);
+					lounge.put(playerID, "gameNotFoundException");
 				}
 				
 				playerNames[playerID] = null;
@@ -124,7 +128,7 @@ public class Lounge {
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
 						Lobby tempInit = new Lobby(tempURI, cardReader);
 						gamesRunning[i] = tempInit;
-						lounge.put(playerID, ServerCommands.newConnection);
+						lounge.put(ServerCommands.newConnection, playerID);
 						lounge.put(playerID, tempURI);
 					}
 				}
@@ -136,7 +140,7 @@ public class Lounge {
 						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
 					}
 					
-					lounge.put(playerID, ServerCommands.setLaunge);
+					lounge.put(ServerCommands.setLaunge, playerID);
 					lounge.put(playerID, gamesRunning, numberOfPlayers);
 					
 					
@@ -152,8 +156,8 @@ public class Lounge {
 					}
 				}
 			case playerName:
-				secondInput = lounge.get(new FormalField(int.class), new FormalField(String.class));
-				if(playerNames[(int) secondInput[0]] == ""){
+				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(String.class));
+				if(playerNames[(int) secondInput[0]] == "" && (String) secondInput[1] != ""){
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
 				

@@ -27,12 +27,12 @@ public class Writer {
 		
 		switch(cmd){
 		case newConnection:
-			clientSpace.put(tuple.getElementAt(int.class, 0), tuple.getElementAt(ServerCommands.class, 1));
-			clientSpace.put(tuple.getElementAt(int.class, 0), tuple.getElementAt(ServerCommands.class, 1), uri);
+			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1), uri);
 		case takeTurn: 
-			clientSpace.put(tuple.getElementAt(int.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
 		default:	
-			clientSpace.put(tuple.getElementAt(int.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
 			clientSpace.put(tuple);
 		}
 	}
