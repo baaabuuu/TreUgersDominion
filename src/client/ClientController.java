@@ -140,7 +140,7 @@ public class ClientController {
 		Object[] input;
 		
 		hostSpace.put(ClientCommands.newPlayer, -1);
-		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(int.class));
+		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
 		playerID = (int)input[1];
 		input = new Object[2];
