@@ -9,7 +9,6 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -18,9 +17,7 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import cards.CardReader;
-import log.Log;
 import objects.ClientCommands;
-import objects.PortNumber;
 import objects.ServerCommands;
 
 

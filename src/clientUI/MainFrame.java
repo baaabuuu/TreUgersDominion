@@ -1,18 +1,14 @@
 package clientUI;
 
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Toolkit;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class MainFrame extends JFrame {
 	
+	private static final long serialVersionUID = -6846565002216818013L;
 	static MainFrame mainFrame;
 	
-	private JPanel contentPane;
 
 	/**
 	 * Launch the application.

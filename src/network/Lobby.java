@@ -1,6 +1,5 @@
 package network;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,11 +7,9 @@ import org.jspace.ActualField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
-import org.jspace.Tuple;
 
 import cards.CardReader;
 import log.Log;
-import engine.Game;
 import engine.GameStarter;
 
 
@@ -83,7 +80,12 @@ public class Lobby extends Thread  {
 		
 		//Setup game		
 		GameStarter gameStarter = new GameStarter(noOfPlayers, players.toArray(new String[noOfPlayers]), cardReader, expansions, new Random(), writer, safeSpace);
-		gameStarter.startGame();
+		try {
+			gameStarter.startGame();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.log("Game start");
 		
 	}
