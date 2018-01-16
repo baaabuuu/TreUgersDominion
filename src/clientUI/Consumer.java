@@ -4,8 +4,6 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import objects.ServerCommands;
-
 public class Consumer implements Runnable {
 	private Space userSpace;
 	private UIController controller;
@@ -21,14 +19,17 @@ public class Consumer implements Runnable {
 		Object[] objs;
 		while(true) {
 			try {
-				objs = userSpace.get(new ActualField("client"), new FormalField(String.class),
+				objs = userSpace.get(new ActualField("UI"), new FormalField(String.class),
 						new FormalField(String.class));
 				
 				switch ((String)objs[1]) {
+					//Currently unused, as the client will call the eventInput function directly
+					//instead of going through jSpace.
 					case "message":
 						controller.eventInput((String)objs[2]);
 						break;
-					case "chat": //Implement chat
+					//For later use if chat is to be implemented.
+					case "chat": 
 						break;
 					default: break;
 				}

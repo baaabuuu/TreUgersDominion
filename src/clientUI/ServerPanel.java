@@ -12,6 +12,10 @@ import java.awt.Color;
 
 // JPanel containing needed code for an address/socket selection screen.
 public class ServerPanel extends JPanel implements ActionListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7310174635182053798L;
 	// JPanel contains following items:
 	private JTextField serverField, socketField;
 	private JLabel lblServer, lblSocket, lblError;

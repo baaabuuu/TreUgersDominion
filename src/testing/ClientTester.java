@@ -12,7 +12,7 @@ public class ClientTester {
 	public static void main(String[] args) {
 		try {
 			
-			ClientActions action = new ClientActions(null);
+			//ClientActions action = new ClientActions(null, null, null);
 			CardReader cards = new CardReader();
 			Card[] card = {cards.getBase().get(4),cards.getBase().get(7),cards.getBase().get(10),cards.getBase().get(13)};
 			

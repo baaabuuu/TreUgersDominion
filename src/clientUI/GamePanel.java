@@ -37,13 +37,17 @@ import javax.swing.text.DefaultStyledDocument;
 import cards.Card;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener, ListSelectionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8457104452489324773L;
 	private JButton actionSend, chatSend;
 	private JScrollBar sbEvent, sbChat, sbItem, sbList;
 	private DefaultCaret eventCaret, chatCaret;
 	private JScrollPane eventAreaScroll, chatAreaScroll, itemScroll, listScroll;
 	public JLabel lblEvent, lblChat, lblRemainingWordsChat, lblRemainingWordsAction;
 	public JLabel lblP1, lblP2, lblP3, lblP4;
-	public JLabel lblP1VP, lblP2VP, lblP3VP, lblP4VP;
+	public JLabel lblUsername, lblP1VP, lblP2VP, lblP3VP, lblP4VP;
 	public JLabel lblActions, lblBuys, lblMoney, lblList;
 	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea;
 	public JList<String> itemList;
@@ -219,63 +223,68 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			// Middle Area Labels.
 			lblP1 = new JLabel("P1: ");
 			lblP1.setForeground(Color.white);
-			lblP1.setBounds(615, 56, 120, 14);
+			lblP1.setBounds(620, 76, 120, 14);
 			add(lblP1);
 			
 			lblP2 = new JLabel("P2: ");
 			lblP2.setForeground(Color.white);
-			lblP2.setBounds(615, 76, 120, 14);
+			lblP2.setBounds(620, 96, 120, 14);
 			add(lblP2);
 			
 			lblP3 = new JLabel("P3: ");
 			lblP3.setForeground(Color.white);
-			lblP3.setBounds(615, 96, 120, 14);
+			lblP3.setBounds(620, 116, 120, 14);
 			add(lblP3);
 			
 			lblP4 = new JLabel("P4: ");
 			lblP4.setForeground(Color.white);
-			lblP4.setBounds(615, 116, 120, 14);
+			lblP4.setBounds(620, 136, 120, 14);
 			add(lblP4);
 			
 			lblActions = new JLabel("Actions: ");
 			lblActions.setForeground(Color.white);
-			lblActions.setBounds(615, 136, 85, 14);
+			lblActions.setBounds(620, 156, 85, 14);
 			add(lblActions);
 			
 			lblBuys = new JLabel("Buys: ");
 			lblBuys.setForeground(Color.white);
-			lblBuys.setBounds(615, 156, 85, 14);
+			lblBuys.setBounds(620, 176, 85, 14);
 			add(lblBuys);
 			
 			lblMoney = new JLabel("Money in play: ");
 			lblMoney.setForeground(Color.white);
-			lblMoney.setBounds(615, 176, 85, 14);
+			lblMoney.setBounds(620, 196, 85, 14);
 			add(lblMoney);
 			
 			lblP1VP = new JLabel("VP: ");
 			lblP1VP.setForeground(Color.white);
-			lblP1VP.setBounds(745, 56, 45, 14);
+			lblP1VP.setBounds(750, 76, 45, 14);
 			add(lblP1VP);
 			
 			lblP2VP = new JLabel("VP: ");
 			lblP2VP.setForeground(Color.WHITE);
-			lblP2VP.setBounds(745, 76, 45, 14);
+			lblP2VP.setBounds(750, 96, 45, 14);
 			add(lblP2VP);
 			
 			lblP3VP = new JLabel("VP: ");
 			lblP3VP.setForeground(Color.WHITE);
-			lblP3VP.setBounds(745, 96, 45, 14);
+			lblP3VP.setBounds(750, 116, 45, 14);
 			add(lblP3VP);
 			
 			lblP4VP = new JLabel("VP: ");
 			lblP4VP.setForeground(Color.WHITE);
-			lblP4VP.setBounds(745, 116, 45, 14);
+			lblP4VP.setBounds(750, 136, 45, 14);
 			add(lblP4VP);
 			
 			lblList = new JLabel("Select card to get description.");
 			lblList.setForeground(Color.WHITE);
 			lblList.setBounds(620, 376, 170, 14);
 			add(lblList);
+			
+			lblUsername = new JLabel("Username: ");
+			lblUsername.setForeground(Color.WHITE);
+			lblUsername.setBounds(620, 56, 120, 14);
+			add(lblUsername);
 			
 			// Update remainingWords labels.
 			updateCount(1);
@@ -291,7 +300,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public void updBuyList(Card[] cards, int[] amounts){
 		listModel.clear();
 		for(int i = 0; i < cards.length; i++) {
-			listModel.addElement(cards[i].getName() + ": " + amounts[i]);
+			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + amounts[i]);
 		}
 	}
 	private String eventAreaInfo;
@@ -303,7 +312,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			try {
 				eventArea.replaceRange("", 0, eventArea.getLineEndOffset(0));
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -363,17 +371,28 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	}
 	public void valueChanged(ListSelectionEvent arg0) {
 		if(controller.getBuyArea() != null && itemList.getSelectedIndex() != -1){
-			itemArea.setText(controller.getBuyArea()[itemList.getSelectedIndex()].getName() + "/n" +
-					controller.getBuyArea()[itemList.getSelectedIndex()].getCost() + "/n" +
-					controller.getBuyArea()[itemList.getSelectedIndex()].getDesc() + "/n" +
-					"Types: " + controller.getBuyArea()[itemList.getSelectedIndex()].getTypes()
+			String displayTypes = "";
+			for(String s : controller.getBuyArea()[itemList.getSelectedIndex()].getDisplayTypes()) {
+				displayTypes += s + " - ";
+			}
+			displayTypes = displayTypes.replaceAll(" - $", "");;
+			itemArea.setText(controller.getBuyArea()[itemList.getSelectedIndex()].getName() + "   " +
+					"Cost: " + controller.getBuyArea()[itemList.getSelectedIndex()].getCost() + "\n\n" +
+					"To buy, type '" + (itemList.getSelectedIndex()+1) + "'\n" +
+					"Effect:\n" + controller.getBuyArea()[itemList.getSelectedIndex()].getDesc() + "\n\n" +
+					"Types: " + displayTypes
 					);
+			itemArea.setCaretPosition(0);
 		}
 	}
 }
 //Modified JTextarea that adds a background.
 class MyTextArea extends JTextArea {
-  private Image img;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7052434801330245652L;
+private Image img;
   public MyTextArea(String text) {
   	super(text);
       img = new ImageIcon(MainFrame.class.getResource("TransparentBlack.png")).getImage();
@@ -386,7 +405,12 @@ class MyTextArea extends JTextArea {
 class MyScrollbarUI extends MetalScrollBarUI {
     private Image imageThumb, imageTrack;
     private JButton b = new JButton() {
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = -7469001016279802969L;
+
+		@Override
         public Dimension getPreferredSize() {
             return new Dimension(0, 0);
         }

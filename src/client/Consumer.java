@@ -10,17 +10,13 @@ import objects.*;
 public class Consumer implements Runnable {
 	private Space clientSpace;
 	private Space hostSpace;
-	private Space userSpace;
 	private String name;
 	private ClientActions action;
-	private UIController userInterface;
 	
 	public Consumer(Space space, String name, Space hostSpace, Space userSpace, UIController userInterface) {
 		this.clientSpace = space;
 		this.name = name;
 		this.hostSpace = hostSpace;
-		this.userSpace = userSpace;
-		this.userInterface = userInterface;
 		this.action = new ClientActions(name, userSpace, userInterface);
 	}
 	

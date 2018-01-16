@@ -10,7 +10,7 @@ import org.jspace.Space;
 import clientUI.UIController;
 import log.Log;
 
-public class ClientController implements ClientControllerInter{
+public class ClientController {
 	private String userName;
 	private String host;
 	private int port;
