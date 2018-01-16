@@ -23,6 +23,8 @@ public class Lobby extends Thread  {
 	private Space clientSpace, safeSpace;
 	private int noOfPlayers;
 	private int activePlayers;
+	
+
 	private ArrayList<String> expansions;
 	private CardReader cardReader;
 	private ArrayList<String> players;
@@ -40,11 +42,6 @@ public class Lobby extends Thread  {
 		
 		//Setup safe space
 		safeSpace = new SequentialSpace();
-		
-		
-		//Setup control center
-		//TODO
-		
 		
 		
 		this.noOfPlayers = 4;
@@ -94,7 +91,9 @@ public class Lobby extends Thread  {
 	public String getURI(){
 		return uri;
 	}
-	
+	public int getActivePlayers() {
+		return activePlayers;
+	}	
 	
 }
 

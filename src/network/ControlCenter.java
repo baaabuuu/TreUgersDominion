@@ -1,6 +1,7 @@
 package network;
 
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.Space;
 
 import cards.Card;
@@ -19,38 +20,45 @@ public class ControlCenter extends Thread {
 	
 	public void run(){
 		
-		String name;
-		ClientCommands cmd;
-		Card card;
-		int index;
+		String name = "";
+		ClientCommands cmd = null;
 		
 		while(true){
 			
 			try {
-				clientSpace.get(new ActualField(name), new ActualField(cmd));
+				Object[] firstInput = clientSpace.get(new FormalField(String.class), new FormalField(ClientCommands.class));
+				
+				name = (String) firstInput[0];
+				cmd = (ClientCommands) firstInput[1];
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			switch(cmd)
-			{
-			case buyCard:
-					clientSpace.get(new ActualField(card));
+			
+			Object[] secondInput;
+			try {
+				switch(cmd)
+				{
+				case buyCard:
+						secondInput = clientSpace.get(new FormalField(Card.class));
+						
+						safeSpace.put(name, cmd);
+						safeSpace.put(name,(Card) secondInput[0]);
+				case playCard:
+				case selectCard:
+						secondInput = clientSpace.get(new FormalField(int.class));
 					
-					safeSpace.put(name, cmd);
-					safeSpace.put(card);
-			case playCard:
-					clientSpace.get(new ActualField(index));
+						safeSpace.put(name, cmd);
+						safeSpace.put(name, (int) secondInput[0]);
 				
-					safeSpace.put(name, cmd);
-					safeSpace.put(index);
-			case selectCard:
-					clientSpace.get(new ActualField(index));
-					safeSpace.put(name, cmd);
-					safeSpace.put(index);	
-			default:
-					safeSpace.put(name, cmd);
+				default:
+						safeSpace.put(name, cmd);
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			
 		}
