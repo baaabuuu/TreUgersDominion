@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
+import org.jspace.*;
 import cards.Card;
 import log.Log;
+import objects.ClientCommands;
 public class EffectHandler
 {	
 	
 	private Game game;
+	private Space rSpace;
 	public EffectHandler(Game game) {
 		this.game=game;
-		
+		this.rSpace=game.getSpace();
 	}
 	/**
 	 * Helper function to return list of available cards based on a predicate
@@ -92,7 +94,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				}
 			}
 		}
-		//If it is an attack, can somoene use a reaction card?
+		//If it is an attack, can someone use a reaction card?
 		Player[] affectedPlayers=null;
 		for(String type: card.getTypes()) {
 			if(type.equals("attack")) {
@@ -237,7 +239,8 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 			if(hasTreasure) {
 				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
-				ArrayList<Integer> response = null;
+				Object[] tempResponse=rSpace.get(new ActualField(p.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+				ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
 				Card selection =tempCards.get(response.get(0));
 				board.trashCard(selection);
 				tempCards.remove(selection);
