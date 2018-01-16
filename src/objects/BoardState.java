@@ -1,9 +1,9 @@
 package objects;
 
 public class BoardState {
-	private int[] shopArea, handCount, deckCount, discardCount, vpCount;
+	private Integer[] shopArea, handCount, deckCount, discardCount, vpCount;
 	private int trashCount;
-	public BoardState(int[] a, int[] b, int[] c, int[] d, int e, int[] f) {
+	public BoardState(Integer[] a, Integer[] b, Integer[] c, Integer[] d, int e, Integer[] f) {
 		this.shopArea = a;
 		this.handCount = b;
 		this.deckCount = c;
@@ -11,40 +11,40 @@ public class BoardState {
 		this.trashCount = e;
 		this.vpCount = f;
 	}
-	public int[] getShopArea(){
+	public Integer[] getShopArea(){
 		return shopArea;
 	}
-	public int[] getHandCount(){
+	public Integer[] getHandCount(){
 		return handCount;
 	}
-	public int[] getDeckCount(){
+	public Integer[] getDeckCount(){
 		return deckCount;
 	}
-	public int[] getDiscardCount(){
+	public Integer[] getDiscardCount(){
 		return discardCount;
 	}
 	public int getTrashCount(){
 		return trashCount;
 	}
-	public int[] getVpCount(){
+	public Integer[] getVpCount(){
 		return vpCount;
 	}
-	public void setShopArea(int[] shopArea){
+	public void setShopArea(Integer[] shopArea){
 		this.shopArea = shopArea;
 	}
-	public void setHandCount(int[] handCount){
+	public void setHandCount(Integer[] handCount){
 		this.handCount = handCount;
 	}
-	public void setDeckCount(int[] deckCount){
+	public void setDeckCount(Integer[] deckCount){
 		this.deckCount = deckCount;
 	}
-	public void setDiscardCount(int[] discardCount){
+	public void setDiscardCount(Integer[] discardCount){
 		this.discardCount = discardCount;
 	}
 	public void setTrashCount(int trashCount){
 		this.trashCount = trashCount;
 	}
-	public void setVpCount(int[] vpCount){
+	public void setVpCount(Integer[] vpCount){
 		this.vpCount = vpCount;
 	}
 }
