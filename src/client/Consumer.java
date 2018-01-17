@@ -42,6 +42,7 @@ public class Consumer implements Runnable {
 		Object[] input;
 		while(true) {
 			try {
+				
 				//Consumes all tuples that contains a playerID and a value from the ServerCommands class.
 				objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
 				
@@ -82,7 +83,8 @@ public class Consumer implements Runnable {
 							break;
 					case setLaunge: Log.log("Recieved a setLaunge");
 							input = hostSpace.get(new ActualField(playerID), 
-								new FormalField(LoungeObject.class));
+								new FormalField(Object.class));
+							Log.log("Recieved the object");
 							action.displayLaunge(((LoungeObject)input[1]).getGames(), hostSpace);
 							break;
 					default: break;

@@ -73,10 +73,6 @@ public class ClientController {
 		
 		userSpace = new SequentialSpace();
 		clientSpace = new SequentialSpace();
-		
-		connecterDetector = new Thread(new ConnectionDetector(hostSpace, clientController));
-		connecterDetector.start();
-		
 		userInterface = new UIController(port, host, clientController, userSpace);
 		
 	}
@@ -86,6 +82,7 @@ public class ClientController {
 	 * @param uri
 	 */
 	public void attemptConnection(String uri) {
+		this.uri = uri;
 		try {
 			this.hostSpace = new RemoteSpace(uri);
 			initiateCommunication();
@@ -108,7 +105,12 @@ public class ClientController {
 	 */
 	public void newConnection(String newUri) {
 		this.uri = newUri;
+		
+		
+		
 		consumer.interrupt();
+		connecterDetector.interrupt();
+		
 		//receiver.interrupt();
 		
 		try {
@@ -128,8 +130,10 @@ public class ClientController {
 	/**
 	 * Initiates the communication with the server.
 	 * @throws InterruptedException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
-	private void initiateCommunication() throws InterruptedException {
+	private void initiateCommunication() throws InterruptedException, UnknownHostException, IOException {
 		Object[] input;
 		
 		hostSpace.put(-1, ClientCommands.newPlayer);		
@@ -143,7 +147,11 @@ public class ClientController {
 		
 		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
 		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface, clientController));
+		connecterDetector = new Thread(new ConnectionDetector(new RemoteSpace(this.uri), clientController));
+		
 		consumer.start();
+		connecterDetector.start();
+		
 		//receiver.start();
 		Log.log("Threads initiated.");
 	}

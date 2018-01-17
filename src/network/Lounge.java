@@ -119,15 +119,15 @@ public class Lounge {
 				
 				if(indexID < gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
 					Log.log("Sending uri");
-					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, ServerCommands.newConnection, gamesRunning[gameID].getURI());
+					playerNames[playerID] = null;
+					
 				} else {
 					Log.log("Failed to find game. Sending Exception");
 					lounge.put(ServerCommands.message, playerID);
 					lounge.put(playerID, "Game Not Found or already started");
 					lounge.put(playerID, ClientCommands.getLobbies);
 				}
-				playerNames[playerID] = null;
 				break;
 			case createLobby:
 				Log.log("Creating lobby");
@@ -146,6 +146,8 @@ public class Lounge {
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?conn";
 						Log.log("Game created. Sending URI to: " + playerID);						
 						lounge.put(playerID, ServerCommands.newConnection, tempURI);
+						playerNames[playerID] = null;
+						
 						break;
 					}
 				}
