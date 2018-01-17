@@ -21,7 +21,7 @@ public class EffectHandler
 
 
 	/**
-	 * Coordinator of effects- Call this on a per-board basis
+	 * Coordinator of effects - calls the effect of cards.
 	 * @param n - Specifies the effect code
 	 * @param player - PLayer that the effect should a apply toString[] players
 	 * @param card - The card that was played.
@@ -29,7 +29,6 @@ public class EffectHandler
 	 * @param players - List of playerObjects
 	 * @throws InterruptedException 
 	 */
-
 	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players) throws InterruptedException{
 		//First check if playing this card would trigger any other effect
 		for(Player p: players) {
@@ -44,14 +43,16 @@ public class EffectHandler
 		}
 		//If it is an attack, can someone use a reaction card?
 		Player[] affectedPlayers=null;
-		for(String type: card.getTypes()) {
-			if(type.equals("attack")) {
-				affectedPlayers=(Player[]) findCounterPlays(player, card, board, players).toArray();
+		for(String type: card.getTypes())
+		{
+			if(type.equals("attack"))
+			{
+				affectedPlayers = (Player[]) findCounterPlays(player, card, board, players).toArray();
 			}
-			else {
+			else 
+			{
 				affectedPlayers = players;
 			}
-
 		}
 
 		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
