@@ -28,7 +28,7 @@ public class Board
 	{
 		Log.important("Setting up supply piles:");		
 		int special = (playerCount == 2) ? 8 : 12;
-		int[] cardSize = {60-(7*playerCount), 40, 30, (playerCount - 1)*10, special, special, special};
+		Integer[] cardSize = {60-(7*playerCount), 40, 30, (playerCount - 1)*10, special, special, special};
 		Card card;
 		for (int i = 0; i < setupCards.size(); i++)
 		{
@@ -37,7 +37,6 @@ public class Board
 			board.put(card.getName(), input);
 			Log.log("Setup Card name: " + card.getName() + " copies: " + cardSize[i]);
 		}
-
 		for (Card card2 : cards)
 		{
 			Object[] input = {10, card2};
@@ -65,9 +64,9 @@ public class Board
 		if (board.containsKey(cardName))
 		{
 			Object[] array = board.get(cardName);
-			if ((int) array[0] > 0)
+			if ((Integer) array[0] > 0)
 			{
-				array[0] = (int) array[0] - 1;
+				array[0] = (Integer) array[0] - 1;
 				board.put(cardName, array);
 				Log.important("Card removed: "+ cardName + " copies left: " + array[0]);
 			}
@@ -88,11 +87,11 @@ public class Board
 	 * @param cardName
 	 * @return
 	 */
-	public int getCopiesLeft(String cardName)
+	public Integer getCopiesLeft(String cardName)
 	{
 		if (board.containsKey(cardName))
 		{
-			int copies = (int) board.get(cardName)[0];
+			Integer copies = (Integer) board.get(cardName)[0];
 			Log.log(copies + " copies left of " + cardName);
 			return copies;
 		}
@@ -109,7 +108,7 @@ public class Board
 		if (board.containsKey(cardName))
 		{
 			Object[] array = board.get(cardName);
-			if ((int) array[0] > 0)
+			if ((Integer) array[0] > 0)
 			{
 				return (Card) array[1];
 			}
