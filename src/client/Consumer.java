@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
+import org.jspace.Tuple;
 
 import cards.Card;
 import clientUI.UIController;
@@ -71,9 +72,9 @@ public class Consumer implements Runnable {
 							break;
 					case setLaunge: Log.log("Recieved a setLaunge");
 							input = clientSpace.get(new ActualField(playerID), 
-								new FormalField(HashMap.class));
+								new FormalField(Tuple.class));
 							Log.log("Recieved a HashMap");
-							action.displayLaunge((HashMap<Integer,Integer>)input[1], hostSpace);
+							action.displayLaunge((HashMap<Integer,Integer>)((Tuple) input[1]).getElementAt(0), hostSpace);
 							break;
 					default: break;
 				}

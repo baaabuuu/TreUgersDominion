@@ -16,6 +16,7 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
+import org.jspace.Tuple;
 
 import cards.CardReader;
 import log.Log;
@@ -161,7 +162,7 @@ public class Lounge {
 				}	
 					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
-					lounge.put(playerID, numberOfPlayers);
+					lounge.put(playerID, new Tuple(numberOfPlayers));
 					
 					
 				
