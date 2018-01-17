@@ -1,32 +1,76 @@
 package engine;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
-
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.jspace.*;
 import cards.Card;
 import log.Log;
+import objects.ClientCommands;
 public class EffectHandler
 {	
 	
 	private Game game;
+	private Space rSpace;
 	public EffectHandler(Game game) {
 		this.game=game;
-		
+		this.rSpace=game.getSpace();
 	}
-	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) {
-		boolean counter;
+	/**
+	 * Helper function to return list of available cards based on a predicate
+	 */
+private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
+	ArrayList<Card> choice =(ArrayList<Card>) board.getCardStream().filter(p).collect(Collectors.toList());
+	 
+		return choice;
+	}
+	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
+		boolean counterPlay;
 		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
 		for(Player p: players) {
-			counter = false;
+			counterPlay = false;
+			if(!player.isConnected()) break;
 			for(Card c : p.getHand()) {
-				
+				//Reaction card handling
 				switch(c.getName()) {
-				case "Moat":
-					//ask if we counter
+				
+				case "Moat": 
+					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
+					//---[BEGIN TIMEOUT BLOCK]---
+					int counter = 0; // timeout
+						Object[] tempResponse = null;
+						while(true) {
+						tempResponse=rSpace.getp(new ActualField(p.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+						ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+						if(response.get(0) != -1) {
+							counterPlay = true;
+							game.sendMessageAll(p.getName()+" has revealed a Moat");
+						}
+						//---[END CODE BLOCK]---
+							break;
+						}
+						counter++;
+						if (counter > game.getWaitTime())
+						{
+
+								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+								game.sendDisconnect(player.getID());
+								break;
+						}
+						Thread.sleep(10);
+					}
+				//---[END TIMEOUT BLOCK]---
+
+					//Based on result, set counter to true or false
 					break;
 				}
 				
 			}
-			if(counter) {
+			if(counterPlay) {
 				
 				continue;
 			}
@@ -61,9 +105,10 @@ public class EffectHandler
 	 * @param card - The card that was played.
 	 * @param board - current board state
 	 * @param players - List of playerObjects
+	 * @throws InterruptedException 
 	 */
 	
-	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players){
+	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players) throws InterruptedException{
 		//First check if playing this card would trigger any other effect
 		for(Player p: players) {
 			if(p.getEffects().size()== 0) {
@@ -75,7 +120,7 @@ public class EffectHandler
 				}
 			}
 		}
-		//If it is an attack, can somoene use a reaction card?
+		//If it is an attack, can someone use a reaction card?
 		Player[] affectedPlayers=null;
 		for(String type: card.getTypes()) {
 			if(type.equals("attack")) {
@@ -175,106 +220,345 @@ public class EffectHandler
 				draw1Action1Look2(player);
 				break;
 			case 24:
-				draw2OthersCurse(player,affectedPlayers);
+				draw2OthersCurse(player,affectedPlayers, board);
 				break;
 			case 25:
 				gainPlus5(player,board);
+				break;
+			case 26: trashUpTo4(player,board);
 				break;
 			default:
 				Log.important("Invalid effect code: "+n);
 				break;//Invalid effect error here;
 
 		}
+		//After every effect, update player hand
+		game.sendPlayerHand(player.getID(), player.getID());
 	}
-	private void gainGoldOthersReveal(Player player, Board board, Player[] players) {
+	private void trashUpTo4(Player player, Board board) throws InterruptedException {
+		game.sendCardOption(player.getID(), "Select up to 4 cards you would like to trash", 4, player.getHand(), true);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				if(response.get(0)==-1) {
+					game.sendMessage("No cards trashed", player.getID());
+				}
+				else {
+					ArrayList<Card> tempHand = player.getHand();
+					ArrayList<Card> toTrash = new ArrayList<Card>();
+					for(int index:response) {
+						toTrash.add(tempHand.get(index));
+						
+					}
+					for(Card c: toTrash) {
+						player.removeFromHand(c);
+						board.trashCard(c);
+						player.trash(c);
+					}
+				}
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]---
+		
+	}
+	private void gainGoldOthersReveal(Player player, Board board, Player[] players) throws InterruptedException {
 		Card gold =board.canGain("Gold");
+		ArrayList<Player> expectedResponses= new ArrayList<Player>();
+		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
 		if(gold != null) {
 			player.discardCard(gold);
 			board.cardRemove("Gold");
+			player.gain(gold);
 		}
-			//reveal 2 top cards
-			//if revealed and is Treasure
-			//not equal tó copper, trash one of them
-			//And discard the others
-		
-	}
-	private void gainPlus5(Player player, Board board) {
-		//NETWORK
-		//loop
-		//What card to gain
-		String cardName ="Placeholder";
-		Card gainedCard =board.canGain(cardName);
-		if(gainedCard != null && gainedCard.getCost()<=5) {
-		board.cardRemove(cardName);
-		}
-		else {
-			//Invalid card break networking loop
-		}
-	//loopend
-	//NETWORK select a card
-		int input =0; //Placeholder value. Should be player choice
-	
-		Card selected =player.select(player.getHand(), input);
-		player.removeFromHand(selected);
-		player.addCardDecktop(selected);
-	}
-	private void mayTrashTreasure(Player player, Board board) {
-		//NETWORK
-		//Query: Want to trash?
-		//If yes, trash card from hand
-		//Check of card is valid
-		Card placeholder = new Card();
-		for(String type: placeholder.getDisplayTypes()) {
-			if(type.equals("Treasure")) {
-				board.trashCard(placeholder);
-				break;
+		for(Player p : players) {
+			if(p.equals(player)) {
+				continue;
 			}
-			
-		}
-		
-		
-		//Query: What card to gain?
-		
-		//Some kind of loop here
-		
-		String placeholder2= "placeholder";
-		Card gainedCard=board.canGain(placeholder2);
-		for(String type: gainedCard.getDisplayTypes()) {
-			if(type.equals("Treasure")) {
+			String[]drawn = p.drawCard(2);
+			//Measure to avoid index out of bounds in case of empty discard and deck
+			String drawnToString="";
+			for(String s:drawn) {
+				drawnToString+= s+" ";
+			}
 				
-				if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+3) {
-					board.cardRemove(placeholder2);
-					ArrayList<Card> tempHand = player.getHand();
-					tempHand.add(gainedCard);
-					player.setHand(tempHand);
-					}
-					else {
-						//Error, request new card
-						
-					}
-				break;
+			game.sendMessageAll(p.getName()+" has revealed "+drawnToString);
+			//Remove cards from hand
+			ArrayList<Card> tempCards = new ArrayList<Card>();
+			for(int i =1;i<=drawn.length;i++) {
+				tempCards.add(p.getHand().get(p.getHandSize()-i));
+				p.removeFromHand(p.getHand().get(p.getHandSize()-i));
 			}
 			
+			//See if cards are treasure
+		boolean hasTreasure= tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) &&!c.getName().equals("Copper"));
+			
+		
+		
+			if(hasTreasure) {
+				//If requirements met, trash one, discard the other (if there is another)
+				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
+				expectedResponses.add(p);
+				selectedCards.add(tempCards);
+			}else {
+				for(int i =tempCards.size()-1;i >= 0 ;i--) {
+					p.addCardDecktop(tempCards.get(i));
+				}
+			}
 		}
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+		Object[] tempResponse = null;
+		while(expectedResponses.size()>0) {
+			
+			while(true) {
+		tempResponse=rSpace.getp(new FormalField(Integer.class),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+		if(tempResponse != null) {
+			
+			
+			int pID = (int) tempResponse[0];
+			ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
+			//Find out what player responded
+			for(Player rPlayer : expectedResponses) {
+				if(rPlayer.getID() == pID) {
+					int cardIndex=expectedResponses.indexOf(rPlayer);
+					//---[BEGIN CODE BLOCK]---
+					Card selection =selectedCards.get(cardIndex).get(response.get(0));
+					board.trashCard(selection);
+					selectedCards.get(cardIndex).remove(selection);
+					rPlayer.trash(selection);
+				
+					Card nullCheck = selectedCards.get(cardIndex).get(0);
+						if (nullCheck != null) {
+							rPlayer.discardCard(nullCheck);
+						}
+					//---[END CODE BLOCK]---
+					expectedResponses.remove(rPlayer);
+					selectedCards.remove(cardIndex);
+					counter =0; // reset timeout after player response
+					break;
+				}
+			}
+			
+			
 		
-		
-	}
+			
+			break;
+		}
+		counter++;
+		if (counter > game.getWaitTime())
+		{
+			for(Player dPlayer : expectedResponses) {
+				Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
+				game.sendDisconnect(dPlayer.getID());
+				
+			}
+			
+			break;
+			}
+			Thread.sleep(10);
+			}
+		}
+		//---[END TIMEOUT BLOCK]---
 	
-	private void drawTill7(Player player) {
-		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
-		while(player.getHandSize() <7 || player.getDeckSize()>0) {
-			player.drawCard(1);
-			Card currentDraw =player.select(player.getHand(), player.getHandSize()-1);
-			for(String dispType: currentDraw.getDisplayTypes()) {
-				if(dispType.equals("Action")) {
-					//NETWORK
-					//Ask if discard or keep
-					boolean placeholder =true; //Keep card?
-					if(placeholder) {
+}
+	private void gainPlus5(Player player, Board board) throws InterruptedException {
+		ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=5, board);
+		
+		ArrayList<Card> tempHand = player.getHand();
+		Card c;
+		if(choice.size()>0) {
+			game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
+			//---[BEGIN TIMEOUT BLOCK]---	
+			int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+				//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				c =choice.get(response.get(0));
+				board.cardRemove(c.getName());
+				tempHand.add(c);
+				player.setHand(tempHand);
+				player.gain(c);
+					
+				game.sendCardOption(player.getID(), "Select a card to put on top of deck", 1, tempHand, false);
+				//---[BEGIN TIMEOUT BLOCK]---
+				int counter2 = 0; // timeout
+					tempResponse = null;
+					while(true) {
+					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+						response =(ArrayList<Integer>) tempResponse[2];
+						c = tempHand.get(response.get(0));
+						player.removeFromHand(c);
+						player.addCardDecktop(c);
+						//---[END CODE BLOCK]---
 						break;
 					}
+					counter2++;
+					if (counter2 > game.getWaitTime())
+					{
+
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
+					}
+					Thread.sleep(10);
+				}
+			//---[END TIMEOUT BLOCK]---		
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+				
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+			//---[END TIMEOUT BLOCK]---	
+		}	
+		
+	}
+	private void mayTrashTreasure(Player player, Board board) throws InterruptedException {
+		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure") ) ).collect(Collectors.toList());
+		if(choice.size() > 0) {
+			
+		game.sendCardOption(player.getID(), "Trash treasure to gain treasure costing upto 3 more?", 1, choice, true);
+		//---[BEGIN TIMEOUT BLOCK]--
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				if(response.get(0) !=-1) {
+					Card c = choice.get(response.get(0));
+					
+					choice = getChoice(bcard ->bcard.getCost()<=c.getCost()+3&& Arrays.stream(bcard.getDisplayTypes()).anyMatch(type -> type.equals("Treasure")), board);
+					if(choice.size() >0) {
+					game.sendCardOption(player.getID(), "Choose a card to gain", 1, choice, false);
+					//---[BEGIN TIMEOUT BLOCK]--
+					int counter2 = 0; // timeout
+						tempResponse = null;
+						while(true) {
+						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+							response = (ArrayList<Integer>) tempResponse[2];
+							Card c2 = choice.get(response.get(0));
+							player.discardCard(c2);
+							board.cardRemove(c2.getName());
+							player.gain(c2);
+							board.trashCard(c);
+							player.trash(c);
+							player.removeFromHand(c);
+						//---[END CODE BLOCK]---
+							break;
+						}
+						counter2++;
+						if (counter2 > game.getWaitTime())
+						{
+
+								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+								game.sendDisconnect(player.getID());
+								break;
+						}
+						Thread.sleep(10);
+					}
+				//---[END TIMEOUT BLOCK]--
+
+						
+					}
 					else {
-						ArrayList<Card> tempHand = player.getHand();
+						game.sendMessage("No cards to gain, your treasure has not been trashed", player.getID());
+					}
+				}
+			else {
+				game.sendMessage("No treasure in hand", player.getID());
+				}
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]--
+
+		
+		
+		
+		}
+	}
+	
+	private void drawTill7(Player player) throws InterruptedException {
+		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
+		while(player.getHandSize() <7 || (player.getDeckSize()>0 && player.getDiscardSize()>0)) {
+			player.drawCard(1);
+			game.sendPlayerHand(player.getID(), player.getID());
+			Card currentDraw =player.getHand().get(player.getHandSize()-1);
+			
+			
+			for(String dispType: currentDraw.getDisplayTypes()) {
+				if(dispType.equals("Action")) {
+					ArrayList<Card> choice = new ArrayList<Card>();
+					ArrayList<Integer> response = new ArrayList<Integer>();
+					choice.add(currentDraw);
+					game.sendCardOption(player.getID(), "Do you wish to keep "+currentDraw.getName()+" ?", 1, choice, true);
+					//---[BEGIN TIMEOUT BLOCK]---
+					int counter = 0; // timeout
+						Object[] tempResponse = null;
+						while(true) {
+						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+						response= (ArrayList<Integer>) tempResponse[2];
+						//---[END CODE BLOCK]---
+							break;
+						}
+						counter++;
+						if (counter > game.getWaitTime())
+						{
+
+								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+								game.sendDisconnect(player.getID());
+								break;
+						}
+						Thread.sleep(10);
+					}
+				//---[END TIMEOUT BLOCK]---
+						if(response.get(0)!= -1) {
+						break;
+						}
+					else {
 						player.removeFromHand(currentDraw);
 						toBeDiscarded.add(currentDraw);
 					}
@@ -290,31 +574,75 @@ public class EffectHandler
 		}
 		
 	}
-	private void trashFromHandGainPlus2(Player player, Board board) {
-	//NETWORK
-	//Query: Want to trash?
-	//If yes, trash card, 
-	Card placeholder = new Card();
-	board.trashCard(placeholder);
-	//Query: What card to gain?
+	private void trashFromHandGainPlus2(Player player, Board board) throws InterruptedException {
 	
-	//Some kind of loop here
-	
-	String placeholder2= "placeholder";
-	Card gainedCard=board.canGain(placeholder2);
-	if(gainedCard != null && gainedCard.getCost()<= placeholder.getCost()+2) {
-	board.cardRemove(placeholder2);
-	player.discardCard(gainedCard);
-	}
-	else {
-		//Error, request new card
+		ArrayList<Card> tempHand = player.getHand();
+		if(tempHand.size()> 0) {
+		game.sendCardOption(player.getID(), "Choose a card to trash",1, tempHand, false);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response=(ArrayList<Integer>) tempResponse[2];
+				Card trashCard = tempHand.get(response.get(0));
+				board.trashCard(trashCard);
+				player.trash(trashCard);
+				ArrayList<Card> choice = getChoice(bcard -> bcard.getCost()<= trashCard.getCost()+2,board);
+			
+				game.sendCardOption(player.getID(), "Choose 1 card to gain", 1,choice, false);
+				//---[BEGIN TIMEOUT BLOCK]---
+				int counter2 = 0; // timeout
+					 tempResponse = null;
+					while(true) {
+					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					if(tempResponse != null) {
+					//---[BEGIN CODE BLOCK]---
+						response = (ArrayList<Integer>) tempResponse[2];
+						//Since we only ask for one choice, we always know where it is.
+						Card c =choice.get(response.get(0));
+						player.discardCard(c);
+						board.cardRemove(c.getName());
+						player.gain(c);
+					//---[END CODE BLOCK]---
+						break;
+					}
+					counter2++;
+					if (counter2 > game.getWaitTime())
+					{
+
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
+					}
+					Thread.sleep(10);
+				}
+			//---[END TIMEOUT BLOCK]---
+					
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]---
+			
+		}
+		else {
+			game.sendMessage("No cards in hand, nothing to trash", player.getID());
+		}
 		
 	}
-	
-	//Loop end
-		
-	}
-	private void discardPerEmptySupply(Player player, Board board) {
+	private void discardPerEmptySupply(Player player, Board board) throws InterruptedException {
 		int count =0;
 		for (String cardName : board.getBoardNamesArray())
 		{
@@ -324,59 +652,258 @@ public class EffectHandler
 			}
 				
 		}
-		Log.log(player+ " needs to discard "+count+ " cards.");
-		//NETWORK
-		//Ask player to discard "count" cards
-		//Reponse
-		
-		for(int i =0;i<count;i++) {
-			//discard cards chosen
+	game.sendCardOption(player.getID(), "Choose "+count+" cards to discard", count, player.getHand(), false);
+	
+	//---[BEGIN TIMEOUT BLOCK]---
+	int counter = 0; // timeout
+		Object[] tempResponse = null;
+		while(true) {
+		tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+		if(tempResponse != null) {
+		//---[BEGIN CODE BLOCK]---
+			ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // Response here
+			ArrayList<Card> toDiscard = new ArrayList<Card>();
+			ArrayList<Card> tempHand = player.getHand();
+			for(int i: response) {
+				toDiscard.add(tempHand.get(i));
+			}
+			for(Card c: toDiscard) {
+				tempHand.remove(c);
+			}
+			player.setHand(tempHand);
+		//---[END CODE BLOCK]---
+			break;
 		}
+		counter++;
+		if (counter > game.getWaitTime())
+		{
+
+				Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+				game.sendDisconnect(player.getID());
+				break;
+		}
+		Thread.sleep(10);
+	}
+//---[END TIMEOUT BLOCK]---
+		
+	
+	
+	
+	//Hand setting happens at the endof the effect trigger
 		
 	}
-	private void mayTrashCopperGain2(Player player,Board board) {
+	private void mayTrashCopperGain2(Player player,Board board) throws InterruptedException {
+		boolean hadCopper =false;
 		for(Card copper: player.getHand()) {
 			if(copper.getName().equals("Copper")) {
-				//Only network if player has copper
-				//NETWORK 
-				//Ask if player wants to trash if yes
-				 ArrayList<Card> tempHand = player.getHand();
-				tempHand.remove(copper);
-				board.trashCard(copper);
-				player.setHand(tempHand);
-				break;
+				hadCopper = true;
+				ArrayList<Card> copperList = new ArrayList<Card>();
+				copperList.add(copper);
+				game.sendCardOption(player.getID(), "Trash copper to gain card costing 2 more?", 1, copperList, true);
 				
+				//---[BEGIN TIMEOUT BLOCK]---
+				ArrayList<Integer> response = new ArrayList<Integer>();
+				int counter = 0; // timeout
+					Object[] tempResponse = null;
+					while(true) {
+					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					if(tempResponse != null) {
+					//---[BEGIN CODE BLOCK]---
+						 response= (ArrayList<Integer>) tempResponse[2];				
+					//---[END CODE BLOCK]---
+						break;
+					}
+					counter++;
+					if (counter > game.getWaitTime())
+					{
+							response.set(0, -1);//Break out of functionality once we time out
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
+					}
+					Thread.sleep(10);
+				}
+			//---[END TIMEOUT BLOCK]---
+					if(response.get(0)==-1){
+						//break if we choose not to or timeout
+						break;
+					}else {
+						ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=copper.getCost()+2,board);
+						if(choice.size()==0) {
+						game.sendMessage("No cards meeting requirements available", player.getID());
+						break;
+						}
+						else {
+						game.sendCardOption(player.getID(), "Select the card you would like to gain", 1, choice, false);
+						//---[BEGIN TIMEOUT BLOCK]---
+						int counter2 = 0; // timeout
+							tempResponse = null;
+							while(true) {
+							tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+							if(tempResponse != null) {
+							//---[BEGIN CODE BLOCK]---
+								response=(ArrayList<Integer>) tempResponse[2];
+								//We already checked that atleast one copy is available in the deck
+							Card cardToGain = board.canGain(choice.get(response.get(0)).getName());
+							player.discardCard(cardToGain);
+							board.cardRemove(cardToGain.getName());
+							player.gain(cardToGain);
+							
+							ArrayList<Card> tempHand = player.getHand();
+							tempHand.remove(copper);
+							board.trashCard(copper);
+							player.trash(copper);
+							player.setHand(tempHand);
+							game.sendPlayerHand(player.getID(), player.getID());
+							//---[END CODE BLOCK]---
+								break;
+							}
+							counter2++;
+							if (counter2 > game.getWaitTime())
+							{
+
+									Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+									game.sendDisconnect(player.getID());
+									break;
+							}
+							Thread.sleep(10);
+						}
+					//---[END TIMEOUT BLOCK]---
+						
+						
+						break;
+					}
+					
+					}
 			}
+			
 		}
-		//Tell player: You don't have copper
+		if(!hadCopper) game.sendMessage("No copper found in hand", player.getID());
 	}
-	private void draw2OthersCurse(Player player, Player[] players) {
+	private void draw2OthersCurse(Player player, Player[] players,Board board) throws InterruptedException {
 		player.drawCard(2);
 		for(Player other: players) {
 			if(other.equals(player)) {
 				continue;
 			}
-			//NETWORK
-			//Gain curse for everyone else
+			game.sendMessage("Gained a Curse from "+player.getName()+"'s card", other.getID());
+			Card curse = board.canGain("Curse");
+			if(curse != null){
+				other.discardCard(curse);
+				board.cardRemove("Curse");
+				other.gain(curse);
+			}
+			
 		}
 		
 		
 	}
-	private void draw1Action1Look2(Player player) {
+	private void draw1Action1Look2(Player player) throws InterruptedException { //This method is bound to have errors, remember this for testing
 		 LinkedBlockingDeque<Card> tempDeck = player.getDeck();
-		player.drawCard(1);
-		player.addActions(1);
-		Card card1 = tempDeck.pollFirst();
-		Card card2 = tempDeck.pollFirst();
-		//Ask what cards to discard
-		//Ask what cards to trash
+		 ArrayList<Card> choice = new ArrayList<Card>();
+		 player.drawCard(1);
+		 player.addActions(1);
+		 Card card1 = tempDeck.pollFirst();
+		 Card card2 = tempDeck.pollFirst();
+		 choice.add(card1);
+		 choice.add(card2);
 		
-		//Discard Routine based on input from NETWORK
-		//Trash Routine based on input from NETWORK
-		
-		//Place remaining cards back on top of the deck in chosen order
-		//player.setDeck();
-	}
+		game.sendCardOption(player.getID(), "Select the cards you would like to discard if any(In order)", 2, choice, true);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // response here
+				
+				List<Card> choice2 = choice;
+				if(response.get(0)!=-1) {
+					for(int i: response ) {
+						player.discardCard(choice.get(i));
+						choice2.remove(choice.get(i));
+						
+					}
+				}
+				if (response.size()!=2) {
+					game.sendCardOption(player.getID(), "Select the cards you would like to trash if any(In order)", response.size(), choice2, true);
+					//---[BEGIN TIMEOUT BLOCK]---
+					int counter2 = 0; // timeout
+						tempResponse = null;
+						while(true) {
+						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+							response = (ArrayList<Integer>) tempResponse[2]; //response here
+							List<Card> choice3 = choice2;
+							if(response.get(0)!=-1) {
+								for(int i: response ) {
+									player.discardCard(choice2.get(i));
+									choice3.remove(choice2.get(i));
+								}
+						}
+						if(response.size()!=2) {
+						game.sendCardOption(player.getID(), "Select the order you would like to put the remaining cards back in", response.size(), choice3, false);
+						//---[BEGIN TIMEOUT BLOCK]---
+						int counter3 = 0; // timeout
+							 tempResponse = null;
+							while(true) {
+							tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+							if(tempResponse != null) {
+							//---[BEGIN CODE BLOCK]---
+								response = (ArrayList<Integer>) tempResponse[2]; //response here		
+								for(int i: response) {
+									tempDeck.addFirst(choice3.get(i));
+								}
+							//---[END CODE BLOCK]---
+								break;
+							}
+							counter3++;
+							if (counter3 > game.getWaitTime())
+							{
+
+									Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+									game.sendDisconnect(player.getID());
+									break;
+							}
+							Thread.sleep(10);
+						}
+						//---[END TIMEOUT BLOCK]---
+						}
+						//---[END CODE BLOCK]---
+							break;
+						}
+						counter2++;
+						if (counter2 > game.getWaitTime())
+						{
+
+								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+								game.sendDisconnect(player.getID());
+								break;
+						}
+						Thread.sleep(10);
+					}
+				//---[END TIMEOUT BLOCK]---
+					
+				}
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]---
+	
+		player.setDeck(tempDeck);
+	}	
 	private void draw1Action1Buy1Tempmoney(Player player) {
 		player.drawCard(1);
 		player.addActions(1);
@@ -394,97 +921,178 @@ public class EffectHandler
 		player.addMoney(2);
 		
 	}
-	private void draw4Buy1OthersDraw(Player player, Player[] players) {
+	private void draw4Buy1OthersDraw(Player player, Player[] players) throws InterruptedException {
 		player.drawCard(4);
-		player.addBuys(1);
-		//NETWORK 
-		//Allow all others to draw one card
+		player.addBuys(1);		
 		for(Player other: players) {
 			if(other.equals(player)) {
 				continue;
 			}
-			//Do some tuple magic here
+			game.sendMessage("Drawing one card from the effect of "+player.getName()+"'s card", other.getID());
+			other.drawCard(1);
+			game.sendPlayerHand(other.getID(), other.getID());
 		}
+		
 		
 	}
-	private void playActionFromHandtwice(Player player,Board board,Player[] players) {
-		//NETWORK
-		//Select card to be played twice or if none 
-		boolean placeholder=false;
-		if(placeholder) {
-			
-		}
-		else {
-		//If wants to play action w/ double battlecry
-			
+	private void playActionFromHandtwice(Player player,Board board,Player[] players) throws InterruptedException {
 		
-		int selected =0; //Response form networking goes here.
-		Card cardSelected = player.select(player.getHand(), selected);
-		//Do the twice
-			for(int o =0;o<2;o++) {
-				for(int i:cardSelected.getEffectCode()) {
-				triggerEffect(i,player, cardSelected, board, players);					
+		ArrayList<Card> actionInHand = new ArrayList<Card>();
+		for(Card c : player.getHand()) {
+			for(String s : c.getDisplayTypes()) {
+				if (s.equals("Action")){
+					actionInHand.add(c);
 				}
 			}
 		}
+		if(actionInHand.size()==0) {
+			game.sendMessage("No action card found in hand", player.getID());
+		}
+		else {
+		game.sendCardOption(player.getID(), "Select an action to be played twice", 1, actionInHand, true);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				//Response form networking goes here.
+				int selected = response.get(0);
+				if(selected == -1) {
+					game.sendMessage("No card has been played", player.getID());
+				}
+				else {
+				Card cardSelected = player.getHand().get(selected);
+				//Do the twice
+					for(int o =0;o<2;o++) {
+						for(int i:cardSelected.getEffectCode()) {
+						triggerEffect(i,player, cardSelected, board, players);					
+						}
+					}
+					player.putIntoPlay(cardSelected);
+				}
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]---
+
+		}
+		
+		
+		
 	}
-	private void discardNDrawN(Player player)
+	private void discardNDrawN(Player player) throws InterruptedException
 	{
-		int i=0; //number of discards
+		
 		if(player.getHandSize()==0)
 		{
-			//Display "invalid action"
+			game.sendMessage("No cards to discard", player.getID());
 		}
 		else
 		{
-			//counter to determine draws
-			//NETWORK
-			//access connected spacenetwork
-			//wait for pspace with identifier
-			//if discard, then then discard+increment counter
-			//else draw equal to counter
+			game.sendCardOption(player.getID(), "Discard as many cards as you would like, then draw the same amount", player.getHandSize(), player.getHand(), true);
+			//---[BEGIN TIMEOUT BLOCK]---
+			int counter = 0; // timeout
+				Object[] tempResponse = null;
+				while(true) {
+				tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+				if(tempResponse != null) {
+				//---[BEGIN CODE BLOCK]---
+					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Card> responseToCard = new ArrayList<Card>();
+					ArrayList<Card> tempHand =player.getHand();
+					int i= response.size();
+					if(i >0) {
+					for(int index:response) {
+						responseToCard.add(tempHand.get(index));
+					}
+					for(Card c: responseToCard) {
+						player.discardCard(c);
+						player.removeFromHand(c);
+					}
+					String allCards="";
+					//The call drawCard returns a list of the names drawn
+					for(String s:player.drawCard(i)) {
+						allCards+=" "+s+" ";
+					}
+					
+				game.sendMessage("You have drawn: "+allCards, player.getID());
+				}
+					else {
+						game.sendMessage("No cards discarded, none drawn", player.getID());
+					}
+				//---[END CODE BLOCK]---
+					break;
+				}
+				counter++;
+				if (counter > game.getWaitTime())
+				{
 
-			if(false)
-			{
+						Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+						game.sendDisconnect(player.getID());
+						break;
+				}
+				Thread.sleep(10);
+			}
+		//---[END TIMEOUT BLOCK]---
 
-			}
-			else 
-			{
-								player.drawCard(i);
-			}
-			//condition here
+			
+			
 
 		}
 	}
-	private void browseDiscard1OnTop(Player player)
+	private void browseDiscard1OnTop(Player player) throws InterruptedException
 	{
 		if(player.getDiscardSize() == 0)
 		{
-			//Display invalid action
+			game.sendMessage("Your discard pile is empty", player.getID());
 		}
-		else
-		{
-			LinkedBlockingDeque<Card> discardTemp= player.getDiscard();
-			for (Card card: discardTemp)
-			{
-				//UI show card
+		else {
+		
+		ArrayList<Card> choice=	new ArrayList<Card>(player.getDiscard());
+		game.sendCardOption(player.getID(), "Select a card to put on top of your deck(if any)", 1, choice, true);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				Card selection =choice.get(response.get(0));
+				choice.remove(selection);
+				player.addCardDecktop(selection);
+				player.setDiscard(new LinkedBlockingDeque<Card>(choice));
+			//---[END CODE BLOCK]---
+				break;
 			}
-			int select = 0; //Error suppression, does not actually need to be initialized
-			//NETWORK either get number or "no"
-			//either do nothing or add
-			//Create temp discard pile.
-			LinkedBlockingDeque<Card> tempDiscard = player.getDiscard();
-			//Convert playerinput to Card object
-			Card selectedCard= player.select(new ArrayList<Card>(tempDiscard), select);
-			//Remove selected card fom temp discard
-			tempDiscard.remove(selectedCard);
-			//Set players discardpile to the temp pile
-			player.setDiscard(tempDiscard);
-			//Finally add the selected card on top of the deck
-			player.addCardDecktop(selectedCard);
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
+		}
+	//---[END TIMEOUT BLOCK]---
+			
 		}
 	}
-	private void discardTopPlayAction(Player player)
+	private void discardTopPlayAction(Player player) throws InterruptedException
 	{
 		//Assume card drawn is not action card
 		boolean discard = true;
@@ -497,16 +1105,47 @@ public class EffectHandler
 		{
 			if(type.equals("Action"))
 			{
+				ArrayList<Card> tempChoice = new ArrayList<Card>();
+				tempChoice.add(topCard);
+				game.sendCardOption(player.getID(), "You drew a "+topCard.getName()+" do you wish to play it?", 1,tempChoice , true);
+				//---[BEGIN TIMEOUT BLOCK]---
+				int counter = 0; // timeout
+					Object[] tempResponse = null;
+					while(true) {
+					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					if(tempResponse != null) {
+					//---[BEGIN CODE BLOCK]---
+						ArrayList<Integer>response = (ArrayList<Integer>) tempResponse[2];
+						
+						if(response.get(0) != -1) {
+						player.playCard(topCard, 0);
+						//Don't discard it
+						discard = false;
+						}
+					//---[END CODE BLOCK]---
+						break;
+					}
+					counter++;
+					if (counter > game.getWaitTime())
+					{
+
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
+					}
+					Thread.sleep(10);
+				}
+			//---[END TIMEOUT BLOCK]---
 				//If action card, play it
-				player.playCard(topCard, 0);
-				//Don't discard it
-				discard = false;
+				
+				
 				break;
 			}
 		}
 		if(discard)
 		{
 			//Discard if not action card
+			player.removeFromHand(topCard);
 			player.discardCard(topCard);
 		}
 	}
@@ -516,43 +1155,196 @@ public class EffectHandler
 		player.addActions(2);
 	}
 
-	private void gain1MaxCost4(Player player, Board board)
+	private void gain1MaxCost4(Player player, Board board) throws InterruptedException
 	{
-		
-		//NETWORK
-		//Ask players what card to gain
-		String cardName = "Placeholder";
-		
-		Card gainedCard = board.canGain(cardName);
-		if(gainedCard.getCost() >4)
-		{
-			//Figure out how we do repetition with NETWORKING
+		ArrayList<Card> choice = getChoice(c-> c.getCost()<=4,board);
+		game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			if(tempResponse != null) {
+			//---[BEGIN CODE BLOCK]---
+				ArrayList<Integer> response= (ArrayList<Integer>) tempResponse[2];
+				Card selection = choice.get(response.get(0));
+				board.cardRemove(selection.getName());
+				player.discardCard(selection);
+				player.gain(selection);
+			//---[END CODE BLOCK]---
+				break;
+			}
+			counter++;
+			if (counter > game.getWaitTime())
+			{
+
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+			}
+			Thread.sleep(10);
 		}
-		else 
-		{
-			player.discardCard(gainedCard);
-			board.cardRemove(cardName);
+	//---[END TIMEOUT BLOCK]---
+		
+	
+	}
+	private void silverOnDeckRevealVC(Player player,Board board, Player[] players) throws InterruptedException
+	{
+		ArrayList<Player> expectedResponses= new ArrayList<Player>();
+		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
+		Card silver =board.canGain("Silver");
+		if (silver != null) {
+			player.addCardDecktop(silver);
 		}
+		for(Player other: players) {
+			if(other.equals(player)) {
+				continue;
+				}
+			//Find out if has any victory cards in hand
+			ArrayList<Card> choice =(ArrayList<Card>) other.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) ).collect(Collectors.toList());
+			if (choice.size()==0) {
+				String handToString ="";
+				for(Card c :other.getHand()) {
+					handToString+=" "+c.getName();
+				}
+				game.sendMessageAll(other.getName()+" reveals a hand with NO vicotry cards: "+handToString);
+			}
+			else if(choice.size()==1) {
+				Card tempCard = choice.get(0);
+				game.sendMessageAll(other.getName()+" reveals a "+tempCard.getName());
+				other.removeFromHand(tempCard);
+				other.addCardDecktop(tempCard);
+			}
+			else {
+				//ask player what card to reveal
+				game.sendCardOption(other.getID(), "Select a victory card to reveal", 1, choice, false);
+				expectedResponses.add(other);
+				selectedCards.add(choice);
+			}
+		
+		}
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+				Object[] tempResponse = null;
+				while(expectedResponses.size()>0) {
+
+					while(true) {
+				tempResponse=rSpace.getp(new FormalField(Integer.class),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+				if(tempResponse != null) {
+
+
+					int pID = (int) tempResponse[0];
+					ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
+					//Find out what player responded
+					for(Player rPlayer : expectedResponses) {
+						if(rPlayer.getID() == pID) {
+						int cardIndex=expectedResponses.indexOf(rPlayer);
+							//---[BEGIN CODE BLOCK]---
+						
+						Card tempCard = selectedCards.get(cardIndex).get(response.get(0));
+						game.sendMessageAll(rPlayer.getName()+" reveals a "+tempCard.getName());
+						rPlayer.removeFromHand(tempCard);
+						rPlayer.addCardDecktop(tempCard);
+							//---[END CODE BLOCK]---
+						expectedResponses.remove(rPlayer);
+						selectedCards.remove(cardIndex);
+						counter =0; // reset timeout after player response
+							break;
+						}
+					}
+
+
+
+
+					break;
+				}
+				counter++;
+				if (counter > game.getWaitTime())
+				{
+					for(Player dPlayer : expectedResponses) {
+						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
+						game.sendDisconnect(dPlayer.getID());
+					}
+
+					break;
+				}
+				Thread.sleep(10);
+			}}
+		//---[END TIMEOUT BLOCK]---
+
 	}
-	private void silverOnDeckRevealVC(Player player,Board board, Player[] players)
+	private void get2TempOthersDiscard(Player player, Player[] players) throws InterruptedException
 	{
-			board.canGain("Silver");
-			
-	}
-	private void get2TempOthersDiscard(Player player, Player[] players)
-	{
+		ArrayList<Player> expectedResponses= new ArrayList<Player>();
+		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
 		player.addMoney(2);
 		for(Player other: players) {
 			//Player should not discard
 			if(other.equals(player))
 				continue;
-
-			else {
-				//NETWORK
-				//Ask other players what cards they want to discard
+			ArrayList<Card> tempHand = other.getHand();
+			if(tempHand.size()<= 3) {
+				continue;
+			}else {
+			game.sendCardOption(other.getID(), "Select 3 cards to keep, the rest is discarded", 3, tempHand, false);
+			expectedResponses.add(other);
+			selectedCards.add(tempHand);
 			}
-
 		}
+		
+		//---[BEGIN TIMEOUT BLOCK]---
+		int counter = 0; // timeout
+				Object[] tempResponse = null;
+				while(expectedResponses.size()>0) {
+
+					while(true) {
+				tempResponse=rSpace.getp(new FormalField(Integer.class),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+				if(tempResponse != null) {
+
+
+					int pID = (int) tempResponse[0];
+					ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
+					//Find out what player responded
+					for(Player rPlayer : expectedResponses) {
+						if(rPlayer.getID() == pID) {
+						int cardIndex=expectedResponses.indexOf(rPlayer);
+							//---[BEGIN CODE BLOCK]---
+					
+						ArrayList<Card> newHand = new ArrayList<Card>();
+						for(int i: response) {
+							newHand.add(selectedCards.get(cardIndex).get(i));
+						}
+						rPlayer.setHand(newHand);
+							//---[END CODE BLOCK]---
+						expectedResponses.remove(rPlayer);
+						selectedCards.remove(cardIndex);
+						counter =0; // reset timeout after player response
+							break;
+						}
+					}
+
+
+
+
+					break;
+				}
+				counter++;
+				if (counter > game.getWaitTime())
+				{
+					for(Player dPlayer : expectedResponses) {
+						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
+						game.sendDisconnect(dPlayer.getID());
+					}
+
+					break;
+				}
+				Thread.sleep(10);
+			}
+			}
+		//---[END TIMEOUT BLOCK]---
+
+		
+		
 	}
 
 }
