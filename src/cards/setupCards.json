@@ -85,11 +85,11 @@
 		minCost : 0,
 		types :
 		[
-			"treasure"
+			"victory"
 		],
 		dispTypes : 
 		[
-			"Treasure"
+			"Curse"
 		],
 		"typeCount": 1,
 		"dispTypeCount": 1,
