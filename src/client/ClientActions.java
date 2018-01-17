@@ -1,7 +1,9 @@
 package client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -292,12 +294,50 @@ public class ClientActions {
 		this.buyArea = input;
 		userInterface.newBuyArea(input);
 	}
-	public void displayLaunge(Launge lobbies) throws InterruptedException {
+	public void displayLaunge(HashMap<Integer, Integer> lobbies, Space hostSpace) throws InterruptedException {
 		userInterface.eventInput("Server sent a list of lobbies: ");
-		for(int i = 0 ; i < lobbies.getLobbies().length; i++) {
-			userInterface.eventInput("Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "/4 players.");
+		Set<Integer> p = lobbies.keySet();
+		for(int i : p) {
+			userInterface.eventInput("Lobby " + i + " - " + lobbies.get(i) + "/4 players.");
 		}
-		userInterface.eventInput("Server sent a list of lobbies: ");
+		userInterface.eventInput("To connect to a lobby, type in 'c'.");
+		userInterface.eventInput("To make a new lobby, type in 'm'.");
+		userInterface.eventInput("To update lobby list, type in 'u'.");
+		Object[] input;
+		userInterface.awaitingUserInput();
+		input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
+		switch((String)input[2]) {
+			case "c":
+				int output;
+				userInterface.eventInput("Type a lobby-number to connect to.");
+				userInterface.awaitingUserInput();
+				input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
+				
+				if(((String)input[2]).matches("[0-9]+") && ((String)input[2]).length() < 5) {
+					output = (int)input[2];
+					
+					if(lobbies.get(output) == null) {
+						userInterface.eventInput("That game has not yet been created.");
+						hostSpace.put(playerID,ClientCommands.getLobbies);
+					}else {
+						hostSpace.put(playerID,ClientCommands.enterLobby);
+						hostSpace.put(playerID,output);
+					}
+				}else {
+					userInterface.eventInput("Invalid input");
+					hostSpace.put(playerID,ClientCommands.getLobbies);
+				}
+				break;
+			case "m":
+				hostSpace.put(playerID,ClientCommands.createLobby);
+				break;
+			case "u": 
+				hostSpace.put(playerID,ClientCommands.getLobbies);
+				break;
+			default: userInterface.eventInput("Not a valid input!");
+				break;
+		}
+		
 	}
 	public void serverMessage(String message) throws InterruptedException {
 		userInterface.eventInput("Server says: " + message);

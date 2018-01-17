@@ -1,5 +1,7 @@
 package client;
 
+import java.util.HashMap;
+
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
@@ -68,8 +70,8 @@ public class Consumer implements Runnable {
 							action.setBuyArea((Card[])input[1]);
 							break;
 					case setLaunge: input = clientSpace.get(new ActualField(playerID), 
-								new FormalField(Launge.class));
-							action.displayLaunge((Launge)input[1]);
+								new FormalField(HashMap.class));
+							action.displayLaunge((HashMap<Integer,Integer>)input[1], hostSpace);
 							break;
 					default: break;
 				}
