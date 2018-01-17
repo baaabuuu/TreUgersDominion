@@ -398,7 +398,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatSend){
-			if(chatTypAreaTemp.length() > 0){
+			if(chatTypAreaTemp != null && chatTypAreaTemp.length() > 0){
 				//Implement Chat
 			}
 			chatTypArea.setText("");

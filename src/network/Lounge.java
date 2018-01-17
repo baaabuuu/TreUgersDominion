@@ -101,9 +101,9 @@ public class Lounge {
 		while(true){
 			Log.log("Waiting for new Message");
 			//Reads command
-			Object[] firstInput = lounge.get(new FormalField(ClientCommands.class), new FormalField(Integer.class));
-			cmd = (ClientCommands) firstInput[0];
-			playerID = (int) firstInput[1];
+			Object[] firstInput = lounge.get(new FormalField(Integer.class), new FormalField(ClientCommands.class));
+			cmd = (ClientCommands) firstInput[1];
+			playerID = (int) firstInput[0];
 			
 			Log.log("Message recived: " + cmd.toString() + ", from: " + playerID);
 			
@@ -123,7 +123,7 @@ public class Lounge {
 					Log.log("Failed to find game. Sending Exception");
 					lounge.put(ServerCommands.message, playerID);
 					lounge.put(playerID, "Game Not Found or already started");
-					lounge.put(ClientCommands.getLobbies, playerID);
+					lounge.put(playerID, ClientCommands.getLobbies);
 				}
 				playerNames[playerID] = null;
 				break;
@@ -142,6 +142,8 @@ public class Lounge {
 						Lobby tempInit = new Lobby(tempURI, cardReader, clientSpace);
 						gamesRunning[i] = tempInit;
 						
+						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?conn";
+						
 						Log.log("Game created. Sending URI to: " + playerID);
 						lounge.put(ServerCommands.newConnection, playerID);
 						lounge.put(playerID, tempURI);
@@ -156,13 +158,13 @@ public class Lounge {
 						
 						numberOfPlayers.put(i, gamesRunning[i].getActivePlayers());
 					} 
-					
+				}	
 					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
 					lounge.put(playerID, numberOfPlayers);
 					
 					
-				}
+				
 				break;
 			case newPlayer:	
 				int ID;
@@ -185,7 +187,7 @@ public class Lounge {
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
-				lounge.put(ClientCommands.getLobbies, playerID);
+				lounge.put(playerID, ClientCommands.getLobbies);
 				break;
 			default:
 				Log.log("Uknown message recieved. Ignoring.");

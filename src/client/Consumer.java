@@ -8,6 +8,7 @@ import org.jspace.Space;
 
 import cards.Card;
 import clientUI.UIController;
+import log.Log;
 import objects.*;
 
 public class Consumer implements Runnable {
@@ -38,11 +39,10 @@ public class Consumer implements Runnable {
 		while(true) {
 			try {
 				//Consumes all tuples that contains a playerID and a value from the ServerCommands class.
-				objs = clientSpace.get(new ActualField(playerID), 
-						new FormalField(ServerCommands.class));
+				objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
 				
-				
-				switch ((ServerCommands)objs[1]) {
+				Log.log("Recieved a command");
+				switch ((ServerCommands)objs[0]) {
 					case setBoardState: input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(BoardState.class));
 							userInterface.newBoardState((BoardState) input[1]);
@@ -69,8 +69,10 @@ public class Consumer implements Runnable {
 								new FormalField(Card[].class));
 							action.setBuyArea((Card[])input[1]);
 							break;
-					case setLaunge: input = clientSpace.get(new ActualField(playerID), 
+					case setLaunge: Log.log("Recieved a setLaunge");
+							input = clientSpace.get(new ActualField(playerID), 
 								new FormalField(HashMap.class));
+							Log.log("Recieved a HashMap");
 							action.displayLaunge((HashMap<Integer,Integer>)input[1], hostSpace);
 							break;
 					default: break;

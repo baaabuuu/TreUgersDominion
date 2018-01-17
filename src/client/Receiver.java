@@ -21,13 +21,15 @@ public class Receiver implements Runnable {
 	public void run() {
 		
 		while(true) {
+			/*
 			try {
-				Object[] input = hostSpace.get(new ActualField(playerID), new FormalField(Object.class));
-				clientSpace.put(input);
+				Object[] input = hostSpace.get(new FormalField(Object.class), new ActualField(playerID));
+				clientSpace.put(input[1], playerID);
 				Log.log("Recieved package from host marked for: " + playerID);
 			} catch (InterruptedException e) {
 				Log.important("InterruptedException");
 			}
+			*/
 		}
 	}
 	

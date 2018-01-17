@@ -2,13 +2,6 @@ package client;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -94,10 +87,9 @@ public class ClientController {
 	 */
 	public void attemptConnection(String uri) {
 		try {
-			hostSpace = new RemoteSpace(uri);
+			this.hostSpace = new RemoteSpace(uri);
 			initiateCommunication();
-			//input = hostSpace.query(new ActualField(ServerCommands.serverKey), new FormalField(PublicKey.class));
-			
+			userInterface.startGame();
 		} catch (UnknownHostException e) {
 			Log.important("UnknownHostException");
 			userInterface.connectionError();
@@ -108,7 +100,7 @@ public class ClientController {
 			Log.important("InterruptedException");
 			userInterface.connectionError();
 		}
-		userInterface.startGame();
+		
 	}
 	/**
 	 * Close the already established connection, then attempt to connect to a new one.
@@ -117,7 +109,7 @@ public class ClientController {
 	public void newConnection(String newUri) {
 		this.uri = newUri;
 		consumer.interrupt();
-		receiver.interrupt();
+		//receiver.interrupt();
 		
 		try {
 			hostSpace = new RemoteSpace(uri);
@@ -140,20 +132,23 @@ public class ClientController {
 	private void initiateCommunication() throws InterruptedException {
 		Object[] input;
 		
-		hostSpace.put(ClientCommands.newPlayer, -1);		
+		hostSpace.put(-1, ClientCommands.newPlayer);		
 		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
 		playerID = (int)input[1];
 		Log.log("Gained ID: " + playerID);
 		
-		hostSpace.put(ClientCommands.playerName,playerID);
+		hostSpace.put(playerID, ClientCommands.playerName);
 		hostSpace.put(playerID,userName);
 		
-		receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
+		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
 		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface));
 		consumer.start();
-		receiver.start();
+		//receiver.start();
 		Log.log("Threads initiated.");
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	/**
 	 * Abuses a method to kill jSpace servers.

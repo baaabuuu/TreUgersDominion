@@ -86,6 +86,7 @@ public class UIController implements client.UIControllerInter {
 	 */
 	public void attemptConnection(String newUri, String userName){
 		setUsername(userName);
+		client.setUserName(userName);
 		client.attemptConnection(newUri);
 	}
 	/**
