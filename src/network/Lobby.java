@@ -58,14 +58,15 @@ public class Lobby extends Thread  {
 		Log.log("Searching for players");
 		while(activePlayers < noOfPlayers){
 			try {
-				input = clientSpace.get( new ActualField(ClientCommands.newPlayer), new FormalField(Integer.class));
+				clientSpace.get(new ActualField(-1), new ActualField(ClientCommands.newPlayer));
 				
 				Log.log("Player found. ID sent: " + activePlayers);
 				
 				clientSpace.put(ServerCommands.playerID, activePlayers);
 				
 				Log.log("Looking for playername");
-				input = clientSpace.get( new ActualField(ClientCommands.playerName), new FormalField(String.class));
+				clientSpace.get( new ActualField(activePlayers),  new ActualField(ClientCommands.playerName));
+				input = clientSpace.get( new ActualField(activePlayers),  new FormalField(String.class));
 				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
