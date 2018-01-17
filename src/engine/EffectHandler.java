@@ -57,98 +57,85 @@ public class EffectHandler
 		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
 		switch(n)
 		{
-		//Do nothing
-		case 0: 
+		case 0: //Do nothing
 			break;
-			//Discard any number of cards, then draw that many.
-		case 1: 
-			discardNDrawN(player); 
+		case 1: //Cellar - +1 Action\n Discard any number of Cards, then draw that many.
+			playCellar(player); 
 			break;
 			//Draw 2 cards
-		case 2: 
+		case 2: //Moat - +2 Cards
 			player.drawCard(2);
 			break;
-			//Reveal and become immune to an attack card
-		case 3://Implement reveal
-			//does not trigger on play
+		case 3://Moat - reveal reaction effect - dosn't trigger on play
 			break;
-			//Look through discard and maybe put one on top of the deck
-		case 4: 
-			browseDiscard1OnTop(player);
+		case 4: //Harbinger Look through your discard pile. You may put a card from it onto your deck.
+			playHarbinger(player);
 			break;
-			//Next time a silver is played, gain +1 temp monies
-		case 5: 
-			player.addEffect("NextSilverMoney1");
+		case 5: //Merchant -Next time a silver is played, gain +1 temp monies
+			playMerchant(player);
 			break;
-			//Discard top of deck, if action card, play it.
-		case 6: 
+		case 6: //Vassal - +2 coin\nDiscard the top card of your deck. If it's an Action card, you may play it.
 			playVassal(player);
 			break;
-			//Draw 1, get 2 actions
-		case 7: 
-			draw1Get2Actions(player);
+		case 7: //Village - Draw 1 card, gain 2 actions
+			playVillage(player);
 			break;
-			//Gain a card costing upto 4
-		case 8: 
-			gain1MaxCost4(player, board);
+		case 8: //Gain a card costing up to 4
+			playWorkshop(player, board);
 			break;
-			//Silver on deck, reveal VP cards
-		case 9:
-			silverOnDeckRevealVC(player, board, affectedPlayers);
+		case 9: //Bureaucrat - Silver on deck, reveal VP cards
+			playBureaucrat(player, board, affectedPlayers);
 			break;
-			//get 1 VP for every 10 cards
-		case 10: 
-			player.addEffect("1VPPer10Cards"); //this might need to go somehwere else
+		case 10: //	Garden - get 1 VP for every 10 cards
 			break;
-			//Get 2 temp money, others discard untill they have 3 cards left
-		case 11: 
-			get2TempOthersDiscard(player,affectedPlayers);
+		case 11: //Militia - +2 money, each other player discards down to 3 Cards in hand.
+			playMilitia(player, affectedPlayers);
 			break;
-			//May trash copper, if so, add +3 tempmoney
-		case 12: 
-			mayTrashCopperGain2(player,board);
+		case 12: //Moneylender - You may trash a Copper from your hand for +3 money.
+			playMoneylender(player, board);
 			break;
-		case 13: 
-			discardPerEmptySupply(player,board);
+		case 13: //Poacher - +1 Card, +1 action, +1 money\nDiscard a card per empty Supply pile.
+			playPoacher(player, board);
 			break;
-		case 14:
-			trashFromHandGainPlus2(player, board);
+		case 14: //Remodel - Trash a card from your hand. Gain a card costing up to 2 more than it.
+			playRemodel(player, board);
 			break;
-		case 15:
+		case 15: //Throne Room - You may play an Action card from your hand twice
 			playThroneRoom(player, board, affectedPlayers);
 			break;
-		case 16:
-			gainGoldOthersReveal(player,board, affectedPlayers);
+		case 16: //Bandit - Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
+			playBandit(player, board, affectedPlayers);
 			break;
-		case 17:
-			draw4Buy1OthersDraw(player,affectedPlayers);
+		case 17: //Council Room - +4 Cards +1 Buy. Each other player draws a card"
+			playCouncilroom(player, affectedPlayers);
 			break;
-		case 18:
-			action2Buy1Money2(player);
+		case 18: //Festival - +2 Actions, +1 buy, +2 money
+			playFestival(player);
 			break;
-		case 19:
-			draw2Action1(player);
+		case 19: //Laboratory - +2 Cards\n +1 action"
+			playLaboratory(player);
 			break;
-		case 20:
-			drawTill7(player);
+		case 20: //Library - Draw until you have 7 cards in hand, skipping any Action cards you chose to; set those aside, discarding them afterwards.
+			playLibrary(player);
 			break;
-		case 21:
-			draw1Action1Buy1Tempmoney(player);
+		case 21: //Market - +1 card\n +1 action\n +1 buy\n +1 money
+			playMarket(player);
 			break;
-		case 22://Requires trash
-			mayTrashTreasure(player,board);
-			break;
+		case 22://Mine - You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it.
+			playMine(player, board);
+			break; //Sentry - +1 Card\n +1 Action\nLook at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
 		case 23:
-			draw1Action1Look2(player);
+			playSentry(player);
 			break;
-		case 24:
-			draw2OthersCurse(player,affectedPlayers, board);
+		case 24: //Witch - +2 Cards\nEach other player gains a Curse.
+			playWitch(player, affectedPlayers, board);
 			break;
-		case 25:
-			gainPlus5(player,board);
+		case 25: //Gain a card to your hand costing up to 5. Put a card from your hand onto your deck
+			playArtisan(player, board);
 			break;
-		case 26: trashUpTo4(player,board);
-		break;
+		case 26: 
+			trashUpTo4(player, board);
+			break;
 		default:
 			Log.important("Invalid effect code: "+n);
 			break;//Invalid effect error here;
@@ -157,6 +144,14 @@ public class EffectHandler
 		//After every effect, update player hand
 		game.sendPlayerHand(player.getID(), player.getID());
 	}
+
+	private void playMerchant(Player player)
+	{
+		player.drawCard(1);
+		player.addActions(1);
+		player.addEffect("Merchant");		
+	}
+
 
 	/**
 	 * A player has the option to trash up to 4 cards from their hand
@@ -212,14 +207,14 @@ public class EffectHandler
 
 	}
 	/**
-	 * Effect code - gain a gold and force others to reveal
+	 * ain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
 	 * @param player
 	 * @param board
 	 * @param players
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void gainGoldOthersReveal(Player player, Board board, Player[] players) throws InterruptedException
+	private void playBandit(Player player, Board board, Player[] players) throws InterruptedException
 	{
 		Card gold = board.canGain("Gold");
 		ArrayList<Player> expectedResponses = new ArrayList<Player>();
@@ -327,15 +322,16 @@ public class EffectHandler
 	}
 
 	/**
-	 * Gain a card costing up to 5.
+	 * Gain a card to your hand costing up to 5.
+	 * <p>Put a card from your hand onto your deck
 	 * @param player
 	 * @param board
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void gainPlus5(Player player, Board board) throws InterruptedException
+	private void playArtisan(Player player, Board board) throws InterruptedException
 	{
-		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= 5, board);
+		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= 5 && board.canGain(bcard.getName()) != null, board);
 		ArrayList<Card> tempHand = player.getHand();
 		Card c;
 		if(choice.size() > 0)
@@ -347,10 +343,11 @@ public class EffectHandler
 			while(true) 
 			{
 				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
-				if(tempResponse != null) {
+				if(tempResponse != null)
+				{
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-					c =choice.get(response.get(0));
+					c = choice.get(response.get(0));
 					board.cardRemove(c.getName());
 					tempHand.add(c);
 					player.setHand(tempHand);
@@ -405,7 +402,7 @@ public class EffectHandler
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void mayTrashTreasure(Player player, Board board) throws InterruptedException
+	private void playMine(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toList());
 		if(choice.size() > 0)
@@ -483,8 +480,13 @@ public class EffectHandler
 		}
 	}
 
+	/**
+	 * Draw until you have 7 cards in hand, skipping any Action cards you chose to; set those aside, discarding them afterwards.
+	 * @param player
+	 * @throws InterruptedException
+	 */
 	@SuppressWarnings("unchecked")
-	private void drawTill7(Player player) throws InterruptedException
+	private void playLibrary(Player player) throws InterruptedException
 	{
 		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
 		while(player.getHandSize() < 7 && player.getDeckSize() > 0  && player.getDiscardSize() > 0) {
@@ -544,13 +546,13 @@ public class EffectHandler
 
 	}
 	/**
-	 * Trash a card from your hand then choose a card to gain
+	 * Trash a card from your hand. Gain a card costing up to 2 more than it.
 	 * @param player
 	 * @param board
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void trashFromHandGainPlus2(Player player, Board board) throws InterruptedException
+	private void playRemodel(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> tempHand = player.getHand();
 		if(tempHand.size()> 0)
@@ -570,7 +572,7 @@ public class EffectHandler
 					board.trashCard(trashCard);
 					player.trash(trashCard);
 					ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= trashCard.getCost()+2,board);
-					game.sendCardOption(player.getID(), "Choose 1 card to gain.", 1,choice, false);
+					game.sendCardOption(player.getID(), "Choose 1 card to gain.", 1, choice, false);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter2 = 0; // timeout
 					tempResponse = null;
@@ -617,14 +619,17 @@ public class EffectHandler
 	}
 	
 	/**
-	 * Discard a card per empty supply pile.
+	 * Draw a card, gain an action.
+	 * <p>Discard a card per empty supply pile.
 	 * @param player
 	 * @param board
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void discardPerEmptySupply(Player player, Board board) throws InterruptedException
+	private void playPoacher(Player player, Board board) throws InterruptedException
 	{
+		player.drawCard(1);
+		player.addActions(1);
 		int count = 0;
 		for (String cardName : board.getBoardNamesArray())
 		{
@@ -678,7 +683,7 @@ public class EffectHandler
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void mayTrashCopperGain2(Player player,Board board) throws InterruptedException
+	private void playMoneylender(Player player,Board board) throws InterruptedException
 	{
 		for(Card copper: player.getHand())
 		{
@@ -777,7 +782,7 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	private void draw2OthersCurse(Player player, Player[] players,Board board) throws InterruptedException
+	private void playWitch(Player player, Player[] players,Board board) throws InterruptedException
 	{
 		player.drawCard(2);
 		for(Player other: players)
@@ -797,12 +802,13 @@ public class EffectHandler
 		}
 	}
 	/**
-	 * Draw a card, gain 1 action Look at the top two cards of your deck.
+	 * +1 Card +1 Action. 
+	 * <p>Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
 	 * @param player
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void draw1Action1Look2(Player player) throws InterruptedException //This method is bound to have errors, remember this for testing
+	private void playSentry(Player player) throws InterruptedException //This method is bound to have errors, remember this for testing
 	{ 
 		LinkedBlockingDeque<Card> tempDeck = player.getDeck();
 		ArrayList<Card> choice = new ArrayList<Card>();
@@ -917,10 +923,10 @@ public class EffectHandler
 		player.setDeck(tempDeck);
 	}
 	/**
-	 * Draw a card, gain an action, get 1 buy, get 1 money.
+	 * +1 card\n +1 action\n +1 buy\n +1 money
 	 * @param player
 	 */
-	private void draw1Action1Buy1Tempmoney(Player player)
+	private void playMarket(Player player)
 	{
 		player.drawCard(1);
 		player.addActions(1);
@@ -929,20 +935,20 @@ public class EffectHandler
 	}
 	
 	/**
-	 * Draw 2 cards, gain 1 action.
+	 * +2 Cards +1 action"
 	 * @param player
 	 */
-	private void draw2Action1(Player player) 
+	private void playLaboratory(Player player) 
 	{
 		player.drawCard(2);
 		player.addActions(1);
 	}
 	
 	/**
-	 * Gain 2 actions, 1 buy, 2 money.
+	 * +2 Actions, +1 buy, +2 money
 	 * @param player
 	 */
-	private void action2Buy1Money2(Player player)
+	private void playFestival(Player player)
 	{
 		player.addActions(2);
 		player.addBuys(1);
@@ -951,12 +957,13 @@ public class EffectHandler
 	}
 	
 	/**
-	 * Draw 4 cards, add 1 buy, other player draw a card
+	 * +4 Cards +1 Buy
+	 * <p>Each other player draws a card"
 	 * @param player
 	 * @param players
 	 * @throws InterruptedException
 	 */
-	private void draw4Buy1OthersDraw(Player player, Player[] players) throws InterruptedException
+	private void playCouncilroom(Player player, Player[] players) throws InterruptedException
 	{
 		player.drawCard(4);
 		player.addBuys(1);		
@@ -1032,14 +1039,15 @@ public class EffectHandler
 	}
 	
 	/**
-	 * Discard N cards from your hand then draw that many.
+	 * +1 Action
+	 * <p> Discard any number of Cards, then draw that many.
 	 * @param player
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void discardNDrawN(Player player) throws InterruptedException
+	private void playCellar(Player player) throws InterruptedException
 	{
-
+		player.addActions(1);
 		if(player.getHandSize()!=0)
 		{
 			game.sendCardOption(player.getID(), "Selecy any number of Cards, then discard them.", player.getHandSize(), player.getHand(), true);
@@ -1098,7 +1106,7 @@ public class EffectHandler
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void browseDiscard1OnTop(Player player) throws InterruptedException
+	private void playHarbinger(Player player) throws InterruptedException
 	{
 		if(player.getDiscardSize() != 0)
 		{
@@ -1200,7 +1208,7 @@ public class EffectHandler
 	 * Draw 1 card, gain 2 actions
 	 * @param player
 	 */
-	private void draw1Get2Actions(Player player)
+	private void playVillage(Player player)
 	{
 		player.drawCard(1);
 		player.addActions(2);
@@ -1213,7 +1221,7 @@ public class EffectHandler
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void gain1MaxCost4(Player player, Board board) throws InterruptedException
+	private void playWorkshop(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = getChoice(c-> c.getCost() <= 4,board);
 		game.sendCardOption(player.getID(), "Select a card to gain costing up to 4.", 1, choice, false);
@@ -1254,7 +1262,8 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-	private void silverOnDeckRevealVC(Player player,Board board, Player[] players) throws InterruptedException
+	@SuppressWarnings("unchecked")
+	private void playBureaucrat(Player player,Board board, Player[] players) throws InterruptedException
 	{
 		ArrayList<Player> expectedResponses= new ArrayList<Player>();
 		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
@@ -1348,7 +1357,8 @@ public class EffectHandler
 		//---[END TIMEOUT BLOCK]---
 
 	}
-	private void get2TempOthersDiscard(Player player, Player[] players) throws InterruptedException
+	@SuppressWarnings("unchecked")
+	private void playMilitia(Player player, Player[] players) throws InterruptedException
 	{
 		ArrayList<Player> expectedResponses= new ArrayList<Player>();
 		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
@@ -1384,7 +1394,6 @@ public class EffectHandler
 						if(rPlayer.getID() == pID) {
 							int cardIndex=expectedResponses.indexOf(rPlayer);
 							//---[BEGIN CODE BLOCK]---
-
 							ArrayList<Card> newHand = new ArrayList<Card>();
 							for(int i: response) {
 								newHand.add(selectedCards.get(cardIndex).get(i));
@@ -1432,7 +1441,9 @@ public class EffectHandler
 	 * @return
 	 * @throws InterruptedException
 	 */
-	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
+	@SuppressWarnings("unchecked")
+	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException
+	{
 		boolean counterPlay;
 		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
 		for(Player p: players)
@@ -1440,17 +1451,18 @@ public class EffectHandler
 			counterPlay = false;
 			if(!player.isConnected())
 				break;
-			for(Card c : p.getHand()) {
+			for(Card c : p.getHand())
+			{
 				//Reaction card handling
-				switch(c.getName()) {
-
+				switch(c.getName())
+				{
 				case "Moat": 
 					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter = 0; // timeout
 					Object[] tempResponse = null;
 					while(true) {
-						tempResponse=rSpace.getp(new ActualField(p.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						tempResponse=rSpace.getp(new ActualField(p.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 						if(tempResponse != null) {
 							//---[BEGIN CODE BLOCK]---
 							ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
@@ -1475,14 +1487,16 @@ public class EffectHandler
 
 					//Based on result, set counter to true or false
 					break;
+				default:
+					break;
 				}
-
 			}
-			if(counterPlay) {
-
+			if(counterPlay)
+			{
 				continue;
 			}
-			else {
+			else
+			{
 				affectedPlayers.add(p);
 			}
 		}
@@ -1493,19 +1507,33 @@ public class EffectHandler
 	 * Expandable "on play" card handler. Currently only needs three params but will
 	 * expand with future implementation
 	 * @param effect String with the c
-	 * @param owner
+	 * @param player
 	 * @param card
 	 */
-	private void playerEffects(String effect,Player owner, Card card) {
-		switch(effect) {
-
-		case "SilverNextMoney1":
-			if(card.getName().equals("Silver")) {
-				owner.addMoney(1);
-				owner.removeEffect(effect);
-			}
+	private void playerEffects(String effect, Player player, Card card)
+	{
+		switch(effect)
+		{
+		case "Merchant": //The first time you play a silver this turn, +1 money.
+			merchantEffect(player, card);
+			break;
+		default :
 			break;
 		}
+	}
+	
+	/**
+	 * If the player has the merchant effect - this is triggered.
+	 * @param player
+	 * @param card
+	 */
+	private void merchantEffect(Player player, Card card)
+	{
+		if (card.getName().equals("Silver"))
+		{
+			player.addMoney(1);
+			player.removeEffect("Merchant");
+		}		
 	}
 
 }

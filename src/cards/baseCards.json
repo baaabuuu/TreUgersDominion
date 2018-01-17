@@ -25,7 +25,7 @@
 	},	
 	{
 		name : "Chapel",
-		description: "Trash up to 4 Cards from your hand",
+		description: "Trash up to 4 Cards from your hand.",
 		set : "base",
 		cost : 0,
 		money : 2,
@@ -76,7 +76,7 @@
 	},
 	{
 		name : "Harbinger",
-		description: "+1 Card, +1 Action \nLook through your discard pile. You may put a card from it onto your deck.",
+		description: "+1 Card\n +1 Action \nLook through your discard pile. You may put a card from it onto your deck.",
 		set : "base",
 		cost : 3,
 		money : 0,
@@ -100,7 +100,7 @@
 	},
 	{
 		name : "Merchant",
-		description: "+1 Card, +1 Action\nThe first time you play a Silver this turn, +1 coin.",
+		description: "+1 Card\n +1 Action\nThe first time you play a Silver this turn\n +1 coin.",
 		set : "base",
 		cost : 3,
 		money : 0,
@@ -148,7 +148,7 @@
 	},
 	{
 		name : "Village",
-		description: "+1 Card, +2 Actions.",
+		description: "+1 Card\n +2 Actions.",
 		set : "base",
 		cost : 3,
 		money : 0,
@@ -244,7 +244,7 @@
 	},
 	{
 		name : "Militia",
-		description: "+2 money\nEach other player disCards down to 3 Cards in hand.",
+		description: "+2 money\nEach other player discards down to 3 Cards in hand.",
 		set : "base",
 		cost : 4,
 		money : 0,
@@ -293,7 +293,7 @@
 	},
 	{
 		name : "Poacher",
-		description: "+1 Card, +1 action, +1 money\nDiscard a card per empty Supply pile.",
+		description: "+1 Card\n +1 action\n +1 money\nDiscard a card per empty Supply pile.",
 		set : "base",
 		cost : 4,
 		money : 0,
@@ -347,7 +347,7 @@
 		money : 0,
 		effectCodes :
 		[
-			14
+			27
 		],
 		victoryPoints : 0,
 		minCost : 0,
@@ -438,7 +438,7 @@
 	},
 	{
 		name : "Festival",
-		description: "+2 Actions, +1 buy, +2 money",
+		description: "+2 Actions\n +1 buy\n +2 money",
 		set : "base",
 		cost : 5,
 		money : 0,
@@ -462,7 +462,7 @@
 	},
 	{
 		name : "Laboratory",
-		description: "+2 Cards, +1 action",
+		description: "+2 Cards\n +1 action",
 		set : "base",
 		cost : 5,
 		money : 0,
@@ -492,7 +492,7 @@
 		money : 0,
 		effectCodes :
 		[
-			19
+			20
 		],
 		victoryPoints : 0,
 		minCost : 0,
@@ -510,7 +510,7 @@
 	},
 	{
 		name : "Market",
-		description: "+1 card, +1 action, +1 buy, +1 money",
+		description: "+1 card\n +1 action\n +1 buy\n +1 money",
 		set : "base",
 		cost : 5,
 		money : 0,
@@ -558,7 +558,7 @@
 	},
 	{
 		name : "Sentry",
-		description: "+1 Card, +1 Action\nLook at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.",
+		description: "+1 Card\n +1 Action\nLook at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.",
 		set : "base",
 		cost : 5,
 		money : 0,
