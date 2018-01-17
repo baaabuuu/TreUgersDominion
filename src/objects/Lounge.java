@@ -1,9 +1,9 @@
 package objects;
 
-public class Launge {
+public class Lounge {
 	private int[] lobbies;
 	private int[] playerCount;
-	public Launge(int[] lobbies, int[] playerCount) {
+	public Lounge(int[] lobbies, int[] playerCount) {
 		this.lobbies = lobbies;
 		this.playerCount = playerCount;
 	}

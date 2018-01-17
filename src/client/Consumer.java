@@ -68,8 +68,8 @@ public class Consumer implements Runnable {
 							action.setBuyArea((Card[])input[1]);
 							break;
 					case setLaunge: input = clientSpace.get(new ActualField(playerID), 
-								new FormalField(Launge.class));
-							action.displayLaunge((Launge)input[1]);
+								new FormalField(Lounge.class));
+							action.displayLaunge((Lounge)input[1], hostSpace);
 							break;
 					default: break;
 				}

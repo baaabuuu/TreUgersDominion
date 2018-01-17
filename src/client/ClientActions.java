@@ -292,12 +292,40 @@ public class ClientActions {
 		this.buyArea = input;
 		userInterface.newBuyArea(input);
 	}
-	public void displayLaunge(Launge lobbies) throws InterruptedException {
+	public void displayLaunge(Lounge lobbies, Space hostSpace) throws InterruptedException {
 		userInterface.eventInput("Server sent a list of lobbies: ");
 		for(int i = 0 ; i < lobbies.getLobbies().length; i++) {
 			userInterface.eventInput("Lobby " + lobbies.getLobbies()[i] + " - " + lobbies.getplayerCount()[i] + "/4 players.");
 		}
-		userInterface.eventInput("Server sent a list of lobbies: ");
+		userInterface.eventInput("To connect to a lobby, type in 'c'.");
+		userInterface.eventInput("To make a new lobby, type in 'm'.");
+		userInterface.eventInput("To update lobby list, type in 'u'.");
+		Object[] input;
+		userInterface.awaitingUserInput();
+		input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
+		switch((String)input[2]) {
+			case "c":
+				boolean lock = true;
+				while(lock) {
+					userInterface.eventInput("Type a lobby-number to connect to.");
+					userInterface.awaitingUserInput();
+					input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
+					
+					
+				}
+				
+				
+				break;
+			case "m":
+				hostSpace.put(playerID,ClientCommands.createLobby);
+				break;
+			case "u": 
+				hostSpace.put(playerID,ClientCommands.getLobbies);
+				break;
+			default: userInterface.eventInput("Not a valid input!");
+				break;
+		}
+		
 	}
 	public void serverMessage(String message) throws InterruptedException {
 		userInterface.eventInput("Server says: " + message);
