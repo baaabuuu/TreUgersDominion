@@ -44,14 +44,16 @@ public class EffectHandler
 		}
 		//If it is an attack, can someone use a reaction card?
 		Player[] affectedPlayers=null;
-		for(String type: card.getTypes()) {
-			if(type.equals("attack")) {
-				affectedPlayers=(Player[]) findCounterPlays(player, card, board, players).toArray();
+		for(String type: card.getTypes())
+		{
+			if(type.equals("attack"))
+			{
+				affectedPlayers = (Player[]) findCounterPlays(player, card, board, players).toArray();
 			}
-			else {
+			else 
+			{
 				affectedPlayers = players;
 			}
-
 		}
 
 		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
