@@ -183,6 +183,20 @@ public class Lounge {
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
+				Log.log("Finding lobbies");
+				for(int i = 0; i< noOfGamesAllowed; i++){
+					
+					if (gamesRunning[i] != null & !gamesRunning[i].isAlive()){
+						
+						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
+					}
+					
+					Log.log("Sending lobies");
+					lounge.put(ServerCommands.setLaunge, playerID);
+					lounge.put(playerID, gamesRunning, numberOfPlayers);
+					
+					
+				}
 				break;
 			default:
 				Log.log("Uknown message recieved. Ignoring.");
