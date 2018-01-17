@@ -131,23 +131,20 @@ public class Lounge {
 				break;
 			case createLobby:
 				Log.log("Creating lobby");
-				for(int i = 0; i<noOfGamesAllowed; i++){
-					if(gamesRunning[i] == null){
+				for(int i = 0; i<noOfGamesAllowed; i++)
+				{
+					if(gamesRunning[i] == null)
+					{
 						
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
 						Log.log("URI: " + tempURI);
 						//Setup client space
 						Space clientSpace = new SequentialSpace();
 						repository.add(Integer.toString(i), clientSpace);
-						
-						
 						Lobby tempInit = new Lobby(tempURI, cardReader, clientSpace);
 						gamesRunning[i] = tempInit;
-						
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?conn";
-						
-						Log.log("Game created. Sending URI to: " + playerID);
-						lounge.put(ServerCommands.newConnection, playerID);
+						Log.log("Game created. Sending URI to: " + playerID);						
 						lounge.put(playerID, ServerCommands.newConnection, tempURI);
 						break;
 					}
