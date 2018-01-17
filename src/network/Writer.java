@@ -46,28 +46,28 @@ public class Writer {
 			
 		case setBoardState: 
 			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(BoardState.class,2));
+			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2));
 			break;
 			
 		case playerSelect: 
 			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(CardOption.class,2));
+			clientSpace.put(playerID, tuple.getElementAt(CardOption.class, 2));
 			break;
 			
 		case setPlayerHand: 
 			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(PlayerHand.class,2));
+			clientSpace.put(playerID, tuple.getElementAt(PlayerHand.class, 2));
 			break;
 		
 		case takeTurn: 
 			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(BoardState.class,2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
+			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
 			break;
 		
 		case invalid:
 		case message: 
 			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(String.class,2));
+			clientSpace.put(playerID, tuple.getElementAt(String.class, 2));
 			break;
 			
 			

@@ -24,7 +24,7 @@ public class ClientController {
 	private int port;
 	private String uri;
 	private Space clientSpace;
-	private Space hostSpace;
+	private RemoteSpace hostSpace;
 	private Space userSpace;
 	
 	/*
@@ -73,10 +73,6 @@ public class ClientController {
 		
 		userSpace = new SequentialSpace();
 		clientSpace = new SequentialSpace();
-		
-		connecterDetector = new Thread(new ConnectionDetector(clientSpace, clientController));
-		connecterDetector.start();
-		
 		userInterface = new UIController(port, host, clientController, userSpace);
 		
 	}
@@ -86,8 +82,10 @@ public class ClientController {
 	 * @param uri
 	 */
 	public void attemptConnection(String uri) {
+		this.uri = uri;
 		try {
 			this.hostSpace = new RemoteSpace(uri);
+			
 			initiateCommunication();
 			userInterface.startGame();
 		} catch (UnknownHostException e) {
@@ -108,11 +106,29 @@ public class ClientController {
 	 */
 	public void newConnection(String newUri) {
 		this.uri = newUri;
+		Log.log("Connecting to: " + uri);
+		try {
+			hostSpace.close();
+		} catch (IOException e1) {
+			
+		}
 		consumer.interrupt();
+		connecterDetector.interrupt();
+		
+		Log.log("" + consumer.isInterrupted());
+		Log.log("" + connecterDetector.isInterrupted());
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			Log.important("" + e1.getLocalizedMessage() + "\n" + e1.getMessage());
+			Log.important("Sleep was interrupted");
+		}
 		//receiver.interrupt();
 		
 		try {
 			hostSpace = new RemoteSpace(uri);
+			Log.log("connected to new RemoteSpace");
 			initiateCommunication();
 		} catch (UnknownHostException e) {
 			Log.important("UnknownHostException");
@@ -128,22 +144,29 @@ public class ClientController {
 	/**
 	 * Initiates the communication with the server.
 	 * @throws InterruptedException 
+	 * @throws IOException 
+	 * @throws UnknownHostException 
 	 */
-	private void initiateCommunication() throws InterruptedException {
+	private void initiateCommunication() throws InterruptedException, UnknownHostException, IOException {
 		Object[] input;
-		
-		hostSpace.put(-1, ClientCommands.newPlayer);		
+		Log.log("initiateCommunication");
+		hostSpace.put(-1, ClientCommands.newPlayer);
+		Log.log("Before get");
 		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
-		playerID = (int)input[1];
+		this.playerID = (int)input[1];
 		Log.log("Gained ID: " + playerID);
 		
 		hostSpace.put(playerID, ClientCommands.playerName);
 		hostSpace.put(playerID,userName);
 		
 		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
-		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface));
+		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface, clientController));
+		connecterDetector = new Thread(new ConnectionDetector(new RemoteSpace(this.uri), playerID, clientController));
+		
 		consumer.start();
+		connecterDetector.start();
+		
 		//receiver.start();
 		Log.log("Threads initiated.");
 	}

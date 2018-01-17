@@ -6,7 +6,6 @@ import org.jspace.Space;
 
 import log.Log;
 import objects.ServerCommands;
-import objects.Uri;
 /**
  * Detects when the server commands the client to make a new connection and .
  * @param Space (local)
@@ -14,28 +13,26 @@ import objects.Uri;
  * @throws InterruptedException 
  */
 public class ConnectionDetector implements Runnable {
-	private Space clientSpace;
+	private Space hostSpace;
 	private int playerID;
 	private ClientController handler;
-	public ConnectionDetector(Space clientSpace, ClientController handler) {
-		this.clientSpace = clientSpace;
+	public ConnectionDetector(Space hostSpace, int playerID, ClientController handler) {
+		this.hostSpace = hostSpace;
 		this.handler = handler;
+		this.playerID = playerID;
 	}
 
 	@Override
 	public void run() {
 		Object[] obj;
-		
-		while(Boolean.TRUE) {
-			try {
-				clientSpace.get(new ActualField(playerID), new ActualField(ServerCommands.newConnection));
-				obj = clientSpace.get(new ActualField(playerID), new FormalField(Uri.class));
-				Log.important("Received newConnection message and an URI.");
-				handler.newConnection(((Uri)obj[1]).getUri());
-			} catch (InterruptedException e) {
-				Log.important("Thread interrupted!");
-				e.printStackTrace();
-			}
+		try {
+			obj = hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.newConnection), new FormalField(String.class));
+			
+			Log.important("Received newConnection message and an URI.");
+			handler.newConnection((String)obj[2]);
+		} catch (InterruptedException e) {
+			Log.important("Thread interrupted!");
+			e.printStackTrace();
 		}
 	}
 }

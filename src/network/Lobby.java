@@ -24,9 +24,9 @@ public class Lobby extends Thread  {
 	private int activePlayers;
 	
 
-	private ArrayList<String> expansions;
+	private ArrayList<String> expansions = new ArrayList<String>();
 	private CardReader cardReader;
-	private ArrayList<String> players;
+	private ArrayList<String> players = new ArrayList<String>();
 	private Writer writer;
 	private ControlCenter controlCenter;
 	private boolean gameRunning;
@@ -41,7 +41,7 @@ public class Lobby extends Thread  {
 		//Setup safe space
 		safeSpace = new SequentialSpace();
 				
-		this.noOfPlayers = 4;
+		this.noOfPlayers = 2;
 		this.activePlayers = 0;
 	
 		this.cardReader = cardReader;
@@ -55,31 +55,44 @@ public class Lobby extends Thread  {
 		
 		
 		Object[] input = null;
-		Log.log("Searching for players");
 		while(activePlayers < noOfPlayers){
+			Log.log("Searching for players");
 			try {
-				input = clientSpace.get( new ActualField(ClientCommands.newPlayer), new FormalField(Integer.class));
+				clientSpace.get(new ActualField(-1), new ActualField(ClientCommands.newPlayer));
 				
 				Log.log("Player found. ID sent: " + activePlayers);
 				
 				clientSpace.put(ServerCommands.playerID, activePlayers);
 				
 				Log.log("Looking for playername");
-				input = clientSpace.get( new ActualField(ClientCommands.playerName), new FormalField(String.class));
+				clientSpace.get(new ActualField(activePlayers), new ActualField(ClientCommands.playerName));
+				input = clientSpace.get(new ActualField(activePlayers), new FormalField(String.class));
 				
+				players.add((String) input[1]);
+				Log.log("Player registred. Name of user: " + (String) input[1] + " ID: " + activePlayers);
+				
+				Log.log("Sending waiting message");
+				
+				clientSpace.put(ServerCommands.message, activePlayers);
+				clientSpace.put(activePlayers, "Welcome " + players.get(activePlayers) + " you are player number: " + activePlayers);
+				
+				clientSpace.put(ServerCommands.message, activePlayers);
+				clientSpace.put(activePlayers, "Waiting for other players");
+				
+				
+				activePlayers++;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			players.add((String) input[1]);
-			Log.log("Player registred. Name of user: " + (String) input[1] + " ID: " + activePlayers);
 			
-			activePlayers++;
 			
 		}
 		
-
+		Log.log("Setting up game");
+		
+		
 		//Setup writer
 		writer = new Writer(clientSpace, players.toArray(new String[noOfPlayers]));
 		
@@ -90,8 +103,12 @@ public class Lobby extends Thread  {
 		
 		//Setup game		
 		GameStarter gameStarter = new GameStarter(noOfPlayers, players.toArray(new String[noOfPlayers]), cardReader, expansions, new Random(), writer, safeSpace);
+		
+		Log.log("Sending game start message");
 		try {
 			gameStarter.startGame();
+			safeSpace.put(ServerCommands.gameStart);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

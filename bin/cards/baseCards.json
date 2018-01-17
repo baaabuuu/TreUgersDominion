@@ -582,7 +582,7 @@
 	},
 	{
 		name : "Witch",
-		description: "+2 Cards\nEach othger player gains a Curse.",
+		description: "+2 Cards\nEach other player gains a Curse.",
 		set : "base",
 		cost : 5,
 		money : 0,
