@@ -139,24 +139,23 @@ public class ClientController {
 	 */
 	private void initiateCommunication() throws InterruptedException {
 		Object[] input;
-		boolean check = true;
-		String out;
 		hostSpace.put(ClientCommands.newPlayer, -1);		
-		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
-		
+		input = hostSpace.get(new ActualField(ServerCommands.playerID), new FormalField(Integer.class));
 		playerID = (int)input[1];
 		input = new Object[2];
 		input[0] = userName;
 		input[1] = playerID;
-		hostSpace.put(ClientCommands.playerName,input);
-		
-		Log.log("After hostSpace put");
+		hostSpace.put(ClientCommands.playerName, input);
+		Log.log("Send playerinfo to hostSpace");
 		receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
 		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface));
 		consumer.start();
 		receiver.start();
 		Log.log("Threads");
 	}
+	/**
+	 * Abuses a method to kill jSpace servers.
+	 */
 	public void killServer() {
 		try {
 			hostSpace = new RemoteSpace("tcp://" + host + ":" + port + "/ripServer?conn");
