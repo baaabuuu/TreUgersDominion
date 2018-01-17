@@ -9,6 +9,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.HashMap;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -27,7 +28,7 @@ public class Lounge {
 	private int noOfGamesAllowed = 1000;
 	private int noOfPlayersAllowed = 5*noOfGamesAllowed;
 	private Lobby[] gamesRunning = new Lobby[noOfGamesAllowed];
-	private int[] numberOfPlayers = new int[noOfGamesAllowed]; 
+	private HashMap<Integer, Integer> numberOfPlayers = new HashMap<Integer, Integer>(); 
 	private String[] playerNames = new String[noOfGamesAllowed];
 	private int indexID;
 	
@@ -111,7 +112,7 @@ public class Lounge {
 			switch(cmd){
 			case enterLobby:
 				Log.log("Finding uri for lobby");
-				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(Integer.class));
+				secondInput = lounge.get(new ActualField(playerID), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
 				if(indexID < gameID && gamesRunning[gameID] != null){
@@ -150,14 +151,14 @@ public class Lounge {
 				Log.log("Finding lobbies");
 				for(int i = 0; i< noOfGamesAllowed; i++){
 					
-					if (gamesRunning[i] != null & !gamesRunning[i].isAlive()){
+					if (gamesRunning[i] != null && !gamesRunning[i].getGameRunning()){
 						
-						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
-					}
+						numberOfPlayers.put(i, gamesRunning[i].getActivePlayers());
+					} 
 					
 					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
-					lounge.put(playerID, gamesRunning, numberOfPlayers);
+					lounge.put(playerID, numberOfPlayers);
 					
 					
 				}
@@ -178,7 +179,7 @@ public class Lounge {
 				}
 				break;
 			case playerName:
-				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(String.class));
+				secondInput = lounge.get(new ActualField(playerID), new FormalField(String.class));
 				if(playerNames[(int) secondInput[0]] == "" && (String) secondInput[1] != ""){
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
@@ -186,14 +187,14 @@ public class Lounge {
 				Log.log("Finding lobbies");
 				for(int i = 0; i< noOfGamesAllowed; i++){
 					
-					if (gamesRunning[i] != null & !gamesRunning[i].isAlive()){
+					if (gamesRunning[i] != null && !gamesRunning[i].getGameRunning()){
 						
-						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
+						numberOfPlayers.put(i, gamesRunning[i].getActivePlayers());
 					}
 					
 					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
-					lounge.put(playerID, gamesRunning, numberOfPlayers);
+					lounge.put(playerID, numberOfPlayers);
 					
 					
 				}

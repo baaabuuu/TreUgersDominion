@@ -29,8 +29,11 @@ public class Lobby extends Thread  {
 	private ArrayList<String> players;
 	private Writer writer;
 	private ControlCenter controlCenter;
+	private boolean gameRunning;
 	
 	public Lobby(String uri, CardReader cardReader, Space clientSpace){
+		
+		gameRunning = false;
 		
 		this.uri = uri;
 		this.clientSpace = clientSpace;
@@ -83,6 +86,7 @@ public class Lobby extends Thread  {
 		//Setup controlcenter
 		controlCenter = new ControlCenter(clientSpace, safeSpace);
 		controlCenter.start();
+		gameRunning = true;
 		
 		//Setup game		
 		GameStarter gameStarter = new GameStarter(noOfPlayers, players.toArray(new String[noOfPlayers]), cardReader, expansions, new Random(), writer, safeSpace);
@@ -102,6 +106,10 @@ public class Lobby extends Thread  {
 	public int getActivePlayers() {
 		return activePlayers;
 	}	
+	
+	public boolean getGameRunning(){
+		return gameRunning;
+	}
 	
 }
 
