@@ -160,6 +160,7 @@ public class UIController implements client.UIControllerInter {
 	public void eventOutput(String input){
 		try {
 			userSpace.put("client","eventOutput",input);
+			Log.log("Sent to userSpace: " + input);
 		} catch (InterruptedException e) {
 			Log.important("InterruptedException");
 		}

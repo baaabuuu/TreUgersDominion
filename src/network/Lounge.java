@@ -149,6 +149,7 @@ public class Lounge {
 						Log.log("Game created. Sending URI to: " + playerID);
 						lounge.put(ServerCommands.newConnection, playerID);
 						lounge.put(playerID, tempURI);
+						break;
 					}
 				}
 				break;

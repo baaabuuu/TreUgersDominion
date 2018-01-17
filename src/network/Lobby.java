@@ -24,7 +24,7 @@ public class Lobby extends Thread  {
 	private int activePlayers;
 	
 
-	private ArrayList<String> expansions;
+	private ArrayList<String> expansions = new ArrayList<String>();
 	private CardReader cardReader;
 	private ArrayList<String> players;
 	private Writer writer;

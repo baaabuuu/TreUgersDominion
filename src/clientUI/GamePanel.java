@@ -35,6 +35,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 
 import cards.Card;
+import log.Log;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener, ListSelectionListener {
 	/**
@@ -375,8 +376,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			//Message must be more than 0 and less than 4 characters.
 			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
 				actionArea.setEditable(false);
+				Log.log("Sent to eventOutput: " + actionAreaTemp);
 				controller.eventOutput(actionAreaTemp);
 				
+				actionAreaTemp = "";
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatTypArea && e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -394,7 +397,10 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			//Message must be more than 0 and less than 4 characters.
 			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
 				actionArea.setEditable(false);
+				Log.log("Sent to eventOutput: " + actionAreaTemp);
 				controller.eventOutput(actionAreaTemp);
+				
+				actionAreaTemp = "";
 			}
 			actionArea.setText("");
 		}else if(e.getSource() == chatSend){

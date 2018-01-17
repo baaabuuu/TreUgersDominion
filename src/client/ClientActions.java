@@ -37,7 +37,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void takeTurn(Space clientSpace, Space hostSpace) throws InterruptedException {
+	public void takeTurn(Space hostSpace) throws InterruptedException {
 		
 		userInterface.eventInput("\\n----------------------");
 		userInterface.eventInput("");
@@ -46,16 +46,16 @@ public class ClientActions {
 		userInterface.newPlayerHand(playerHand);
 		setTurnValues(new TurnValues(1,1,0));
 		userInterface.eventInput("ACTION PHASE");
-		actionPhase(clientSpace, hostSpace);
+		actionPhase(hostSpace);
 		
 		userInterface.eventInput("BUY PHASE");
-		buyPhase(clientSpace, hostSpace);
+		buyPhase(hostSpace);
 		
 		userInterface.eventInput("CLEANUP PHASE");
 		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
-		clientSpace.get(new ActualField(playerID), new ActualField(ServerCommands.setPlayerHand));
-		Object[] objs = clientSpace.get(new ActualField(playerID), 
+		hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.setPlayerHand));
+		Object[] objs = hostSpace.get(new ActualField(playerID), 
 				new FormalField(PlayerHand.class));
 		
 		setPlayerHand((PlayerHand)objs[1]);
@@ -69,30 +69,30 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void resolvePlay(Space clientSpace, Space hostSpace) throws InterruptedException {
+	private void resolvePlay(Space hostSpace) throws InterruptedException {
 		Object[] objs;
 		Object[] input;
 		boolean lock = true;
 		while(lock) {
 			//Wait for a server command
-			objs = clientSpace.get(new ActualField(playerID), 
+			objs = hostSpace.get(new ActualField(playerID), 
 					new FormalField(ServerCommands.class));
 			//Reacy dependent on which command was received.
 			switch ((ServerCommands)objs[1]) {
 				// Display the received message.
 				case message: Log.log("Recieved message command");
-						input = clientSpace.get(new ActualField(playerID), 
+						input = hostSpace.get(new ActualField(playerID), 
 							new FormalField(String.class));
 						userInterface.eventInput((String)input[1]);
 						break;
 				case invalid: Log.log("Recieved invalid command");
-						input = clientSpace.get(new ActualField(playerID), 
+						input = hostSpace.get(new ActualField(playerID), 
 								new FormalField(String.class));
 						userInterface.eventInput((String)input[1]);
 						lock = false;
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
-						input = clientSpace.get(new ActualField(playerID), 
+						input = hostSpace.get(new ActualField(playerID), 
 								new FormalField(Object[].class));
 						
 						userInterface.newBoardState((BoardState)(((Object[])input[1])[0]));
@@ -104,7 +104,7 @@ public class ClientActions {
 						lock = false;
 						break;
 				case playerSelect: Log.log("Recieved playerSelect command");
-						input = clientSpace.get(new ActualField(playerID), 
+						input = hostSpace.get(new ActualField(playerID), 
 							new FormalField(CardOption.class));
 						playerSelect((CardOption)input[1],hostSpace);
 						break;
@@ -118,7 +118,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void actionPhase(Space clientSpace, Space hostSpace) throws InterruptedException {
+	private void actionPhase(Space hostSpace) throws InterruptedException {
 		
 		int value;
 		Object input[];
@@ -141,7 +141,7 @@ public class ClientActions {
 				}else {
 					hostSpace.put(playerID, ClientCommands.playCard);
 					hostSpace.put(playerID, value);
-					resolvePlay(clientSpace, hostSpace);
+					resolvePlay(hostSpace);
 				}
 			}catch(NumberFormatException e) {
 				userInterface.eventInput("Input is not a valid integer.");
@@ -154,7 +154,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void buyPhase(Space clientSpace, Space hostSpace) throws InterruptedException {
+	public void buyPhase(Space hostSpace) throws InterruptedException {
 		
 		Object[] input;
 		int value;
@@ -187,7 +187,7 @@ public class ClientActions {
 							}else {
 								hostSpace.put(playerID, ClientCommands.playCard);
 								hostSpace.put(playerID, value);
-								resolvePlay(clientSpace, hostSpace);
+								resolvePlay(hostSpace);
 							}
 						}catch(NumberFormatException e) {
 							userInterface.eventInput("Input is not a valid integer.");
@@ -200,7 +200,6 @@ public class ClientActions {
 						try {
 							input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 							value = Integer.parseInt((String)input[2]);
-							
 							if(value < 0 || value > buyArea.length) {
 								userInterface.eventInput("Input is not a valid card.");
 							
@@ -211,7 +210,7 @@ public class ClientActions {
 							}else {
 								hostSpace.put(playerID, ClientCommands.buyCard);
 								hostSpace.put(playerID, buyArea[value-1].getName());
-								resolvePlay(clientSpace, hostSpace);
+								resolvePlay(hostSpace);
 							}
 						}catch(NumberFormatException e) {
 							userInterface.eventInput("Input is not a valid integer.");
@@ -305,7 +304,9 @@ public class ClientActions {
 		userInterface.eventInput("To update lobby list, type in 'u'.");
 		Object[] input;
 		userInterface.awaitingUserInput();
+		Log.log("Waiting for user input");
 		input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
+		Log.log("Recieved from userSpace: " + (String)input[2]);
 		switch((String)input[2]) {
 			case "c":
 				int output;
@@ -314,7 +315,7 @@ public class ClientActions {
 				input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 				
 				if(((String)input[2]).matches("[0-9]+") && ((String)input[2]).length() < 5) {
-					output = (int)input[2];
+					output = Integer.parseInt(((String)input[2]));
 					
 					if(lobbies.get(output) == null) {
 						userInterface.eventInput("That game has not yet been created.");
@@ -333,8 +334,10 @@ public class ClientActions {
 				break;
 			case "u": 
 				hostSpace.put(playerID,ClientCommands.getLobbies);
+				Log.log("Sent getLobbies");
 				break;
 			default: userInterface.eventInput("Not a valid input!");
+				hostSpace.put(playerID,ClientCommands.getLobbies);
 				break;
 		}
 		
