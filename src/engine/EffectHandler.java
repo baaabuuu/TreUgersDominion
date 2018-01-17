@@ -18,86 +18,8 @@ public class EffectHandler
 		this.game=game;
 		this.rSpace=game.getSpace();
 	}
-	/**
-	 * Helper function to return list of available cards based on a predicate
-	 */
-private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
-	ArrayList<Card> choice =(ArrayList<Card>) board.getCardStream().filter(p).collect(Collectors.toList());
-	 
-		return choice;
-	}
-	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
-		boolean counterPlay;
-		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
-		for(Player p: players) {
-			counterPlay = false;
-			if(!player.isConnected()) break;
-			for(Card c : p.getHand()) {
-				//Reaction card handling
-				switch(c.getName()) {
-				
-				case "Moat": 
-					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
-					//---[BEGIN TIMEOUT BLOCK]---
-					int counter = 0; // timeout
-						Object[] tempResponse = null;
-						while(true) {
-						tempResponse=rSpace.getp(new ActualField(p.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-						if(tempResponse != null) {
-						//---[BEGIN CODE BLOCK]---
-						ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-						if(response.get(0) != -1) {
-							counterPlay = true;
-							game.sendMessageAll(p.getName()+" has revealed a Moat");
-						}
-						//---[END CODE BLOCK]---
-							break;
-						}
-						counter++;
-						if (counter > game.getWaitTime())
-						{
-
-								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-								game.sendDisconnect(player.getID());
-								break;
-						}
-						Thread.sleep(10);
-					}
-				//---[END TIMEOUT BLOCK]---
-
-					//Based on result, set counter to true or false
-					break;
-				}
-				
-			}
-			if(counterPlay) {
-				
-				continue;
-			}
-			else {
-				affectedPlayers.add(p);
-			}
-		}
-		return affectedPlayers;
-	}
-	/**
-	 * Expandable "on play" card handler. Currently only needs three params but will
-	 * expand with future implementation
-	 * @param effect String with the c
-	 * @param owner
-	 * @param card
-	 */
-	private void playerEffects(String effect,Player owner, Card card) {
-		switch(effect) {
-		
-		case "SilverNextMoney1":
-			if(card.getName().equals("Silver")) {
-				owner.addMoney(1);
-				owner.removeEffect(effect);
-			}
-			break;
-		}
-	}
+	
+	
 	/**
 	 * Coordinator of effects- Call this on a per-board basis
 	 * @param n - Specifies the effect code
@@ -235,27 +157,39 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		//After every effect, update player hand
 		game.sendPlayerHand(player.getID(), player.getID());
 	}
-	private void trashUpTo4(Player player, Board board) throws InterruptedException {
+	
+	/**
+	 * A player has the option to trash up to 4 cards from their hand
+	 * @param player
+	 * @param board
+	 * @throws InterruptedException
+	 */
+	@SuppressWarnings("unchecked")
+	private void trashUpTo4(Player player, Board board) throws InterruptedException
+	{
 		game.sendCardOption(player.getID(), "Select up to 4 cards you would like to trash", 4, player.getHand(), true);
 		//---[BEGIN TIMEOUT BLOCK]---
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-			if(tempResponse != null) {
+			tempResponse=rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+			if(tempResponse != null)
+			{
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-				if(response.get(0)==-1) {
+				if(response.get(0) == -1)
+				{
 					game.sendMessage("No cards trashed", player.getID());
 				}
 				else {
 					ArrayList<Card> tempHand = player.getHand();
 					ArrayList<Card> toTrash = new ArrayList<Card>();
-					for(int index:response) {
+					for(int index:response)
+					{
 						toTrash.add(tempHand.get(index));
-						
 					}
-					for(Card c: toTrash) {
+					for(Card c: toTrash)
+					{
 						player.removeFromHand(c);
 						board.trashCard(c);
 						player.trash(c);
@@ -277,46 +211,63 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 	//---[END TIMEOUT BLOCK]---
 		
 	}
-	private void gainGoldOthersReveal(Player player, Board board, Player[] players) throws InterruptedException {
-		Card gold =board.canGain("Gold");
-		ArrayList<Player> expectedResponses= new ArrayList<Player>();
-		ArrayList<ArrayList<Card>> selectedCards= new ArrayList<ArrayList<Card>>();
-		if(gold != null) {
+	/**
+	 * Effect code - gain a gold and force others to reveal
+	 * @param player
+	 * @param board
+	 * @param players
+	 * @throws InterruptedException
+	 */
+	@SuppressWarnings("unchecked")
+	private void gainGoldOthersReveal(Player player, Board board, Player[] players) throws InterruptedException
+	{
+		Card gold = board.canGain("Gold");
+		ArrayList<Player> expectedResponses = new ArrayList<Player>();
+		ArrayList<ArrayList<Card>> selectedCards = new ArrayList<ArrayList<Card>>();
+		if(gold != null)
+		{
 			player.discardCard(gold);
 			board.cardRemove("Gold");
 			player.gain(gold);
 		}
-		for(Player p : players) {
-			if(p.equals(player)) {
+		for(Player p : players)
+		{
+			if(p.equals(player))
+			{
 				continue;
 			}
-			String[]drawn = p.drawCard(2);
+			String[] drawn = p.drawCard(2);
 			//Measure to avoid index out of bounds in case of empty discard and deck
-			String drawnToString="";
-			for(String s:drawn) {
-				drawnToString+= s+" ";
+			StringBuilder drawnToString = new StringBuilder();
+			for(String s: drawn)
+			{
+				drawnToString.append(s);
+				drawnToString.append(", ");
 			}
-				
-			game.sendMessageAll(p.getName()+" has revealed "+drawnToString);
+			drawnToString.substring(0, drawnToString.length() - 2);
+
+			game.sendMessageAll(p.getName() + " has revealed " + drawnToString.toString());
 			//Remove cards from hand
 			ArrayList<Card> tempCards = new ArrayList<Card>();
-			for(int i =1;i<=drawn.length;i++) {
-				tempCards.add(p.getHand().get(p.getHandSize()-i));
-				p.removeFromHand(p.getHand().get(p.getHandSize()-i));
+			for(int i = 1; i <= drawn.length; i++)
+			{
+				tempCards.add(p.getHand().get(p.getHandSize() - i));
+				p.removeFromHand(p.getHand().get(p.getHandSize() - i));
 			}
-			
-			//See if cards are treasure
-		boolean hasTreasure= tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) &&!c.getName().equals("Copper"));
-			
-		
-		
-			if(hasTreasure) {
+
+			//See if any cards in hand are treasures - but not coppers
+			boolean hasTreasure = tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) && !c.getName().equals("Copper"));
+			if(hasTreasure)
+			{
 				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
 				expectedResponses.add(p);
 				selectedCards.add(tempCards);
-			}else {
-				for(int i =tempCards.size()-1;i >= 0 ;i--) {
+			}
+			else
+			{
+				for(int i = tempCards.size() - 1;i >= 0 ; i--)
+				{
 					p.addCardDecktop(tempCards.get(i));
 				}
 			}
@@ -324,211 +275,225 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		//---[BEGIN TIMEOUT BLOCK]---
 		int counter = 0; // timeout
 		Object[] tempResponse = null;
-		while(expectedResponses.size()>0) {
-			
-			while(true) {
-		tempResponse=rSpace.getp(new FormalField(Integer.class),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-		if(tempResponse != null) {
-			
-			
-			int pID = (int) tempResponse[0];
-			ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
-			//Find out what player responded
-			for(Player rPlayer : expectedResponses) {
-				if(rPlayer.getID() == pID) {
-					int cardIndex=expectedResponses.indexOf(rPlayer);
-					//---[BEGIN CODE BLOCK]---
-					Card selection =selectedCards.get(cardIndex).get(response.get(0));
-					board.trashCard(selection);
-					selectedCards.get(cardIndex).remove(selection);
-					rPlayer.trash(selection);
-				
-					Card nullCheck = selectedCards.get(cardIndex).get(0);
-						if (nullCheck != null) {
-							rPlayer.discardCard(nullCheck);
+		while(expectedResponses.size() > 0)
+		{	
+			while(true)
+			{
+				tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				if(tempResponse != null)
+				{
+					int pID = (int) tempResponse[0];
+					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					//Find out what player responded
+					for(Player rPlayer : expectedResponses)
+					{
+						if(rPlayer.getID() == pID)
+						{
+							int cardIndex = expectedResponses.indexOf(rPlayer);
+							//---[BEGIN CODE BLOCK]---
+							Card selection = selectedCards.get(cardIndex).get(response.get(0));
+							board.trashCard(selection);
+							selectedCards.get(cardIndex).remove(selection);
+							rPlayer.trash(selection);
+							Card nullCheck = selectedCards.get(cardIndex).get(0);
+							if (nullCheck != null)
+							{
+								rPlayer.discardCard(nullCheck);
+							}
+							//---[END CODE BLOCK]---
+							expectedResponses.remove(rPlayer);
+							selectedCards.remove(cardIndex);
+							counter = 0; // reset timeout after player response
+							break;
 						}
-					//---[END CODE BLOCK]---
-					expectedResponses.remove(rPlayer);
-					selectedCards.remove(cardIndex);
-					counter =0; // reset timeout after player response
+					}
 					break;
 				}
-			}
-			
-			
-		
-			
-			break;
-		}
-		counter++;
-		if (counter > game.getWaitTime())
-		{
-			for(Player dPlayer : expectedResponses) {
-				Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
-				game.sendDisconnect(dPlayer.getID());
-				
-			}
-			
-			break;
-			}
-			Thread.sleep(10);
+				counter++;
+				if (counter > game.getWaitTime())
+				{
+					for(Player dPlayer : expectedResponses)
+					{
+						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
+						game.sendDisconnect(dPlayer.getID());
+
+					}
+					break;
+				}
+				Thread.sleep(10);
 			}
 		}
 		//---[END TIMEOUT BLOCK]---
+	}
 	
-}
-	private void gainPlus5(Player player, Board board) throws InterruptedException {
-		ArrayList<Card> choice = getChoice(bcard-> bcard.getCost()<=5, board);
-		
+	/**
+	 * Gain a card costing up to 5.
+	 * @param player
+	 * @param board
+	 * @throws InterruptedException
+	 */
+	@SuppressWarnings("unchecked")
+	private void gainPlus5(Player player, Board board) throws InterruptedException
+	{
+		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= 5, board);
 		ArrayList<Card> tempHand = player.getHand();
 		Card c;
-		if(choice.size()>0) {
+		if(choice.size() > 0)
+		{
 			game.sendCardOption(player.getID(), "Select a card to gain", 1, choice, false);
 			//---[BEGIN TIMEOUT BLOCK]---	
 			int counter = 0; // timeout
 			Object[] tempResponse = null;
-			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-			if(tempResponse != null) {
-				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-				c =choice.get(response.get(0));
-				board.cardRemove(c.getName());
-				tempHand.add(c);
-				player.setHand(tempHand);
-				player.gain(c);
-					
-				game.sendCardOption(player.getID(), "Select a card to put on top of deck", 1, tempHand, false);
-				//---[BEGIN TIMEOUT BLOCK]---
-				int counter2 = 0; // timeout
-					tempResponse = null;
-					while(true) {
-					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-					if(tempResponse != null) {
-						//---[BEGIN CODE BLOCK]---
-						response =(ArrayList<Integer>) tempResponse[2];
-						c = tempHand.get(response.get(0));
-						player.removeFromHand(c);
-						player.addCardDecktop(c);
-						//---[END CODE BLOCK]---
-						break;
-					}
-					counter2++;
-					if (counter2 > game.getWaitTime())
-					{
-
-							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-							game.sendDisconnect(player.getID());
-							break;
-					}
-					Thread.sleep(10);
-				}
-			//---[END TIMEOUT BLOCK]---		
-				break;
-			}
-			counter++;
-			if (counter > game.getWaitTime())
+			while(true) 
 			{
-				
-					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-					game.sendDisconnect(player.getID());
-					break;
-			}
-			Thread.sleep(10);
-		}
-			//---[END TIMEOUT BLOCK]---	
-		}	
-		
-	}
-	private void mayTrashTreasure(Player player, Board board) throws InterruptedException {
-		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure") ) ).collect(Collectors.toList());
-		if(choice.size() > 0) {
-			
-		game.sendCardOption(player.getID(), "Trash treasure to gain treasure costing upto 3 more?", 1, choice, true);
-		//---[BEGIN TIMEOUT BLOCK]--
-		int counter = 0; // timeout
-			Object[] tempResponse = null;
-			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-			if(tempResponse != null) {
-			//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-				if(response.get(0) !=-1) {
-					Card c = choice.get(response.get(0));
-					
-					choice = getChoice(bcard ->bcard.getCost()<=c.getCost()+3&& Arrays.stream(bcard.getDisplayTypes()).anyMatch(type -> type.equals("Treasure")), board);
-					if(choice.size() >0) {
-					game.sendCardOption(player.getID(), "Choose a card to gain", 1, choice, false);
-					//---[BEGIN TIMEOUT BLOCK]--
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				if(tempResponse != null) {
+					//---[BEGIN CODE BLOCK]---
+					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					c =choice.get(response.get(0));
+					board.cardRemove(c.getName());
+					tempHand.add(c);
+					player.setHand(tempHand);
+					player.gain(c);
+
+					game.sendCardOption(player.getID(), "Select a card to put on top of deck", 1, tempHand, false);
+					//---[BEGIN TIMEOUT BLOCK]---
 					int counter2 = 0; // timeout
-						tempResponse = null;
-						while(true) {
-						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
-						if(tempResponse != null) {
-						//---[BEGIN CODE BLOCK]---
-							response = (ArrayList<Integer>) tempResponse[2];
-							Card c2 = choice.get(response.get(0));
-							player.discardCard(c2);
-							board.cardRemove(c2.getName());
-							player.gain(c2);
-							board.trashCard(c);
-							player.trash(c);
+					tempResponse = null;
+					while(true)
+					{
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						if(tempResponse != null) 
+						{
+							//---[BEGIN CODE BLOCK]---
+							response =(ArrayList<Integer>) tempResponse[2];
+							c = tempHand.get(response.get(0));
 							player.removeFromHand(c);
-						//---[END CODE BLOCK]---
+							player.addCardDecktop(c);
+							//---[END CODE BLOCK]---
 							break;
 						}
 						counter2++;
 						if (counter2 > game.getWaitTime())
 						{
-
-								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-								game.sendDisconnect(player.getID());
-								break;
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
 						}
 						Thread.sleep(10);
 					}
-				//---[END TIMEOUT BLOCK]--
-
-						
-					}
-					else {
-						game.sendMessage("No cards to gain, your treasure has not been trashed", player.getID());
-					}
+					//---[END TIMEOUT BLOCK]---		
+					break;
 				}
-			else {
-				game.sendMessage("No treasure in hand", player.getID());
-				}
-			//---[END CODE BLOCK]---
-				break;
-			}
-			counter++;
-			if (counter > game.getWaitTime())
-			{
-
+				counter++;
+				if (counter > game.getWaitTime())
+				{
 					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
 					game.sendDisconnect(player.getID());
 					break;
+				}
+				Thread.sleep(10);
 			}
-			Thread.sleep(10);
-		}
-	//---[END TIMEOUT BLOCK]--
-
+			//---[END TIMEOUT BLOCK]---	
+		}	
 		
-		
-		
+	}
+	/**
+	 * Allows a player to trash a card costing up to 3 or more.
+	 * @param player
+	 * @param board
+	 * @throws InterruptedException
+	 */
+	@SuppressWarnings("unchecked")
+	private void mayTrashTreasure(Player player, Board board) throws InterruptedException
+	{
+		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toList());
+		if(choice.size() > 0)
+		{
+			game.sendCardOption(player.getID(), "Trash treasure card from your hand to gain a treasure costing upto 3 more.", 1, choice, true);
+			//---[BEGIN TIMEOUT BLOCK]--
+			int counter = 0; // timeout
+			Object[] tempResponse = null;
+			while(true)
+			{
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				if(tempResponse != null)
+				{
+					//---[BEGIN CODE BLOCK]---
+					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					if(response.get(0) != -1) {
+						Card c = choice.get(response.get(0));
+						choice = getChoice(bcard -> bcard.getCost() <= c.getCost() + 3 && Arrays.stream(bcard.getDisplayTypes()).anyMatch(type -> type.equals("Treasure")), board);
+						if(choice.size() > 0) 
+						{
+							game.sendCardOption(player.getID(), "Choose a card to gain", 1, choice, false);
+							//---[BEGIN TIMEOUT BLOCK]--
+							int counter2 = 0; // timeout
+							tempResponse = null;
+							while(true)
+							{
+								tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+								if(tempResponse != null)
+								{
+									//---[BEGIN CODE BLOCK]---
+									response = (ArrayList<Integer>) tempResponse[2];
+									Card c2 = choice.get(response.get(0));
+									player.discardCard(c2);
+									board.cardRemove(c2.getName());
+									player.gain(c2);
+									board.trashCard(c);
+									player.trash(c);
+									player.removeFromHand(c);
+									//---[END CODE BLOCK]---
+									break;
+								}
+								counter2++;
+								if (counter2 > game.getWaitTime())
+								{
+									Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+									game.sendDisconnect(player.getID());
+									break;
+								}
+								Thread.sleep(10);
+							}
+							//---[END TIMEOUT BLOCK]--
+						}
+						else
+						{
+							game.sendMessage("No cards to gain, your treasure has not been trashed", player.getID());
+						}
+					}
+					else
+					{
+						game.sendMessage("No treasure in hand", player.getID());
+					}
+					//---[END CODE BLOCK]---
+					break;
+				}
+				counter++;
+				if (counter > game.getWaitTime())
+				{
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
+				}
+				Thread.sleep(10);
+			}
+			//---[END TIMEOUT BLOCK]--
 		}
 	}
 	
-	private void drawTill7(Player player) throws InterruptedException {
+	private void drawTill7(Player player) throws InterruptedException
+	{
 		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
-		while(player.getHandSize() <7 || (player.getDeckSize()>0 && player.getDiscardSize()>0)) {
+		while(player.getHandSize() < 7 && player.getDeckSize() > 0  && player.getDiscardSize() > 0) {
 			player.drawCard(1);
 			game.sendPlayerHand(player.getID(), player.getID());
-			Card currentDraw =player.getHand().get(player.getHandSize()-1);
-			
-			
-			for(String dispType: currentDraw.getDisplayTypes()) {
-				if(dispType.equals("Action")) {
+			Card currentDraw = player.getHand().get(player.getHandSize() - 1);
+			for(String dispType: currentDraw.getDisplayTypes())
+			{
+				if(dispType.equals("Action"))
+				{
 					ArrayList<Card> choice = new ArrayList<Card>();
 					ArrayList<Integer> response = new ArrayList<Integer>();
 					choice.add(currentDraw);
@@ -537,7 +502,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 					int counter = 0; // timeout
 						Object[] tempResponse = null;
 						while(true) {
-						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 						if(tempResponse != null) {
 						//---[BEGIN CODE BLOCK]---
 						response= (ArrayList<Integer>) tempResponse[2];
@@ -583,7 +548,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 			if(tempResponse != null) {
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response=(ArrayList<Integer>) tempResponse[2];
@@ -597,7 +562,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				int counter2 = 0; // timeout
 					 tempResponse = null;
 					while(true) {
-					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 					if(tempResponse != null) {
 					//---[BEGIN CODE BLOCK]---
 						response = (ArrayList<Integer>) tempResponse[2];
@@ -658,7 +623,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 	int counter = 0; // timeout
 		Object[] tempResponse = null;
 		while(true) {
-		tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+		tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 		if(tempResponse != null) {
 		//---[BEGIN CODE BLOCK]---
 			ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // Response here
@@ -706,7 +671,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				int counter = 0; // timeout
 					Object[] tempResponse = null;
 					while(true) {
-					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 					if(tempResponse != null) {
 					//---[BEGIN CODE BLOCK]---
 						 response= (ArrayList<Integer>) tempResponse[2];				
@@ -739,7 +704,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 						int counter2 = 0; // timeout
 							tempResponse = null;
 							while(true) {
-							tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+							tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 							if(tempResponse != null) {
 							//---[BEGIN CODE BLOCK]---
 								response=(ArrayList<Integer>) tempResponse[2];
@@ -813,7 +778,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 			if(tempResponse != null) {
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // response here
@@ -832,7 +797,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 					int counter2 = 0; // timeout
 						tempResponse = null;
 						while(true) {
-						tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 						if(tempResponse != null) {
 						//---[BEGIN CODE BLOCK]---
 							response = (ArrayList<Integer>) tempResponse[2]; //response here
@@ -849,7 +814,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 						int counter3 = 0; // timeout
 							 tempResponse = null;
 							while(true) {
-							tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+							tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 							if(tempResponse != null) {
 							//---[BEGIN CODE BLOCK]---
 								response = (ArrayList<Integer>) tempResponse[2]; //response here		
@@ -954,7 +919,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 			if(tempResponse != null) {
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
@@ -1007,7 +972,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 			int counter = 0; // timeout
 				Object[] tempResponse = null;
 				while(true) {
-				tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 				if(tempResponse != null) {
 				//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
@@ -1067,7 +1032,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 			if(tempResponse != null) {
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
@@ -1112,7 +1077,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 				int counter = 0; // timeout
 					Object[] tempResponse = null;
 					while(true) {
-					tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+					tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 					if(tempResponse != null) {
 					//---[BEGIN CODE BLOCK]---
 						ArrayList<Integer>response = (ArrayList<Integer>) tempResponse[2];
@@ -1155,6 +1120,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		player.addActions(2);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void gain1MaxCost4(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = getChoice(c-> c.getCost()<=4,board);
@@ -1163,7 +1129,7 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 		int counter = 0; // timeout
 			Object[] tempResponse = null;
 			while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 			if(tempResponse != null) {
 			//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response= (ArrayList<Integer>) tempResponse[2];
@@ -1322,10 +1288,6 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 							break;
 						}
 					}
-
-
-
-
 					break;
 				}
 				counter++;
@@ -1335,16 +1297,106 @@ private ArrayList<Card> getChoice(Predicate<Card> p, Board board) {
 						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
 						game.sendDisconnect(dPlayer.getID());
 					}
-
 					break;
 				}
 				Thread.sleep(10);
 			}
 			}
 		//---[END TIMEOUT BLOCK]---
+	}
+	
+	/**
+	 * Helper function to return list of available cards based on a predicate
+	 */
+	private ArrayList<Card> getChoice(Predicate<Card> p, Board board)
+	{
+		ArrayList<Card> choice =(ArrayList<Card>) board.getCardStream().filter(p).collect(Collectors.toList());
+		return choice;
+	}
+	
+	/**
+	 * Looks through the player for possible counter players from a play played by a specific player
+	 * @param player
+	 * @param card
+	 * @param board
+	 * @param players
+	 * @return
+	 * @throws InterruptedException
+	 */
+	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException {
+		boolean counterPlay;
+		ArrayList<Player> affectedPlayers = new ArrayList<Player>();
+		for(Player p: players)
+		{
+			counterPlay = false;
+			if(!player.isConnected())
+				break;
+			for(Card c : p.getHand()) {
+				//Reaction card handling
+				switch(c.getName()) {
+				
+				case "Moat": 
+					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
+					//---[BEGIN TIMEOUT BLOCK]---
+					int counter = 0; // timeout
+						Object[] tempResponse = null;
+						while(true) {
+						tempResponse=rSpace.getp(new ActualField(p.getID()),new ActualField(ClientCommands.selectCard),new FormalField(ArrayList.class));
+						if(tempResponse != null) {
+						//---[BEGIN CODE BLOCK]---
+						ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+						if(response.get(0) != -1) {
+							counterPlay = true;
+							game.sendMessageAll(p.getName()+" has revealed a Moat");
+						}
+						//---[END CODE BLOCK]---
+							break;
+						}
+						counter++;
+						if (counter > game.getWaitTime())
+						{
 
+								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+								game.sendDisconnect(player.getID());
+								break;
+						}
+						Thread.sleep(10);
+					}
+				//---[END TIMEOUT BLOCK]---
+
+					//Based on result, set counter to true or false
+					break;
+				}
+				
+			}
+			if(counterPlay) {
+				
+				continue;
+			}
+			else {
+				affectedPlayers.add(p);
+			}
+		}
+		return affectedPlayers;
+	}
+	
+	/**
+	 * Expandable "on play" card handler. Currently only needs three params but will
+	 * expand with future implementation
+	 * @param effect String with the c
+	 * @param owner
+	 * @param card
+	 */
+	private void playerEffects(String effect,Player owner, Card card) {
+		switch(effect) {
 		
-		
+		case "SilverNextMoney1":
+			if(card.getName().equals("Silver")) {
+				owner.addMoney(1);
+				owner.removeEffect(effect);
+			}
+			break;
+		}
 	}
 
 }
