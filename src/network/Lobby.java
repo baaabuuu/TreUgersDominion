@@ -72,11 +72,13 @@ public class Lobby extends Thread  {
 				Log.log("Player registred. Name of user: " + (String) input[1] + " ID: " + activePlayers);
 				
 				Log.log("Sending waiting message");
-				clientSpace.put(ServerCommands.message, activePlayers);
-				clientSpace.put(activePlayers, "Connected. Waiting for other players");
 				
 				clientSpace.put(ServerCommands.message, activePlayers);
 				clientSpace.put(activePlayers, "Welcome " + players.get(activePlayers) + " you are player number: " + activePlayers);
+				
+				clientSpace.put(ServerCommands.message, activePlayers);
+				clientSpace.put(activePlayers, "Waiting for other players");
+				
 				
 				activePlayers++;
 			} catch (InterruptedException e) {

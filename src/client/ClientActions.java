@@ -287,7 +287,7 @@ public class ClientActions {
 	}
 	public void setPlayerHand(PlayerHand input) throws InterruptedException {
 		playerHand = input.getCards();
-		userInterface.newPlayerHand(input);
+		userInterface.newPlayerHand(input.getCards());
 	}
 	public void setBuyArea(Card[] input) {
 		this.buyArea = input;

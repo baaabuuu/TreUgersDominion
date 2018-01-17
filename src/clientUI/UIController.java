@@ -143,6 +143,7 @@ public class UIController implements client.UIControllerInter {
 		for(int i = 0; i < playerHand.size(); i++){
 			output += (i+1) + ". " + playerHand.get(i).getName() + " - ";
 		}
+		output = output.replaceAll(" - $", "");
 		eventInput(output);
 	}
 	public void chatInput(){

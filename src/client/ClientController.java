@@ -154,7 +154,7 @@ public class ClientController {
 		Log.log("Before get");
 		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
-		playerID = (int)input[1];
+		this.playerID = (int)input[1];
 		Log.log("Gained ID: " + playerID);
 		
 		hostSpace.put(playerID, ClientCommands.playerName);
@@ -162,7 +162,7 @@ public class ClientController {
 		
 		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
 		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface, clientController));
-		connecterDetector = new Thread(new ConnectionDetector(new RemoteSpace(this.uri), clientController));
+		connecterDetector = new Thread(new ConnectionDetector(new RemoteSpace(this.uri), playerID, clientController));
 		
 		consumer.start();
 		connecterDetector.start();

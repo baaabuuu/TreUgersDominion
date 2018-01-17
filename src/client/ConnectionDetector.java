@@ -16,9 +16,10 @@ public class ConnectionDetector implements Runnable {
 	private Space hostSpace;
 	private int playerID;
 	private ClientController handler;
-	public ConnectionDetector(Space hostSpace, ClientController handler) {
+	public ConnectionDetector(Space hostSpace, int playerID, ClientController handler) {
 		this.hostSpace = hostSpace;
 		this.handler = handler;
+		this.playerID = playerID;
 	}
 
 	@Override

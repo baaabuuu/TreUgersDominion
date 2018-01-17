@@ -416,7 +416,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			for(String s : controller.getBuyArea()[itemList.getSelectedIndex()].getDisplayTypes()) {
 				displayTypes += s + " - ";
 			}
-			displayTypes = displayTypes.replaceAll(" - $", "");;
+			displayTypes = displayTypes.replaceAll(" - $", "");
 			itemArea.setText(controller.getBuyArea()[itemList.getSelectedIndex()].getName() + "   " +
 					"Cost: " + controller.getBuyArea()[itemList.getSelectedIndex()].getCost() + "\n\n" +
 					"To buy, type '" + (itemList.getSelectedIndex()+1) + "'\n" +

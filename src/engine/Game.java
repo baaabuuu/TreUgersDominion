@@ -323,7 +323,7 @@ public class Game
 		{
 			Integer[] shopCount = (Integer[]) board.getBoardStream().map(i -> i[0]).toArray();
 			Integer[] handCount = (Integer[]) Arrays.stream(players).map(player -> player.getHandSize()).toArray();
-			Integer[] deckCount = (Integer[])Arrays.stream(players).map(player -> player.getDeckSize()).toArray();
+			Integer[] deckCount = (Integer[]) Arrays.stream(players).map(player -> player.getDeckSize()).toArray();
 			Integer[] discardCount = (Integer[]) Arrays.stream(players).map(player -> player.getDiscardSize()).toArray();
 			Integer[] vpCount = (Integer[]) Arrays.stream(players).map(player -> player.getVictoryPoints()).toArray();
 			int trashCount = board.getTrashSize();		

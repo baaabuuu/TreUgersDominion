@@ -106,7 +106,7 @@ public class Lounge {
 			cmd = (ClientCommands) firstInput[1];
 			playerID = (int) firstInput[0];
 			
-			Log.log("Message recived: " + cmd.toString() + ", from: " + playerID);
+			Log.log("Message recived: \"" + cmd.toString() + "\", from: " + playerID);
 			
 			Object[] secondInput;
 			//Obeys command
