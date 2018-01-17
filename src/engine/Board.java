@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import org.jspace.Tuple;
-
 import cards.Card;
 import log.Log;
 
