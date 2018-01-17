@@ -133,8 +133,11 @@ public class EffectHandler
 		case 25: //Gain a card to your hand costing up to 5. Put a card from your hand onto your deck
 			playArtisan(player, board);
 			break;
-		case 26: 
-			trashUpTo4(player, board);
+		case 26: //Chapel - Trash up to 4 Cards from your hand.
+			playChapel(player, board);
+			break;
+		case 27: //Smithy - +3 cards
+			playSmithy(player);
 			break;
 		default:
 			Log.important("Invalid effect code: "+n);
@@ -144,6 +147,15 @@ public class EffectHandler
 		//After every effect, update player hand
 		game.sendPlayerHand(player.getID(), player.getID());
 	}
+
+	/**
+	 * Draw 3 cards.
+	 * @param player
+	 */
+	private void playSmithy(Player player) {
+		player.drawCard(3);
+	}
+
 
 	private void playMerchant(Player player)
 	{
@@ -160,7 +172,7 @@ public class EffectHandler
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
-	private void trashUpTo4(Player player, Board board) throws InterruptedException
+	private void playChapel(Player player, Board board) throws InterruptedException
 	{
 		game.sendCardOption(player.getID(), "Select up to 4 cards you would like to trash", 4, player.getHand(), true);
 		//---[BEGIN TIMEOUT BLOCK]---

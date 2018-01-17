@@ -1,6 +1,7 @@
 package engine;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -305,11 +306,13 @@ public class Game
 	 */
 	private void startGameActions() throws InterruptedException
 	{
+		Card[] buyArea = (Card[]) board.getCardStream().toArray();
 		for (int i = 0; i < playerCount; i++)
 		{
-			if (i != turn)
-				sendPlayerHand(i, i);
+			sendPlayerHand(i, i);
+			writer.sendMessage(new Tuple(i, ServerCommands.setBuyArea, buyArea));
 		}
+		sendBoardState();
 	}
 	
 	/**
@@ -556,7 +559,6 @@ public class Game
 	{
 		phase++;
 		Log.log("Switching to phase " + phase);
-
 		if (phase > 1)
 			return newTurn();
 		return false;
