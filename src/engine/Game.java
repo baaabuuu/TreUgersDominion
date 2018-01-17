@@ -306,13 +306,13 @@ public class Game
 	 */
 	private void startGameActions() throws InterruptedException
 	{
-		Card[] buyArea = (Card[]) board.getCardStream().toArray();
+		sendBoardState();
+		Card[] buyArea =  (Card[]) board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray();
 		for (int i = 0; i < playerCount; i++)
 		{
 			sendPlayerHand(i, i);
 			writer.sendMessage(new Tuple(i, ServerCommands.setBuyArea, buyArea));
 		}
-		sendBoardState();
 	}
 	
 	/**

@@ -21,7 +21,7 @@ public class EffectHandler
 
 
 	/**
-	 * Coordinator of effects- Call this on a per-board basis
+	 * Coordinator of effects - calls the effect of cards.
 	 * @param n - Specifies the effect code
 	 * @param player - PLayer that the effect should a apply toString[] players
 	 * @param card - The card that was played.
@@ -29,7 +29,6 @@ public class EffectHandler
 	 * @param players - List of playerObjects
 	 * @throws InterruptedException 
 	 */
-
 	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players) throws InterruptedException{
 		//First check if playing this card would trigger any other effect
 		for(Player p: players) {
