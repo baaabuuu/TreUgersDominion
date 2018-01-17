@@ -106,6 +106,14 @@ public class Lobby extends Thread  {
 		
 		Log.log("Sending game start message");
 		try {
+			for(int i =0; i < noOfPlayers; i++) {
+				clientSpace.put(ServerCommands.setNames, i);
+				clientSpace.put(i, players.toArray(new String[noOfPlayers]));
+				
+				clientSpace.put(ServerCommands.message, i);
+				clientSpace.put(i, "Game is starting");
+			}
+			
 			gameStarter.startGame();
 			safeSpace.put(ServerCommands.gameStart);
 			
