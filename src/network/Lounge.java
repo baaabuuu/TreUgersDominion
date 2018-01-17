@@ -21,6 +21,7 @@ import org.jspace.Tuple;
 import cards.CardReader;
 import log.Log;
 import objects.ClientCommands;
+import objects.LoungeObject;
 import objects.ServerCommands;
 
 
@@ -29,10 +30,10 @@ public class Lounge {
 	private int noOfGamesAllowed = 1000;
 	private int noOfPlayersAllowed = 5*noOfGamesAllowed;
 	private Lobby[] gamesRunning = new Lobby[noOfGamesAllowed];
-	private HashMap<Integer, Integer> numberOfPlayers = new HashMap<Integer, Integer>(); 
+	private HashMap<Integer, Integer> gamesMap = new HashMap<Integer, Integer>(); 
 	private String[] playerNames = new String[noOfGamesAllowed];
 	private int indexID;
-	
+	private LoungeObject object = new LoungeObject();
 	
 	
 	
@@ -157,15 +158,13 @@ public class Lounge {
 					
 					if (gamesRunning[i] != null && !gamesRunning[i].getGameRunning()){
 						
-						numberOfPlayers.put(i, gamesRunning[i].getActivePlayers());
+						gamesMap.put(i, gamesRunning[i].getActivePlayers());
 					} 
 				}	
+					object.setGames(gamesMap);
 					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
-					lounge.put(playerID, new Tuple(numberOfPlayers));
-					
-					
-				
+					lounge.put(playerID, object);
 				break;
 			case newPlayer:	
 				int ID;
