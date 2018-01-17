@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -40,7 +41,7 @@ public class Game
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 4000;
+	private final int waitTime = 600000;
 	
 	/**
 	 * Returns how long time a time is allowed.
@@ -141,11 +142,11 @@ public class Game
 	 */
 	public void sendBoardState() throws InterruptedException
 	{
-		Integer[] shopCount = (Integer[]) board.getBoardStream().map(i -> i[0]).toArray();
-		Integer[] handCount = (Integer[]) Arrays.stream(players).map(player -> player.getHandSize()).toArray();
-		Integer[] deckCount = (Integer[])Arrays.stream(players).map(player -> player.getDeckSize()).toArray();
-		Integer[] discardCount = (Integer[]) Arrays.stream(players).map(player -> player.getDiscardSize()).toArray();
-		Integer[] vpCount = (Integer[]) Arrays.stream(players).map(player -> player.getVictoryPoints()).toArray();
+		Integer[] shopCount = board.getBoardStream().map(i -> (Integer) i[0]).toArray(Integer[]::new);
+		Integer[] handCount = (Integer[]) Arrays.stream(players).map(player -> (Integer) player.getHandSize()).toArray(Integer[]::new);
+		Integer[] deckCount = (Integer[])Arrays.stream(players).map(player -> (Integer) player.getDeckSize()).toArray(Integer[]::new);
+		Integer[] discardCount = (Integer[]) Arrays.stream(players).map(player -> (Integer) player.getDiscardSize()).toArray(Integer[]::new);
+		Integer[] vpCount = (Integer[]) Arrays.stream(players).map(player -> (Integer) player.getVictoryPoints()).toArray(Integer[]::new);
 		int trashCount = board.getTrashSize();		
 		BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
 		for (int playerID = 0; playerID < players.length; playerID++)
@@ -284,7 +285,7 @@ public class Game
 			builder.append(" with ");
 			builder.append(player.getVictoryPoints());
 			builder.append(" victory points! Their deck consisted of:\n");
-			String[] cardNames = (String[]) player.getAllCards().stream().map(card -> card.getName()).distinct().toArray();
+			String[] cardNames = player.getAllCards().stream().map(card -> card.getName()).distinct().toArray(String[]::new);
 			for (int i = 0; i < cardNames.length; i++)
 			{
 				String name = cardNames[i];
@@ -307,7 +308,7 @@ public class Game
 	private void startGameActions() throws InterruptedException
 	{
 		sendBoardState();
-		Card[] buyArea =  (Card[]) board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray();
+		Card[] buyArea = board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray(Card[]::new);
 		for (int i = 0; i < playerCount; i++)
 		{
 			sendPlayerHand(i, i);
@@ -324,11 +325,11 @@ public class Game
 	{
 		if (players[playerID].isConnected())
 		{
-			Integer[] shopCount = (Integer[]) board.getBoardStream().map(i -> i[0]).toArray();
-			Integer[] handCount = (Integer[]) Arrays.stream(players).map(player -> player.getHandSize()).toArray();
-			Integer[] deckCount = (Integer[]) Arrays.stream(players).map(player -> player.getDeckSize()).toArray();
-			Integer[] discardCount = (Integer[]) Arrays.stream(players).map(player -> player.getDiscardSize()).toArray();
-			Integer[] vpCount = (Integer[]) Arrays.stream(players).map(player -> player.getVictoryPoints()).toArray();
+			Integer[] shopCount = board.getBoardStream().map(i -> i[0]).toArray(Integer[]::new);
+			Integer[] handCount =  Arrays.stream(players).map(player -> player.getHandSize()).toArray(Integer[]::new);
+			Integer[] deckCount = Arrays.stream(players).map(player -> player.getDeckSize()).toArray(Integer[]::new);
+			Integer[] discardCount = Arrays.stream(players).map(player -> player.getDiscardSize()).toArray(Integer[]::new);
+			Integer[] vpCount = Arrays.stream(players).map(player -> player.getVictoryPoints()).toArray(Integer[]::new);
 			int trashCount = board.getTrashSize();		
 			BoardState boardState = new BoardState(shopCount, handCount, deckCount, discardCount, trashCount, vpCount);
 			Player player = players[playerID];

@@ -55,7 +55,7 @@ public class EffectHandler
 			}
 		}
 
-		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName()+".");
+		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName() +".");
 		switch(n)
 		{
 		case 0: //Do nothing

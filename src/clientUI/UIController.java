@@ -24,10 +24,10 @@ public class UIController implements client.UIControllerInter {
 	private ServerPanel serverPanel;
 	private ClientController client;
 	private UIController controller = this;
-	
+
 	private Space userSpace;
 	private Card[] buyArea;
-	
+
 	/**
 	 * The constructor of UIController.
 	 * @param int port
@@ -38,7 +38,7 @@ public class UIController implements client.UIControllerInter {
 	public UIController(int port, String host, ClientController client, Space userSpace) {
 		this.client = client;
 		this.userSpace = userSpace;
-		
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -57,15 +57,14 @@ public class UIController implements client.UIControllerInter {
 					gameBG.add(serverPanel, BorderLayout.CENTER);
 					// Add background pane to main.
 					mainFrame.setContentPane(gameBG);
-					
-					
+
 					CardReader cards = new CardReader();
 					Card[] card = {cards.getBase().get(2),cards.getBase().get(6),cards.getBase().get(8),cards.getBase().get(14)};
 					newBuyArea(card);
 					Integer[] a = {1,2,3,4};
 					gamePanel.updBuyList(buyArea,a);
-					
-					
+
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -129,12 +128,13 @@ public class UIController implements client.UIControllerInter {
 		gamePanel.lblActions.setText("Money in play: " + values.getMoney());
 	}
 	public void newBoardState(BoardState input){
-		
 		gamePanel.lblP1Hand.setText("Card Count: " + input.getHandCount()[0]);
 		gamePanel.lblP2Hand.setText("Card Count: " + input.getHandCount()[1]);
-		gamePanel.lblP3Hand.setText("Card Count: " + input.getHandCount()[2]);
-		gamePanel.lblP4Hand.setText("Card Count: " + input.getHandCount()[3]);
-		
+		if (input.getHandCount().length > 2)
+			gamePanel.lblP3Hand.setText("Card Count: " + input.getHandCount()[2]);
+		if (input.getHandCount().length > 3)
+			gamePanel.lblP4Hand.setText("Card Count: " + input.getHandCount()[3]);
+
 		gamePanel.updBuyList(buyArea,input.getShopArea());
 	}
 	public void newPlayerHand(List<Card> playerHand){

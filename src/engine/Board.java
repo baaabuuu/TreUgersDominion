@@ -185,8 +185,8 @@ public class Board
 	
 	/**
 	 * Returns the board as a Stream.
-	 * Object[n][0] = copies left
-	 * Object[n][1] = Card
+	 *<p>Object[n][0] = copies left
+	 *<p> Object[n][1] = Card
 	 * @return
 	 */
 	public Stream<Object[]> getBoardStream()
