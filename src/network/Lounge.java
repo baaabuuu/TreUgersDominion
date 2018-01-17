@@ -109,32 +109,45 @@ public class Lounge {
 			Object[] secondInput;
 			//Obeys command
 			switch(cmd){
-			case enterLobby:		
+			case enterLobby:
+				Log.log("Finding uri for lobby");
 				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
-				if(indexID < gameID){
+				if(indexID < gameID && gamesRunning[gameID] != null){
+					Log.log("Sending uri");
 					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, gamesRunning[gameID].getURI());
 				} else {
+					Log.log("Failed to find game. Sending Exception");
 					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, "gameNotFoundException");
 				}
 				playerNames[playerID] = null;
 				break;
 			case createLobby:
+				Log.log("Creating lobby");
 				for(int i = 0; i<noOfGamesAllowed; i++){
-					if(gamesRunning[i] != null){
+					if(gamesRunning[i] == null){
 						
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
-						Lobby tempInit = new Lobby(tempURI, cardReader);
+						Log.log("URI: " + tempURI);
+						//Setup client space
+						Space clientSpace = new SequentialSpace();
+						repository.add(Integer.toString(i), clientSpace);
+						
+						
+						Lobby tempInit = new Lobby(tempURI, cardReader, clientSpace);
 						gamesRunning[i] = tempInit;
+						
+						Log.log("Game created. Sending URI to: " + playerID);
 						lounge.put(ServerCommands.newConnection, playerID);
 						lounge.put(playerID, tempURI);
 					}
 				}
 				break;
 			case getLobbies:
+				Log.log("Finding lobbies");
 				for(int i = 0; i< noOfGamesAllowed; i++){
 					
 					if (gamesRunning[i] != null & !gamesRunning[i].isAlive()){
@@ -142,6 +155,7 @@ public class Lounge {
 						numberOfPlayers[i] = gamesRunning[i].getActivePlayers();
 					}
 					
+					Log.log("Sending lobies");
 					lounge.put(ServerCommands.setLaunge, playerID);
 					lounge.put(playerID, gamesRunning, numberOfPlayers);
 					
@@ -150,11 +164,15 @@ public class Lounge {
 				break;
 			case newPlayer:	
 				int ID;
+				Log.log("Finding avaible ID");
 				for(ID = 0; ID < noOfPlayersAllowed; ID++){
 					if(playerNames[ID] == null){
+						Log.log("Sending player ID: " + ID);
+						
 						lounge.put(ServerCommands.playerID, ID);
 						
 						playerNames[ID] = "";
+						
 						break;
 					}
 				}
@@ -162,10 +180,12 @@ public class Lounge {
 			case playerName:
 				secondInput = lounge.get(new FormalField(Integer.class), new FormalField(String.class));
 				if(playerNames[(int) secondInput[0]] == "" && (String) secondInput[1] != ""){
+					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
 				break;
 			default:
+				Log.log("Uknown message recieved. Ignoring.");
 				break;
 			}
 		}
