@@ -74,7 +74,7 @@ public class ClientController {
 		userSpace = new SequentialSpace();
 		clientSpace = new SequentialSpace();
 		
-		connecterDetector = new Thread(new ConnectionDetector(clientSpace, clientController));
+		connecterDetector = new Thread(new ConnectionDetector(hostSpace, clientController));
 		connecterDetector.start();
 		
 		userInterface = new UIController(port, host, clientController, userSpace);
@@ -142,7 +142,7 @@ public class ClientController {
 		hostSpace.put(playerID,userName);
 		
 		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
-		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface));
+		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface, clientController));
 		consumer.start();
 		//receiver.start();
 		Log.log("Threads initiated.");

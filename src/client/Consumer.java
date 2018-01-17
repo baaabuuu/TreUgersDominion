@@ -18,15 +18,18 @@ public class Consumer implements Runnable {
 	private int playerID;
 	private ClientActions action;
 	private UIController userInterface;
+	private ClientController clientController;
 	
 	/**
 	 * Consumes relevant data from the servers space and places it into the clients space.
+	 * @param clientController 
 	 */
-	public Consumer(Space space, int playerID, Space hostSpace, Space userSpace, UIController userInterface) {
+	public Consumer(Space space, int playerID, Space hostSpace, Space userSpace, UIController userInterface, ClientController clientController) {
 		this.clientSpace = space;
 		this.playerID = playerID;
 		this.hostSpace = hostSpace;
 		this.userInterface = userInterface;
+		this.clientController = clientController;
 		this.action = new ClientActions(playerID, userSpace, userInterface);
 	}
 	/**
