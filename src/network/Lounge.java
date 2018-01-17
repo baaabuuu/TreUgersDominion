@@ -119,7 +119,7 @@ public class Lounge {
 				if(indexID < gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
 					Log.log("Sending uri");
 					lounge.put(ServerCommands.newConnection, playerID);
-					lounge.put(playerID, gamesRunning[gameID].getURI());
+					lounge.put(playerID, ServerCommands.newConnection, gamesRunning[gameID].getURI());
 				} else {
 					Log.log("Failed to find game. Sending Exception");
 					lounge.put(ServerCommands.message, playerID);
@@ -147,7 +147,7 @@ public class Lounge {
 						
 						Log.log("Game created. Sending URI to: " + playerID);
 						lounge.put(ServerCommands.newConnection, playerID);
-						lounge.put(playerID, tempURI);
+						lounge.put(playerID, ServerCommands.newConnection, tempURI);
 					}
 				}
 				break;
