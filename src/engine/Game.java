@@ -249,7 +249,6 @@ public class Game
 	 * @throws InterruptedException
 	 */
 	public void start() throws InterruptedException {
-		space.get(new ActualField(ServerCommands.gameStart));
 		Log.important("Game started");
 		startGameActions();
 		while(Boolean.TRUE)

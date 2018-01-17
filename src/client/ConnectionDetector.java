@@ -24,17 +24,14 @@ public class ConnectionDetector implements Runnable {
 	@Override
 	public void run() {
 		Object[] obj;
-		
-		while(Boolean.TRUE) {
-			try {
-				obj = hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.newConnection), new FormalField(String.class));
-				
-				Log.important("Received newConnection message and an URI.");
-				handler.newConnection((String)obj[2]);
-			} catch (InterruptedException e) {
-				Log.important("Thread interrupted!");
-				e.printStackTrace();
-			}
+		try {
+			obj = hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.newConnection), new FormalField(String.class));
+			
+			Log.important("Received newConnection message and an URI.");
+			handler.newConnection((String)obj[2]);
+		} catch (InterruptedException e) {
+			Log.important("Thread interrupted!");
+			e.printStackTrace();
 		}
 	}
 }

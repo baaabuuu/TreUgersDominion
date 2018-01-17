@@ -24,7 +24,7 @@ public class ClientController {
 	private int port;
 	private String uri;
 	private Space clientSpace;
-	private Space hostSpace;
+	private RemoteSpace hostSpace;
 	private Space userSpace;
 	
 	/*
@@ -85,6 +85,7 @@ public class ClientController {
 		this.uri = uri;
 		try {
 			this.hostSpace = new RemoteSpace(uri);
+			
 			initiateCommunication();
 			userInterface.startGame();
 		} catch (UnknownHostException e) {
@@ -105,16 +106,29 @@ public class ClientController {
 	 */
 	public void newConnection(String newUri) {
 		this.uri = newUri;
-		
-		
-		
+		Log.log("Connecting to: " + uri);
+		try {
+			hostSpace.close();
+		} catch (IOException e1) {
+			
+		}
 		consumer.interrupt();
 		connecterDetector.interrupt();
 		
+		Log.log("" + consumer.isInterrupted());
+		Log.log("" + connecterDetector.isInterrupted());
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			Log.important("" + e1.getLocalizedMessage() + "\n" + e1.getMessage());
+			Log.important("Sleep was interrupted");
+		}
 		//receiver.interrupt();
 		
 		try {
 			hostSpace = new RemoteSpace(uri);
+			Log.log("connected to new RemoteSpace");
 			initiateCommunication();
 		} catch (UnknownHostException e) {
 			Log.important("UnknownHostException");
@@ -135,8 +149,9 @@ public class ClientController {
 	 */
 	private void initiateCommunication() throws InterruptedException, UnknownHostException, IOException {
 		Object[] input;
-		
-		hostSpace.put(-1, ClientCommands.newPlayer);		
+		Log.log("initiateCommunication");
+		hostSpace.put(-1, ClientCommands.newPlayer);
+		Log.log("Before get");
 		input = hostSpace.get(new ActualField(ServerCommands.playerID),new FormalField(Integer.class));
 		
 		playerID = (int)input[1];

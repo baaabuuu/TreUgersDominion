@@ -50,7 +50,6 @@ public class Lounge {
 	public void Start() throws InterruptedException{
 		Log.log("Starting server");
 		
-		indexID = 0;
 		//Setup the Repository
 		SpaceRepository repository = new SpaceRepository();
 		repository.addGate(uri);
@@ -117,11 +116,11 @@ public class Lounge {
 				secondInput = lounge.get(new ActualField(playerID), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
-				if(indexID < gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
+				if(noOfGamesAllowed > gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
 					Log.log("Sending uri");
 					lounge.put(playerID, ServerCommands.newConnection, gamesRunning[gameID].getURI());
 					playerNames[playerID] = null;
-					
+					lounge.put(ServerCommands.newConnection, playerID);
 				} else {
 					Log.log("Failed to find game. Sending Exception");
 					lounge.put(ServerCommands.message, playerID);
@@ -143,11 +142,14 @@ public class Lounge {
 						repository.add(Integer.toString(i), clientSpace);
 						Lobby tempInit = new Lobby(tempURI, cardReader, clientSpace);
 						gamesRunning[i] = tempInit;
+						Log.log("Before run");
+						tempInit.start();
+						Log.log("After run");
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?conn";
 						Log.log("Game created. Sending URI to: " + playerID);						
 						lounge.put(playerID, ServerCommands.newConnection, tempURI);
 						playerNames[playerID] = null;
-						
+						lounge.put(ServerCommands.newConnection, playerID);
 						break;
 					}
 				}
@@ -187,6 +189,9 @@ public class Lounge {
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
+				lounge.put(ServerCommands.message, playerID);
+				lounge.put(playerID, "Welcome " + playerNames[playerID] + " you have ID: " + playerID);
+				
 				lounge.put(playerID, ClientCommands.getLobbies);
 				break;
 			default:

@@ -40,13 +40,18 @@ public class Consumer implements Runnable {
 		
 		Object[] objs;
 		Object[] input;
-		while(true) {
+		boolean lock = true;
+		while(lock) {
 			try {
 				
 				//Consumes all tuples that contains a playerID and a value from the ServerCommands class.
-				objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
-				
-				Log.log("Recieved a command");
+				try {
+					objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
+				}catch(InterruptedException e) {
+					Log.log("Consumer was interrupted");
+					objs = new Object[1];
+					objs[0] = ServerCommands.newConnection;
+				}
 				switch ((ServerCommands)objs[0]) {
 					case setBoardState: Log.log("Recieved a setBoardState");
 							input = hostSpace.get(new ActualField(playerID), 
@@ -64,6 +69,7 @@ public class Consumer implements Runnable {
 					case setPlayerHand: Log.log("Recieved a setPlayerHand");
 							input = hostSpace.get(new ActualField(playerID), 
 								new FormalField(PlayerHand.class));
+							Log.log("Recieved a PlayerHand");
 							action.setPlayerHand((PlayerHand)input[1]);
 							break;
 					case message:Log.log("Recieved a message");
@@ -86,6 +92,9 @@ public class Consumer implements Runnable {
 								new FormalField(Object.class));
 							Log.log("Recieved the object");
 							action.displayLaunge(((LoungeObject)input[1]).getGames(), hostSpace);
+							break;
+					case newConnection: Log.log("Recieved a newConnection");
+							lock = false;
 							break;
 					default: break;
 				}
