@@ -4,18 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import cards.CardReader;
 import log.Log;
+import objects.ClientCommands;
+import objects.ServerCommands;
 import engine.GameStarter;
 
 
 public class Lobby extends Thread  {
 	
-	private SpaceRepository repository;
 	private String uri;
 	private Space clientSpace, safeSpace;
 	private int noOfPlayers;
@@ -28,19 +30,14 @@ public class Lobby extends Thread  {
 	private Writer writer;
 	private ControlCenter controlCenter;
 	
-	public Lobby(String uri, CardReader cardReader){
+	public Lobby(String uri, CardReader cardReader, Space clientSpace){
 		
-		//Setup client space
 		this.uri = uri;
-		repository = new SpaceRepository();
-		repository.addGate(uri);
-		clientSpace = new SequentialSpace();
-		repository.add("game", clientSpace);
+		this.clientSpace = clientSpace;
 		
 		//Setup safe space
 		safeSpace = new SequentialSpace();
-		
-		
+				
 		this.noOfPlayers = 4;
 		this.activePlayers = 0;
 	
@@ -54,19 +51,28 @@ public class Lobby extends Thread  {
 	public void run(){
 		
 		
-		String name = "";
+		Object[] input = null;
 		Log.log("Searching for players");
 		while(activePlayers < noOfPlayers){
 			try {
-				clientSpace.get(new ActualField(name), new ActualField("enter") );
+				input = clientSpace.get( new ActualField(ClientCommands.newPlayer), new FormalField(Integer.class));
+				
+				Log.log("Player found. ID sent: " + activePlayers);
+				
+				clientSpace.put(ServerCommands.playerID, activePlayers);
+				
+				Log.log("Looking for playername");
+				input = clientSpace.get( new ActualField(ClientCommands.playerName), new FormalField(String.class));
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			Log.log("Player found. Name of user: " + name);
 			
-			players.add(name);
+			players.add((String) input[1]);
+			Log.log("Player registred. Name of user: " + (String) input[1] + " ID: " + activePlayers);
 			
+			activePlayers++;
 			
 		}
 		

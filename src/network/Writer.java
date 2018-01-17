@@ -3,7 +3,12 @@ package network;
 import org.jspace.Space;
 import org.jspace.Tuple;
 
+import log.Log;
+import objects.BoardState;
+import objects.CardOption;
+import objects.PlayerHand;
 import objects.ServerCommands;
+import objects.TurnValues;
 
 public class Writer {
 
@@ -24,17 +29,50 @@ public class Writer {
 	public void sendMessage(Tuple tuple) throws InterruptedException{
 
 		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
+		int playerID = tuple.getElementAt(Integer.class, 0);
+		
+		Log.log("Sending message: " + cmd.toString());
 		
 		switch(cmd){
 		case newConnection:
-			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
-			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1), uri);
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, uri);
 			break;
+		
+		case gameStart: 
+			for(int i = 0; i < players.length; i++)
+			clientSpace.put(cmd, i);
+			break;
+			
+		case setBoardState: 
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, tuple.getElementAt(BoardState.class,2));
+			break;
+			
+		case playerSelect: 
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, tuple.getElementAt(CardOption.class,2));
+			break;
+			
+		case setPlayerHand: 
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, tuple.getElementAt(PlayerHand.class,2));
+			break;
+		
 		case takeTurn: 
-			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, tuple.getElementAt(BoardState.class,2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
 			break;
+		
+		case invalid:
+		case message: 
+			clientSpace.put(cmd, playerID);
+			clientSpace.put(playerID, tuple.getElementAt(String.class,2));
+			break;
+			
+			
 		default:	
-			clientSpace.put(tuple.getElementAt(Integer.class, 0), tuple.getElementAt(ServerCommands.class, 1));
+			clientSpace.put(cmd, playerID);
 			clientSpace.put(tuple);
 			break;
 		}
