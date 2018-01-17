@@ -115,14 +115,15 @@ public class Lounge {
 				secondInput = lounge.get(new ActualField(playerID), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
-				if(indexID < gameID && gamesRunning[gameID] != null){
+				if(indexID < gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
 					Log.log("Sending uri");
 					lounge.put(ServerCommands.newConnection, playerID);
 					lounge.put(playerID, gamesRunning[gameID].getURI());
 				} else {
 					Log.log("Failed to find game. Sending Exception");
-					lounge.put(ServerCommands.newConnection, playerID);
-					lounge.put(playerID, "gameNotFoundException");
+					lounge.put(ServerCommands.message, playerID);
+					lounge.put(playerID, "Game Not Found or already started");
+					lounge.put(ClientCommands.getLobbies, playerID);
 				}
 				playerNames[playerID] = null;
 				break;
@@ -184,20 +185,7 @@ public class Lounge {
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
-				Log.log("Finding lobbies");
-				for(int i = 0; i< noOfGamesAllowed; i++){
-					
-					if (gamesRunning[i] != null && !gamesRunning[i].getGameRunning()){
-						
-						numberOfPlayers.put(i, gamesRunning[i].getActivePlayers());
-					}
-					
-					Log.log("Sending lobies");
-					lounge.put(ServerCommands.setLaunge, playerID);
-					lounge.put(playerID, numberOfPlayers);
-					
-					
-				}
+				lounge.put(ClientCommands.getLobbies, playerID);
 				break;
 			default:
 				Log.log("Uknown message recieved. Ignoring.");
