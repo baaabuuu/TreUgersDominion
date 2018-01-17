@@ -108,6 +108,7 @@ public class ClientController {
 			Log.important("InterruptedException");
 			userInterface.connectionError();
 		}
+		userInterface.startGame();
 	}
 	/**
 	 * Close the already established connection, then attempt to connect to a new one.
@@ -149,9 +150,33 @@ public class ClientController {
 		input[1] = playerID;
 		hostSpace.put(ClientCommands.playerName,input);
 		
+		Log.log("After hostSpace put");
 		receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
 		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface));
 		consumer.start();
 		receiver.start();
+		Log.log("Threads");
+	}
+	public void killServer() {
+		try {
+			hostSpace = new RemoteSpace("tcp://" + host + ":" + port + "/ripServer?conn");
+			Log.log("Connected to a non-exsistant space!");
+			try {
+				Log.log((String)(hostSpace.get(new ActualField("Hello from the non-existant space!"))[0]));
+			}catch(NullPointerException e) {
+				Log.log("I just skipped a get!");
+			}
+			Log.log("Killed the server!");
+			System.exit(0);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

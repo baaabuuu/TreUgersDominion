@@ -20,4 +20,5 @@ public interface UIControllerInter {
 	public default void awaitingUserInput() {}
 	public default void eventInput(String input){}
 	public default void eventOutput(String input){}
+	public default void startGame() {}
 }

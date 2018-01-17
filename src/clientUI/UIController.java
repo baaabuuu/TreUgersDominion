@@ -100,6 +100,7 @@ public class UIController implements client.UIControllerInter {
 	public void newConnectionError() {
 		gameBG.remove(gamePanel);
 		gameBG.add(serverPanel, BorderLayout.CENTER);
+		mainFrame.setContentPane(gameBG);
 		serverPanel.setError("Host was not found.");
 	}
 	public void newBuyArea(Card[] buyArea){
@@ -164,5 +165,13 @@ public class UIController implements client.UIControllerInter {
 	}
 	public void setUsername(String username) {
 		gamePanel.lblUsername.setText(username);
+	}
+	public void startGame() {
+		gameBG.remove(serverPanel);
+		gameBG.add(gamePanel, BorderLayout.CENTER);
+		mainFrame.setContentPane(gameBG);
+	}
+	public void killServer() {
+		client.killServer();
 	}
 }

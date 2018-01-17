@@ -308,6 +308,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblP4Hand.setBounds(730, 136, 85, 14);
 			add(lblP4Hand);
 			
+			JButton btnKillServer = new JButton("KILL SERVER!");
+			btnKillServer.setBackground(Color.RED);
+			btnKillServer.setFocusPainted(false);
+			btnKillServer.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					controller.killServer();
+				}
+			});
+			btnKillServer.setBounds(620, 586, 170, 51);
+			add(btnKillServer);
+			
 			// Update remainingWords labels.
 			updateCount(1);
 			updateCount(2);
