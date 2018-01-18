@@ -28,57 +28,63 @@ public class Writer {
 	
 	public void sendMessage(Tuple tuple) throws InterruptedException{
 
-		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
 		int playerID = tuple.getElementAt(Integer.class, 0);
+		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
 		
 		Log.log("Sending message: " + cmd.toString());
 		
 		switch(cmd){
 		case newConnection:
-			clientSpace.put(cmd, playerID);
+			
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, uri);
 			break;
 		
-		case gameStart: 
-			for(int i = 0; i < players.length; i++)
-			clientSpace.put(cmd, i);
-			break;
-			
 		case setBoardState: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2));
 			break;
 			
 		case playerSelect: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(CardOption.class, 2));
 			break;
 			
 		case setPlayerHand: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(PlayerHand.class, 2));
 			break;
 		
 		case takeTurn: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
 			break;
 		
 		case invalid:
-		case message: 
-			clientSpace.put(cmd, playerID);
+		case message:
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(String.class, 2));
 			break;
 			
-			
 		default:	
-			clientSpace.put(cmd, playerID);
-			clientSpace.put(tuple);
+			Log.important("Unknown message recived. Ignoring");
 			break;
 		}
 	}
 	
 	
+	/**
+	 * Sends the standard header for communication with the client.
+	 * 
+	 * Sends the ServerCommand to the player on the jSpace
+	 * @param jSpace
+	 * @param playerID
+	 * @param server cmd	
+	 * @throws InterruptedException
+	 */
+	private void sendStandardHeader(Space jSpace, int playerID, ServerCommands cmd) throws InterruptedException {
+		jSpace.put(cmd, playerID);
+	}
 	
 	
 	
