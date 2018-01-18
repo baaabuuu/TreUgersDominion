@@ -66,7 +66,7 @@ public class EffectHandler
 			break;
 			//Draw 2 cards
 		case 2: //Moat - +2 Cards
-			player.drawCard(2);
+			playMoat(player);
 			break;
 		case 3://Moat - reveal reaction effect - dosn't trigger on play
 			break;
@@ -150,6 +150,12 @@ public class EffectHandler
 		game.sendPlayerHand(player.getID(), player.getID());
 	}
 
+	private void playMoat(Player player)
+	{
+		player.drawCard(2);
+	}
+
+
 	/**
 	 * Draw 3 cards.
 	 * @param player
@@ -183,7 +189,7 @@ public class EffectHandler
 	private void playChapel(Player player, Board board) throws InterruptedException
 	{
 		game.sendCardOption(player.getID(), "Select up to 4 cards you would like to trash", 4, player.getHand(), true);
-		//---[BEGIN TIMEOUT BLOCK]---
+		//---[BEGIN TIMEOUT BLOCK]---   
 		int counter = 0; // timeout
 		Object[] tempResponse = null;
 		while(true) {

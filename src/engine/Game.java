@@ -40,7 +40,7 @@ public class Game
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 4;
+	private final int waitTime = 4000000;
 	
 	/**
 	 * Returns how long time a time is allowed.
@@ -540,6 +540,12 @@ public class Game
 			card = currPlayer.getHand().get(0);
 			currPlayer.removeFromHand(card);
 			currPlayer.discardCard(card);
+		}
+		while (currPlayer.getPlayArea().size() > 0)
+		{
+			card = currPlayer.getPlayArea().get(0);
+			currPlayer.discardCard(card);
+			currPlayer.getPlayArea().remove(card);
 		}
 		currPlayer.drawCard(5);
 	}

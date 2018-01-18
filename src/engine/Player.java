@@ -59,6 +59,16 @@ public class Player
 		String[] draw = new String[n];
 		for (int i = 0; i < n; i++)
 		{
+			Log.important("");
+			Log.important("");
+			Log.important("");
+			Log.important("DECK SIZE " + getDeckSize());
+			Log.important("DISCARD SIZE " + getDiscardSize());
+			Log.important("PLAY SIZE " + playArea.size());
+			Log.important("HAND SIZE " + getHandSize());
+			Log.important("");
+			Log.important("");
+			Log.important("");
 			if (getDeck().isEmpty())
 			{
 				if (getDiscard().isEmpty())
@@ -273,6 +283,17 @@ public class Player
 		Log.log(getName() + " tries to pay " + cost + " has " + money + " gold");
 		return money >= cost;
 	}
+	
+	/**
+	 * Checks if the player has enough money left to buy.
+	 * @param cost
+	 * @return
+	 */
+	public ArrayList<Card> getPlayArea()
+	{
+		return playArea;
+	}
+	
 	/**
 	 * Buys the card triggers - buyEffects
 	 * @return
