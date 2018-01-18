@@ -40,10 +40,14 @@ public class ClientActions {
 	 */
 	public void takeTurn(Space hostSpace) throws InterruptedException {
 		
-		hostSpace.get(new ActualField(playerID), 
+		Object[] input = hostSpace.get(new ActualField(playerID), 
 				new FormalField(BoardState.class), 
 				new FormalField(PlayerHand.class), 
 				new FormalField(TurnValues.class));
+		
+		userInterface.newBoardState((BoardState)input[1]);
+		setPlayerHand((PlayerHand)input[2]);
+		setTurnValues((TurnValues)input[3]);
 		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
@@ -258,6 +262,7 @@ public class ClientActions {
 			locked = true;
 			while(locked) {
 				userInterface.eventInput("Select card " + (i+1) + ": ");
+				userInterface.awaitingUserInput();
 				input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 				
 				// Test if integer.
