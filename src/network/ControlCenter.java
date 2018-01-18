@@ -9,6 +9,7 @@ import org.jspace.Space;
 
 import cards.Card;
 import log.Log;
+import objects.ArrayListObject;
 import objects.ClientCommands;
 
 public class ControlCenter extends Thread {
@@ -72,11 +73,11 @@ public class ControlCenter extends Thread {
 				case selectCard:
 
 						Log.log("Finding arraylist for the played card.");
-						secondInput = clientSpace.get(new ActualField(id), new FormalField(ArrayList.class));
+						secondInput = clientSpace.get(new ActualField(id), new FormalField(ArrayListObject.class));
 					
-						Log.log("Found int: \"" + ((ArrayList<Integer>) secondInput[1]).toString() + "\" sending to server Space");
+						Log.log("Found arraylist: \"" + (((ArrayListObject) secondInput[1]).getArrayList()).toString() + "\" sending to server Space");
 						
-						safeSpace.put(id, cmd, (ArrayList<Integer>) secondInput[1]);
+						safeSpace.put(id, cmd, (((ArrayListObject) secondInput[1]).getArrayList()).toString());
 						break;
 						
 				case changePhase:
