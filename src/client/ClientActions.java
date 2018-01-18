@@ -45,6 +45,9 @@ public class ClientActions {
 				new FormalField(PlayerHand.class), 
 				new FormalField(TurnValues.class));
 		
+		userInterface.newBoardState((BoardState)input[1]);
+		setTurnValues((TurnValues)input[3]);
+		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
 		userInterface.eventInput("YOUR TURN HAS BEGUN!");
@@ -272,7 +275,7 @@ public class ClientActions {
 					} else if(!option.getMay() && (value <= 0 || value > option.getCards().size())){
 						userInterface.eventInput("Input is not a valid card.");
 					} else { // If an integer not already in list, add to list and unlock while loop.
-						if(selected.contains(value)) {
+						if(selected.contains(value-1)) {
 							userInterface.eventInput("That card has already been selected.");
 						}else {
 							if(value == 0) {
