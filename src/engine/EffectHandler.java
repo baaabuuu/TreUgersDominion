@@ -1175,60 +1175,60 @@ public class EffectHandler
 	@SuppressWarnings("unchecked")
 	private void playVassal(Player player) throws InterruptedException
 	{
-		player.addMoney(2);
-		//Assume card drawn is not action card
 		boolean discard = true;
-		//Draw card
-		player.drawCard(1);
-		//Find card in hand
-		Card topCard = player.getHand().get(player.getHandSize() - 1);
-		//Check if it is an action card
-		for(String type: topCard.getDisplayTypes())
+		player.addMoney(2);
+		String[] result = player.drawCard(1);
+		if (result[0] != null)
 		{
-			if(type.equals("Action"))
+			Card topCard = player.getHand().get(player.getHandSize() - 1);
+			for(String type: topCard.getDisplayTypes())
 			{
-				ArrayList<Card> tempChoice = new ArrayList<Card>();
-				tempChoice.add(topCard);
-				game.sendCardOption(player.getID(), "You drew a " + topCard.getName() +" do you wish to play it?", 1, tempChoice, true);
-				//---[BEGIN TIMEOUT BLOCK]---
-				int counter = 0; // timeout
-				Object[] tempResponse = null;
-				while(true)
+				if(type.equals("Action"))
 				{
-					tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
-					if(tempResponse != null) 
+					ArrayList<Card> tempChoice = new ArrayList<Card>();
+					tempChoice.add(topCard);
+					game.sendCardOption(player.getID(), "You drew a " + topCard.getName() +" do you wish to play it?", 1, tempChoice, true);
+					//---[BEGIN TIMEOUT BLOCK]---
+					int counter = 0; // timeout
+					Object[] tempResponse = null;
+					while(true)
 					{
-						//---[BEGIN CODE BLOCK]---
-						ArrayList<Integer>response = (ArrayList<Integer>) tempResponse[2];
-						if(response.get(0) != -1)
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						if(tempResponse != null) 
 						{
-							player.playCard(topCard, 0);
-							//Don't discard it
-							discard = false;
+							//---[BEGIN CODE BLOCK]---
+							ArrayList<Integer>response = (ArrayList<Integer>) tempResponse[2];
+							if(response.get(0) != -1)
+							{
+								player.playCard(topCard, 0);
+								//Don't discard it
+								discard = false;
+							}
+							//---[END CODE BLOCK]---
+							break;
 						}
-						//---[END CODE BLOCK]---
-						break;
+						counter++;
+						if (counter > game.getWaitTime())
+						{
+							Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+							game.sendDisconnect(player.getID());
+							break;
+						}
+						Thread.sleep(10);
 					}
-					counter++;
-					if (counter > game.getWaitTime())
-					{
-						Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-						game.sendDisconnect(player.getID());
-						break;
-					}
-					Thread.sleep(10);
+					//---[END TIMEOUT BLOCK]---
+					//If action card, play it
+					break;
 				}
-				//---[END TIMEOUT BLOCK]---
-				//If action card, play it
-				break;
+			}
+			if(discard)
+			{
+				//Discard if not action card
+				player.removeFromHand(topCard);
+				player.discardCard(topCard);
 			}
 		}
-		if(discard)
-		{
-			//Discard if not action card
-			player.removeFromHand(topCard);
-			player.discardCard(topCard);
-		}
+		
 	}
 	/**
 	 * Draw 1 card, gain 2 actions
