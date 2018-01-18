@@ -66,6 +66,11 @@ public class EffectHandlerTest
 		assertEquals("Action count is now 1", 1, actionCount);
 	}
 	
-	
-	
+	@Test
+	public void playCellarCardsinHand() throws InterruptedException
+	{
+		when(playerMock1.getHandSize()).thenReturn(0);
+		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
+	}
+
 }
