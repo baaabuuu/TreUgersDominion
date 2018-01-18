@@ -55,6 +55,7 @@ public class Player
 	 */
 	public String[] drawCard(int n)
 	{
+		Log.important("Trying to draw: " + n);
 		String[] draw = new String[n];
 		for (int i = 0; i < n; i++)
 		{

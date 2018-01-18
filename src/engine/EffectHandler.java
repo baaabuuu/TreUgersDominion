@@ -154,7 +154,8 @@ public class EffectHandler
 	 * Draw 3 cards.
 	 * @param player
 	 */
-	private void playSmithy(Player player) {
+	private void playSmithy(Player player)
+	{
 		player.drawCard(3);
 	}
 
@@ -574,23 +575,22 @@ public class EffectHandler
 	private void playRemodel(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> tempHand = player.getHand();
-		if(tempHand.size()> 0)
+		if(tempHand.size() > 0)
 		{
-			game.sendCardOption(player.getID(), "Choose a card to trash from your hand.",1, tempHand, false);
+			game.sendCardOption(player.getID(), "Choose a card to trash from your hand.", 1, tempHand, false);
 			//---[BEGIN TIMEOUT BLOCK]---
 			int counter = 0; // timeout
-			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response=(ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
 					Card trashCard = tempHand.get(response.get(0));
 					board.trashCard(trashCard);
 					player.trash(trashCard);
-					ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= trashCard.getCost()+2,board);
+					ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= trashCard.getCost() + 2,board);
 					game.sendCardOption(player.getID(), "Choose 1 card to gain.", 1, choice, false);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter2 = 0; // timeout
@@ -1260,7 +1260,7 @@ public class EffectHandler
 			if(tempResponse != null)
 			{
 				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response= (ArrayList<Integer>) tempResponse[2];
+				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
 				Card selection = choice.get(response.get(0));
 				board.cardRemove(selection.getName());
 				player.discardCard(selection);

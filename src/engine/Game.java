@@ -311,8 +311,8 @@ public class Game
 		Card[] buyArea = board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray(Card[]::new);
 		for (int i = 0; i < playerCount; i++)
 		{
-			sendPlayerHand(i, i);
 			writer.sendMessage(new Tuple(i, ServerCommands.setBuyArea, buyArea));
+			sendPlayerHand(i, i);
 		}
 		sendBoardState();
 	}
