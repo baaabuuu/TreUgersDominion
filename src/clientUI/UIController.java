@@ -57,14 +57,6 @@ public class UIController implements client.UIControllerInter {
 					gameBG.add(serverPanel, BorderLayout.CENTER);
 					// Add background pane to main.
 					mainFrame.setContentPane(gameBG);
-
-					CardReader cards = new CardReader();
-					Card[] card = {cards.getBase().get(2),cards.getBase().get(6),cards.getBase().get(8),cards.getBase().get(14)};
-					newBuyArea(card);
-					Integer[] a = {1,2,3,4};
-					gamePanel.updBuyList(buyArea,a);
-
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -309,6 +309,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblP4Hand.setBounds(730, 136, 85, 14);
 			add(lblP4Hand);
 			
+			//The kill server button got out-dated by an update to jSpace
 			JButton btnKillServer = new JButton("KILL SERVER!");
 			btnKillServer.setBackground(Color.RED);
 			btnKillServer.setFocusPainted(false);
@@ -318,7 +319,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 				}
 			});
 			btnKillServer.setBounds(620, 586, 170, 51);
-			add(btnKillServer);
+			//add(btnKillServer);
 			
 			// Update remainingWords labels.
 			updateCount(1);
