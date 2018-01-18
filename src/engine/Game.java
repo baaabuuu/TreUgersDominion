@@ -32,7 +32,7 @@ public class Game
 	private int initialTurn;
 	private int phase;
 	private int playerCount;
-	private EffectHandler effects = new EffectHandler(this);
+	private EffectHandler effects;
 	private Space space;
 	private Writer writer;
 	private int turnCount = 0;
@@ -40,7 +40,7 @@ public class Game
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 4000000;
+	private final int waitTime = 4;
 	
 	/**
 	 * Returns how long time a time is allowed.
@@ -133,7 +133,9 @@ public class Game
 		this.writer = writer;
 		this.space = space;
 		initialTurn = turn;
+		effects = new EffectHandler(this);
 	}
+	
 	
 	/**
 	 * Transmits board state to all players.
@@ -424,24 +426,11 @@ public class Game
 								if (currPlayer.buy(buying, phase))
 								{
 									board.cardRemove(cardName);
-									Log.important("");
-									Log.important("");
-									Log.important("");
-									Log.important("");
 									sendMessageAll(currPlayer.getName() + " bought " + cardName + " copies left: " + board.getCopiesLeft(cardName));
-									Log.important("");
-									Log.important("");
-									Log.important("");
-									Log.important("");
 									break;
 								}
 								else
 								{
-									Log.important("");
-									Log.important("");
-									Log.important("No buys?");
-									Log.important("");
-									Log.important("");
 									sendInvalid("You can't buy this card.", playerNum);
 								}
 							}
