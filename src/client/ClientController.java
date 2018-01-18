@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.jspace.ActualField;
+import org.jspace.FIFOSpace;
 import org.jspace.FormalField;
-import org.jspace.QueueSpace;
 import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
+import org.jspace.Space;
 
 import clientUI.UIController;
 import log.Log;
@@ -23,7 +25,7 @@ public class ClientController {
 	private int port;
 	private String uri;
 	private RemoteSpace hostSpace;
-	private QueueSpace userSpace;
+	private Space userSpace;
 	
 	/*
 	private PrivateKey privKey = null;
@@ -68,7 +70,7 @@ public class ClientController {
 	 */
 	public void run() {
 		
-		userSpace = new QueueSpace();
+		userSpace = new SequentialSpace();
 		userInterface = new UIController(port, host, clientController, userSpace);
 		
 	}

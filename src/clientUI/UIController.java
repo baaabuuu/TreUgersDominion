@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.List;
 
-import org.jspace.QueueSpace;
+import org.jspace.Space;
 
 import cards.Card;
 import cards.CardReader;
@@ -25,7 +25,7 @@ public class UIController implements client.UIControllerInter {
 	private ClientController client;
 	private UIController controller = this;
 
-	private QueueSpace userSpace;
+	private Space userSpace;
 	private Card[] buyArea;
 
 	/**
@@ -35,7 +35,7 @@ public class UIController implements client.UIControllerInter {
 	 * @param ClientController client
 	 * @param Space userSpace
 	 */
-	public UIController(int port, String host, ClientController client, QueueSpace userSpace) {
+	public UIController(int port, String host, ClientController client, Space userSpace) {
 		this.client = client;
 		this.userSpace = userSpace;
 

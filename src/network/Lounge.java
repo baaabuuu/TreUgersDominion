@@ -12,6 +12,7 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 
 import org.jspace.ActualField;
+import org.jspace.FIFOSpace;
 import org.jspace.FormalField;
 import org.jspace.QueueSpace;
 import org.jspace.SequentialSpace;
@@ -140,7 +141,7 @@ public class Lounge {
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
 						Log.log("URI: " + tempURI);
 						//Setup game
-						Space gameSpace = new QueueSpace();
+						Space gameSpace = new SequentialSpace();
 						repository.add(Integer.toString(i), gameSpace);
 						Lobby tempInit = new Lobby(tempURI, cardReader, gameSpace);
 						gamesRunning[i] = tempInit;

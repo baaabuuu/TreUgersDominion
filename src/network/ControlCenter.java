@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.QueueSpace;
 import org.jspace.Space;
 
 import cards.Card;
@@ -12,7 +13,9 @@ import objects.ClientCommands;
 
 public class ControlCenter extends Thread {
 	
-	private Space clientSpace, safeSpace;
+	private Space safeSpace;
+	
+	private Space clientSpace;
 	
 	public ControlCenter(Space clientSpace, Space safeSpace){
 		
@@ -29,6 +32,7 @@ public class ControlCenter extends Thread {
 		while(true){
 			
 			try {
+				Log.log("Looking for message");
 				Object[] firstInput = clientSpace.get(new FormalField(Integer.class), new FormalField(ClientCommands.class));
 				
 				id = (Integer) firstInput[0];

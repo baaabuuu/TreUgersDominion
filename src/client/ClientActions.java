@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
-import org.jspace.QueueSpace;
-import org.jspace.RemoteSpace;
+import org.jspace.Space;
+import org.jspace.Space;
 
 import cards.Card;
 import clientUI.UIController;
@@ -24,10 +24,10 @@ public class ClientActions {
 	private Card[] buyArea;
 	private List<Card> playerHand;
 	
-	QueueSpace userSpace;
+	Space userSpace;
 	private UIController userInterface;
 	
-	public ClientActions(int playerID, QueueSpace userSpace, UIController userInterface){
+	public ClientActions(int playerID, Space userSpace, UIController userInterface){
 		this.playerID = playerID;
 		this.userSpace = userSpace;
 		this.userInterface = userInterface;
@@ -38,7 +38,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void takeTurn(RemoteSpace hostSpace) throws InterruptedException {
+	public void takeTurn(Space hostSpace) throws InterruptedException {
 		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
@@ -48,6 +48,8 @@ public class ClientActions {
 		setTurnValues(new TurnValues(1,1,0));
 		userInterface.eventInput("ACTION PHASE");
 		actionPhase(hostSpace);
+		
+		hostSpace.get(new ActualField(ServerCommands.takeTurn), new ActualField(playerID));
 		
 		userInterface.eventInput("BUY PHASE");
 		buyPhase(hostSpace);
@@ -70,7 +72,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void resolvePlay(RemoteSpace hostSpace) throws InterruptedException {
+	private void resolvePlay(Space hostSpace) throws InterruptedException {
 		Log.log("Resolving a play.");
 		Object[] objs;
 		Object[] input;
@@ -117,7 +119,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void actionPhase(RemoteSpace hostSpace) throws InterruptedException {
+	private void actionPhase(Space hostSpace) throws InterruptedException {
 		
 		int value;
 		Object input[];
@@ -134,6 +136,7 @@ public class ClientActions {
 				
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
+					Log.important("Sending ChangePhase");
 					userInterface.eventInput("Action phase has ended.");
 					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
@@ -153,7 +156,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void buyPhase(RemoteSpace hostSpace) throws InterruptedException {
+	public void buyPhase(Space hostSpace) throws InterruptedException {
 		
 		Object[] input;
 		int value;
@@ -234,7 +237,7 @@ public class ClientActions {
 	 * @param Space
 	 * @throws InterruptedException 
 	 */
-	public void playerSelect(CardOption option, RemoteSpace hostSpace) throws InterruptedException {
+	public void playerSelect(CardOption option, Space hostSpace) throws InterruptedException {
 		userInterface.eventInput("\n" + option.getMessage());
 		userInterface.eventInput("Your options are: ");
 		userInterface.newPlayerHand(option.getCards());
@@ -295,7 +298,7 @@ public class ClientActions {
 		this.buyArea = input;
 		userInterface.newBuyArea(input);
 	}
-	public void displayLaunge(HashMap<Integer, Integer> lobbies, RemoteSpace hostSpace) throws InterruptedException {
+	public void displayLaunge(HashMap<Integer, Integer> lobbies, Space hostSpace) throws InterruptedException {
 		userInterface.eventInput("Server sent a list of lobbies: ");
 		Set<Integer> p = lobbies.keySet();
 		for(int i : p) {

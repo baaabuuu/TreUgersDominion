@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.QueueSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
@@ -19,7 +20,8 @@ import engine.GameStarter;
 public class Lobby extends Thread  {
 	
 	private String uri;
-	private Space clientSpace, safeSpace;
+	private Space safeSpace;
+	private Space clientSpace;
 	private int noOfPlayers;
 	private int activePlayers;
 	
@@ -31,12 +33,12 @@ public class Lobby extends Thread  {
 	private ControlCenter controlCenter;
 	private boolean gameRunning;
 	
-	public Lobby(String uri, CardReader cardReader, Space clientSpace){
+	public Lobby(String uri, CardReader cardReader, Space gameSpace){
 		
 		gameRunning = false;
 		
 		this.uri = uri;
-		this.clientSpace = clientSpace;
+		this.clientSpace = gameSpace;
 		
 		//Setup safe space
 		safeSpace = new SequentialSpace();
