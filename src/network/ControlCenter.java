@@ -77,7 +77,7 @@ public class ControlCenter extends Thread {
 					
 						Log.log("Found arraylist: \"" + (((ArrayListObject) secondInput[1]).getArrayList()).toString() + "\" sending to server Space");
 						
-						safeSpace.put(id, cmd, (((ArrayListObject) secondInput[1]).getArrayList()).toString());
+						safeSpace.put(id, cmd, ((ArrayListObject) secondInput[1]));
 						break;
 						
 				case changePhase:
