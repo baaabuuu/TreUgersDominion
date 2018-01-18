@@ -45,10 +45,6 @@ public class ClientActions {
 				new FormalField(PlayerHand.class), 
 				new FormalField(TurnValues.class));
 		
-		userInterface.newBoardState((BoardState)input[1]);
-		setPlayerHand((PlayerHand)input[2]);
-		setTurnValues((TurnValues)input[3]);
-		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
 		userInterface.eventInput("YOUR TURN HAS BEGUN!");
@@ -68,7 +64,7 @@ public class ClientActions {
 		buyPhase(hostSpace);
 		
 		userInterface.eventInput("CLEANUP PHASE");
-		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
+		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.\n");
 	}
 	/**
 	 * Resolves a card being played.

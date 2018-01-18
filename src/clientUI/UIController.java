@@ -27,6 +27,9 @@ public class UIController implements client.UIControllerInter {
 
 	private Space userSpace;
 	private Card[] buyArea;
+	
+	private int nameIndex;
+	private String userName;
 
 	/**
 	 * The constructor of UIController.
@@ -76,6 +79,7 @@ public class UIController implements client.UIControllerInter {
 	 * @param String userName
 	 */
 	public void attemptConnection(String newUri, String userName){
+		this.userName = userName;
 		setUsername(userName);
 		client.setUserName(userName);
 		client.attemptConnection(newUri);
@@ -102,15 +106,27 @@ public class UIController implements client.UIControllerInter {
 		//Set text in relevant fields depending on player names.
 		//Check if the array contains a field before trying to access it.
 		if((0 >= 0) && (0 < names.length)) {
+			if(names[0] == userName) {
+				nameIndex = 0;
+			}
 			gamePanel.lblP1.setText("P1: " + names[0]);
 		}
 		if((1 >= 0) && (1 < names.length)) {
+			if(names[1] == userName) {
+				nameIndex = 1;
+			}
 			gamePanel.lblP2.setText("P2: " + names[1]);
 		}
 		if((2 >= 0) && (2 < names.length)) {
+			if(names[2] == userName) {
+				nameIndex = 2;
+			}
 			gamePanel.lblP3.setText("P3: " + names[2]);
 		}
 		if((3 >= 0) && (3 < names.length)) {
+			if(names[3] == userName) {
+				nameIndex = 3;
+			}
 			gamePanel.lblP4.setText("P4: " + names[3]);
 		}
 	}
@@ -126,6 +142,9 @@ public class UIController implements client.UIControllerInter {
 			gamePanel.lblP3Hand.setText("Card Count: " + input.getHandCount()[2]);
 		if (input.getHandCount().length > 3)
 			gamePanel.lblP4Hand.setText("Card Count: " + input.getHandCount()[3]);
+		
+		gamePanel.lblDeck.setText("Deck count: " + input.getDeckCount()[nameIndex]);
+		gamePanel.lblDiscardCount.setText("Discard count: " + input.getDiscardCount()[nameIndex]);
 		
 		gamePanel.lblP1VP.setText("VP: " + input.getVpCount()[0]);
 		gamePanel.lblP2VP.setText("VP: " + input.getVpCount()[1]);

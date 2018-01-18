@@ -50,8 +50,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public JLabel lblP1, lblP2, lblP3, lblP4;
 	public JLabel lblUsername, lblP1VP, lblP2VP, lblP3VP, lblP4VP;
 	public JLabel lblActions, lblBuys, lblMoney, lblList;
-	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand;
-	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea, backBlack;
+	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand, lblDiscardCount, lblDeck;
+	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea, backBlack, myTextArea, myTextArea_1, myTextArea_2;
 	public JList<String> itemList;
 	public DefaultListModel<String> listModel;
 	private DefaultStyledDocument docAction, docChat;
@@ -105,7 +105,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			eventAreaScroll.setBounds(10, 50, 600, 440);
 			sbEvent = eventAreaScroll.getVerticalScrollBar();
 	        sbEvent.setUI(new MyScrollbarUI());
-			add(eventAreaScroll);
+	        add(eventAreaScroll);
+			
+			lblDiscardCount = new JLabel("Discard count: ");
+			lblDiscardCount.setForeground(Color.WHITE);
+			lblDiscardCount.setBounds(730, 196, 85, 14);
+			add(lblDiscardCount);
+			
+			lblDeck = new JLabel("Deck count: ");
+			lblDeck.setForeground(Color.WHITE);
+			lblDeck.setBounds(730, 176, 85, 14);
+			add(lblDeck);
 			
 			chatArea = new MyTextArea("Welcome to the chat!");
 			chatArea.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
@@ -316,21 +326,21 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			backBlack.setBounds(620, 51, 250, 159);
 			add(backBlack);
 			
-			clientUI.MyTextArea myTextArea = new clientUI.MyTextArea("");
+			myTextArea = new MyTextArea("");
 			myTextArea.setOpaque(false);
 			myTextArea.setForeground(Color.WHITE);
 			myTextArea.setEditable(false);
 			myTextArea.setBounds(620, 376, 250, 14);
 			add(myTextArea);
 			
-			clientUI.MyTextArea myTextArea_1 = new clientUI.MyTextArea("");
+			myTextArea_1 = new MyTextArea("");
 			myTextArea_1.setOpaque(false);
 			myTextArea_1.setForeground(Color.WHITE);
 			myTextArea_1.setEditable(false);
 			myTextArea_1.setBounds(10, 50, 600, 440);
 			add(myTextArea_1);
 			
-			clientUI.MyTextArea myTextArea_2 = new clientUI.MyTextArea("");
+			myTextArea_2 = new MyTextArea("");
 			myTextArea_2.setOpaque(false);
 			myTextArea_2.setForeground(Color.WHITE);
 			myTextArea_2.setEditable(false);
