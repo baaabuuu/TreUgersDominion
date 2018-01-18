@@ -705,7 +705,6 @@ public class EffectHandlerTest
 	@Test
 	public void playPoacherTimeout() throws InterruptedException
 	{
-		
 		ArrayList<Card> hand = new ArrayList<Card>();
 		hand.add(cardMock);
 		String[] names = {"testCard"};

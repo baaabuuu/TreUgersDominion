@@ -680,6 +680,7 @@ public class EffectHandler
 			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 			if(tempResponse != null)
 			{
+				Log.important("did this reach lmao");
 				//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 				ArrayList<Card> toDiscard = new ArrayList<Card>();
