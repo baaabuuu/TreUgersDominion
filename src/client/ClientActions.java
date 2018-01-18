@@ -54,7 +54,7 @@ public class ClientActions {
 		userInterface.eventInput("CLEANUP PHASE");
 		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
-		hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.setPlayerHand));
+		hostSpace.get(new ActualField(ServerCommands.setPlayerHand), new ActualField(playerID));
 		Object[] objs = hostSpace.get(new ActualField(playerID), 
 				new FormalField(PlayerHand.class));
 		
