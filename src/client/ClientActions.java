@@ -93,11 +93,11 @@ public class ClientActions {
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
 						input = hostSpace.get(new ActualField(playerID), 
-								new FormalField(Object[].class));
+								new FormalField(BoardState.class), new FormalField(PlayerHand.class), new FormalField(TurnValues.class));
 						
-						userInterface.newBoardState((BoardState)(((Object[])input[1])[0]));
-						setPlayerHand((PlayerHand)(((Object[])input[1])[1]));
-						setTurnValues((TurnValues)(((Object[])input[1])[2]));
+						userInterface.newBoardState((BoardState)input[1]);
+						setPlayerHand((PlayerHand)input[2]);
+						setTurnValues((TurnValues)input[3]);
 						
 						userInterface.eventInput("Your hand contains: ");
 						userInterface.newPlayerHand(playerHand);
@@ -210,6 +210,7 @@ public class ClientActions {
 								userInterface.eventInput("You ended the Action Phase\n");
 								lock2 = false;
 							}else {
+								Log.important("Sending buyCard command for: " + buyArea[value-1].getName());
 								hostSpace.put(playerID, ClientCommands.buyCard);
 								hostSpace.put(playerID, buyArea[value-1].getName());
 								resolvePlay(hostSpace);
