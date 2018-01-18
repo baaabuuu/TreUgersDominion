@@ -45,7 +45,7 @@ public class UIController implements client.UIControllerInter {
 					// Create new mainFrame and set its size. 
 					mainFrame = new MainFrame();
 					mainFrame.setVisible(true);
-					mainFrame.setSize(1280,650);
+					mainFrame.setSize(900,650);
 					// Start game background and set layout.
 					gameBG = new GameBackground();
 					gameBG.setLayout(new BorderLayout());
