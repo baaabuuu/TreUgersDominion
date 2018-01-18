@@ -116,20 +116,21 @@ public class Lounge {
 				secondInput = lounge.get(new ActualField(playerID), new FormalField(Integer.class));
 				gameID = (int) secondInput[1];
 				
+				//Check if the given game is valid
 				if(noOfGamesAllowed > gameID && gamesRunning[gameID] != null && !gamesRunning[gameID].getGameRunning()){
 					Log.log("Sending uri");
-					lounge.put(playerID, ServerCommands.newConnection, gamesRunning[gameID].getURI());
+					lounge.put(playerID, ServerCommands.newConnection, gamesRunning[gameID].getURI()); //Special command to interrupt current connection
 					playerNames[playerID] = null;
-					lounge.put(ServerCommands.newConnection, playerID);
+					sendHeader(lounge, playerID, ServerCommands.playerID);
 				} else {
 					Log.log("Failed to find game. Sending Exception");
-					lounge.put(ServerCommands.message, playerID);
-					lounge.put(playerID, "Game Not Found or already started");
+					sendMessage(lounge, playerID, "Game Not Found or already started");
 					lounge.put(playerID, ClientCommands.getLobbies);
 				}
 				break;
 			case createLobby:
 				Log.log("Creating lobby");
+				//Finds a valid game space
 				for(int i = 0; i<noOfGamesAllowed; i++)
 				{
 					if(gamesRunning[i] == null)
@@ -137,45 +138,48 @@ public class Lounge {
 						
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
 						Log.log("URI: " + tempURI);
-						//Setup client space
-						Space clientSpace = new SequentialSpace();
-						repository.add(Integer.toString(i), clientSpace);
-						Lobby tempInit = new Lobby(tempURI, cardReader, clientSpace);
+						//Setup game
+						Space gameSpace = new SequentialSpace();
+						repository.add(Integer.toString(i), gameSpace);
+						Lobby tempInit = new Lobby(tempURI, cardReader, gameSpace);
 						gamesRunning[i] = tempInit;
-						Log.log("Before run");
 						tempInit.start();
-						Log.log("After run");
+						//Sending URI
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?conn";
 						Log.log("Game created. Sending URI to: " + playerID);						
-						lounge.put(playerID, ServerCommands.newConnection, tempURI);
+						lounge.put(playerID, ServerCommands.newConnection, tempURI); //Special command to interrupt current connection from user
 						playerNames[playerID] = null;
-						lounge.put(ServerCommands.newConnection, playerID);
+						sendHeader(lounge, playerID, ServerCommands.newConnection);
 						break;
 					}
 				}
 				break;
 			case getLobbies:
 				Log.log("Finding lobbies");
+				//Checks all games and puts them in a hashmap if they are active
 				for(int i = 0; i< noOfGamesAllowed; i++){
 					
 					if (gamesRunning[i] != null && !gamesRunning[i].getGameRunning()){
 						
 						gamesMap.put(i, gamesRunning[i].getActivePlayers());
-					} 
+					} else if (gamesRunning[i] != null && gamesRunning[i].getGameRunning()) {
+						gamesMap.remove(i);
+					}
 				}	
 					object.setGames(gamesMap);
 					Log.log("Sending lobies");
-					lounge.put(ServerCommands.setLaunge, playerID);
+					sendHeader(lounge, playerID, ServerCommands.setLaunge);
 					lounge.put(playerID, object);
 				break;
 			case newPlayer:	
 				int ID;
 				Log.log("Finding avaible ID");
+				//Finds a avaible ID
 				for(ID = 0; ID < noOfPlayersAllowed; ID++){
 					if(playerNames[ID] == null){
 						Log.log("Sending player ID: " + ID);
 						
-						lounge.put(ServerCommands.playerID, ID);
+						sendHeader(lounge, ID, ServerCommands.playerID);
 						
 						playerNames[ID] = "";
 						
@@ -185,22 +189,48 @@ public class Lounge {
 				break;
 			case playerName:
 				secondInput = lounge.get(new ActualField(playerID), new FormalField(String.class));
+				//If the name is avaible, then sets it
 				if(playerNames[(int) secondInput[0]] == "" && (String) secondInput[1] != ""){
 					Log.log("Saving ID: " + (int) secondInput[0] + " as name: " + (String) secondInput[1]);
 					playerNames[(int) secondInput[0]] = (String) secondInput[1];	
 				}
-				lounge.put(ServerCommands.message, playerID);
-				lounge.put(playerID, "Welcome " + playerNames[playerID] + " you have ID: " + playerID);
-				
+				sendMessage(lounge, playerID, "Welcome " + playerNames[playerID] + " you have ID: " + playerID);
 				lounge.put(playerID, ClientCommands.getLobbies);
+				
 				break;
 			default:
-				Log.log("Uknown message recieved. Ignoring.");
+				Log.important("Uknown message recieved. Ignoring.");
 				break;
 			}
 		}
 	
 	
+	}
+
+	
+	/**
+	 * Sends a message to the given player ID, on the given space.
+	 *  
+	 * @param jSpace
+	 * @param playerID
+	 * @param msg
+	 * @throws InterruptedException
+	 */
+	private void sendMessage(Space jSpace, int playerID, String msg) throws InterruptedException {
+		sendHeader(jSpace, playerID, ServerCommands.message);
+		jSpace.put(playerID, msg);
+	}
+	/**
+	 * Sends the standard header for communication with the client.
+	 * 
+	 * Sends the ServerCommand to the player on the jSpace
+	 * @param jSpace
+	 * @param playerID
+	 * @param server cmd	
+	 * @throws InterruptedException
+	 */
+	private void sendHeader(Space jSpace, int playerID, ServerCommands cmd) throws InterruptedException {
+		jSpace.put(cmd, playerID);
 	}
  
 		
