@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.List;
 
-import org.jspace.Space;
+import org.jspace.QueueSpace;
 
 import cards.Card;
 import cards.CardReader;
@@ -25,7 +25,7 @@ public class UIController implements client.UIControllerInter {
 	private ClientController client;
 	private UIController controller = this;
 
-	private Space userSpace;
+	private QueueSpace userSpace;
 	private Card[] buyArea;
 
 	/**
@@ -35,7 +35,7 @@ public class UIController implements client.UIControllerInter {
 	 * @param ClientController client
 	 * @param Space userSpace
 	 */
-	public UIController(int port, String host, ClientController client, Space userSpace) {
+	public UIController(int port, String host, ClientController client, QueueSpace userSpace) {
 		this.client = client;
 		this.userSpace = userSpace;
 
@@ -164,6 +164,7 @@ public class UIController implements client.UIControllerInter {
 		gamePanel.actionArea.setEditable(true);
 	}
 	public void eventInput(String input){
+		Log.log("Adding to eventArea: " + input);
 		gamePanel.updEventArea(input);
 	}
 	public void eventOutput(String input){

@@ -2,6 +2,7 @@ package client;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.RemoteSpace;
 import org.jspace.Space;
 
 import log.Log;
@@ -13,10 +14,10 @@ import objects.ServerCommands;
  * @throws InterruptedException 
  */
 public class ConnectionDetector implements Runnable {
-	private Space hostSpace;
+	private RemoteSpace hostSpace;
 	private int playerID;
 	private ClientController handler;
-	public ConnectionDetector(Space hostSpace, int playerID, ClientController handler) {
+	public ConnectionDetector(RemoteSpace hostSpace, int playerID, ClientController handler) {
 		this.hostSpace = hostSpace;
 		this.handler = handler;
 		this.playerID = playerID;

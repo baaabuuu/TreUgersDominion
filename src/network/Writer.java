@@ -32,7 +32,7 @@ public class Writer {
 		int playerID = tuple.getElementAt(Integer.class, 0);
 		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
 		
-		Log.log("Sending message: " + cmd.toString());
+		Log.log("Sending message: \"" + cmd.toString() + "\" to \"" + playerID + "\"");
 		
 		switch(cmd){
 

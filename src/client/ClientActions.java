@@ -7,7 +7,8 @@ import java.util.Set;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
-import org.jspace.Space;
+import org.jspace.QueueSpace;
+import org.jspace.RemoteSpace;
 
 import cards.Card;
 import clientUI.UIController;
@@ -23,10 +24,10 @@ public class ClientActions {
 	private Card[] buyArea;
 	private List<Card> playerHand;
 	
-	Space userSpace;
+	QueueSpace userSpace;
 	private UIController userInterface;
 	
-	public ClientActions(int playerID, Space userSpace, UIController userInterface){
+	public ClientActions(int playerID, QueueSpace userSpace, UIController userInterface){
 		this.playerID = playerID;
 		this.userSpace = userSpace;
 		this.userInterface = userInterface;
@@ -37,7 +38,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void takeTurn(Space hostSpace) throws InterruptedException {
+	public void takeTurn(RemoteSpace hostSpace) throws InterruptedException {
 		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
@@ -69,7 +70,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void resolvePlay(Space hostSpace) throws InterruptedException {
+	private void resolvePlay(RemoteSpace hostSpace) throws InterruptedException {
 		Log.log("Resolving a play.");
 		Object[] objs;
 		Object[] input;
@@ -77,7 +78,7 @@ public class ClientActions {
 		while(lock) {
 			//Wait for a server command
 			objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
-			//Reacy dependent on which command was received.
+			//React dependent on which command was received.
 			switch ((ServerCommands)objs[0]) {
 				// Display the received message.
 				case message: Log.log("Recieved message command");
@@ -99,7 +100,6 @@ public class ClientActions {
 						setPlayerHand((PlayerHand)input[2]);
 						setTurnValues((TurnValues)input[3]);
 						
-						userInterface.newPlayerHand(playerHand);
 						lock = false;
 						break;
 				case playerSelect: Log.log("Recieved playerSelect command");
@@ -117,7 +117,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	private void actionPhase(Space hostSpace) throws InterruptedException {
+	private void actionPhase(RemoteSpace hostSpace) throws InterruptedException {
 		
 		int value;
 		Object input[];
@@ -153,7 +153,7 @@ public class ClientActions {
 	 * @param Space (remote)
 	 * @throws InterruptedException 
 	 */
-	public void buyPhase(Space hostSpace) throws InterruptedException {
+	public void buyPhase(RemoteSpace hostSpace) throws InterruptedException {
 		
 		Object[] input;
 		int value;
@@ -206,7 +206,7 @@ public class ClientActions {
 							
 							//If player wants to get out of Action phase
 							} else if(value == 0) {
-								userInterface.eventInput("You ended the Action Phase\n");
+								userInterface.eventInput("You ended the Buy Phase\n");
 								lock2 = false;
 							}else {
 								Log.important("Sending buyCard command for: " + buyArea[value-1].getName());
@@ -234,7 +234,7 @@ public class ClientActions {
 	 * @param Space
 	 * @throws InterruptedException 
 	 */
-	public void playerSelect(CardOption option, Space hostSpace) throws InterruptedException {
+	public void playerSelect(CardOption option, RemoteSpace hostSpace) throws InterruptedException {
 		userInterface.eventInput("\n" + option.getMessage());
 		userInterface.eventInput("Your options are: ");
 		userInterface.newPlayerHand(option.getCards());
@@ -295,7 +295,7 @@ public class ClientActions {
 		this.buyArea = input;
 		userInterface.newBuyArea(input);
 	}
-	public void displayLaunge(HashMap<Integer, Integer> lobbies, Space hostSpace) throws InterruptedException {
+	public void displayLaunge(HashMap<Integer, Integer> lobbies, RemoteSpace hostSpace) throws InterruptedException {
 		userInterface.eventInput("Server sent a list of lobbies: ");
 		Set<Integer> p = lobbies.keySet();
 		for(int i : p) {
