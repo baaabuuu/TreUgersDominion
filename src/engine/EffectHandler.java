@@ -252,12 +252,12 @@ public class EffectHandler
 			player.discardCard(gold);
 			board.cardRemove("Gold");
 			player.gain(gold);
-			game.sendMessageAll(player.getName() + "#" + player.getID() + " gained a Gold!!");
-
+			game.sendMessageAll(player.getName() + "#" + player.getID() + " gained a Gold!");
 		}
+		
 		for(Player p : players)
 		{
-			if(p.equals(player))
+			if(p.equals(player) || !p.isConnected())
 			{
 				continue;
 			}
@@ -274,6 +274,7 @@ public class EffectHandler
 			game.sendMessageAll(p.getName() + " has revealed " + drawnToString.toString());
 			//Remove cards from hand
 			ArrayList<Card> tempCards = new ArrayList<Card>();
+			//1 due to inherent size of list objects
 			for(int i = 1; i <= drawn.length; i++)
 			{
 				tempCards.add(p.getHand().get(p.getHandSize() - i));
@@ -281,8 +282,15 @@ public class EffectHandler
 			}
 
 			//See if any cards in hand are treasures - but not coppers
-			boolean hasTreasure = tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) && !c.getName().equals("Copper"));
-			if(hasTreasure)
+			ArrayList<Card> treasures = (ArrayList<Card>) tempCards.stream().filter(c ->
+			Arrays.stream(c.getDisplayTypes()).anyMatch(i ->
+			i.equals("Treasure")) && !c.getName().equals("Copper")).collect(Collectors.toList());
+			for (Card temp : tempCards)
+			{
+				if (!treasures.contains(temp))
+					p.discardCard(temp);
+			}
+			if(treasures.size() == 2)
 			{
 				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
@@ -291,20 +299,20 @@ public class EffectHandler
 			}
 			else
 			{
-				for(int i = tempCards.size() - 1;i >= 0 ; i--)
+				if (treasures.size() == 1)
 				{
-					p.addCardDecktop(tempCards.get(i));
+					player.trash(treasures.get(0));
+					board.trashCard(treasures.get(0));
 				}
 			}
 		}
 		//---[BEGIN TIMEOUT BLOCK]---
 		int counter = 0; // timeout
-		Object[] tempResponse = null;
 		while(expectedResponses.size() > 0)
 		{	
 			while(true)
 			{
-				tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+				Object[] tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					int pID = (int) tempResponse[0];
@@ -318,8 +326,8 @@ public class EffectHandler
 							//---[BEGIN CODE BLOCK]---
 							Card selection = selectedCards.get(cardIndex).get(response.get(0));
 							board.trashCard(selection);
-							selectedCards.get(cardIndex).remove(selection);
 							rPlayer.trash(selection);
+							selectedCards.get(cardIndex).remove(selection);
 							game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + selection.getName() + "!");
 							Card nullCheck = selectedCards.get(cardIndex).get(0);
 							if (nullCheck != null)
@@ -338,11 +346,13 @@ public class EffectHandler
 				counter++;
 				if (counter > game.getWaitTime())
 				{
-					for(Player dPlayer : expectedResponses)
+					@SuppressWarnings("unchecked")
+					ArrayList<Player> list = (ArrayList<Player>) expectedResponses.clone();
+					for(Player dPlayer : list)
 					{
+						expectedResponses.remove(dPlayer);
 						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
 						game.sendDisconnect(dPlayer.getID());
-
 					}
 					break;
 				}
@@ -678,6 +688,8 @@ public class EffectHandler
 		while(true)
 		{
 			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+			Log.important("WHAT" + (tempResponse == null));
+
 			if(tempResponse != null)
 			{
 				Log.important("did this reach lmao");
@@ -969,10 +981,12 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-
 	private void playThroneRoom(Player player, Board board, Player[] players) throws InterruptedException
 	{
-		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card -> Arrays.stream(card.getDisplayTypes()).filter(s -> s.equals("Action")).findAny().isPresent()).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card ->
+			Arrays.stream(card.getDisplayTypes()).filter(s ->
+				s.equals("Action")).findAny().isPresent())
+					.collect(Collectors.toCollection(ArrayList::new));
 		if(actionInHand.size() != 0)
 		{
 			game.sendCardOption(player.getID(), "Select an action to be played twice", 1, actionInHand, true);
@@ -981,29 +995,27 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+				
+				tempResponse = rSpace.getp(new ActualField(player.getID()),
+						new ActualField(ClientCommands.selectCard),
+						new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
-					//Response form networking goes here.
 					int selected = response.get(0);
-					if(selected == -1)
+					if (selected >= 0)
 					{
-						game.sendMessage("No card has been played", player.getID());
-					}
-					else 
-					{
-						Card cardSelected = player.getHand().get(selected);
-						//Do the twice
-						for(int o =0; o < 2; o++)
+						Card card = player.getHand().get(selected);
+						game.sendMessageAll(player.getName() + "'s Throneroom plays " + card + " twice!");
+						for(int o = 0; o < 2; o++)
 						{
-							for(int i:cardSelected.getEffectCode())
+							for(int i : card.getEffectCode())
 							{
-								triggerEffect(i,player, cardSelected, board, players);					
+								triggerEffect(i, player, card, board, players);					
 							}
 						}
-						player.putIntoPlay(cardSelected);
+						player.putIntoPlay(card);
 					}
 					//---[END CODE BLOCK]---
 					break;
