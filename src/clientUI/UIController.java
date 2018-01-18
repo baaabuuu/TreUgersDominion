@@ -145,6 +145,7 @@ public class UIController implements client.UIControllerInter {
 		
 		gamePanel.lblDeck.setText("Deck count: " + input.getDeckCount()[nameIndex]);
 		gamePanel.lblDiscardCount.setText("Discard count: " + input.getDiscardCount()[nameIndex]);
+		gamePanel.lblTrash.setText("Trashed count: " + input.getTrashCount());
 		
 		gamePanel.lblP1VP.setText("VP: " + input.getVpCount()[0]);
 		gamePanel.lblP2VP.setText("VP: " + input.getVpCount()[1]);

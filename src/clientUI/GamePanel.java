@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public JLabel lblP1, lblP2, lblP3, lblP4;
 	public JLabel lblUsername, lblP1VP, lblP2VP, lblP3VP, lblP4VP;
 	public JLabel lblActions, lblBuys, lblMoney, lblList;
-	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand, lblDiscardCount, lblDeck;
+	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand, lblDiscardCount, lblDeck, lblTrash;
 	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea, backBlack, myTextArea, myTextArea_1, myTextArea_2;
 	public JList<String> itemList;
 	public DefaultListModel<String> listModel;
@@ -105,16 +105,21 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			eventAreaScroll.setBounds(10, 50, 600, 440);
 			sbEvent = eventAreaScroll.getVerticalScrollBar();
 	        sbEvent.setUI(new MyScrollbarUI());
+	        
+	        lblTrash = new JLabel("Trashed count: ");
+	        lblTrash.setForeground(Color.WHITE);
+	        lblTrash.setBounds(730, 156, 140, 14);
+	        add(lblTrash);
 	        add(eventAreaScroll);
 			
 			lblDiscardCount = new JLabel("Discard count: ");
 			lblDiscardCount.setForeground(Color.WHITE);
-			lblDiscardCount.setBounds(730, 196, 85, 14);
+			lblDiscardCount.setBounds(730, 196, 140, 14);
 			add(lblDiscardCount);
 			
 			lblDeck = new JLabel("Deck count: ");
 			lblDeck.setForeground(Color.WHITE);
-			lblDeck.setBounds(730, 176, 85, 14);
+			lblDeck.setBounds(730, 176, 140, 14);
 			add(lblDeck);
 			
 			chatArea = new MyTextArea("Welcome to the chat!");
