@@ -125,7 +125,7 @@ public class EffectHandler
 		case 21: //Market - +1 card\n +1 action\n +1 buy\n +1 money
 			playMarket(player);
 			break;
-		case 22://Mine - You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it.
+		case 22: //Mine - You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it.
 			playMine(player, board);
 			break; //Sentry - +1 Card\n +1 Action\nLook at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
 		case 23:
@@ -549,7 +549,7 @@ public class EffectHandler
 					ArrayList<Card> choice = new ArrayList<Card>();
 					ArrayList<Integer> response = new ArrayList<Integer>();
 					choice.add(currentDraw);
-					game.sendCardOption(player.getID(), "Do you wish to keep "+currentDraw.getName()+" ?", 1, choice, true);
+					game.sendCardOption(player.getID(), "Do you wish to keep " + currentDraw.getName() +" ?", 1, choice, true);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter = 0; // timeout
 					Object[] tempResponse = null;
