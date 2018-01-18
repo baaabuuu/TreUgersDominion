@@ -99,7 +99,7 @@
 		name : "Estate",
 		description: "Worth 1 Victory Point",
 		set : "treasures",
-		cost : 2,
+		cost : 3,
 		money : 0,
 		effectCodes :
 		[
@@ -145,7 +145,7 @@
 	},
 	{
 		name : "Province",
-		description: "Worth 5 Victory Point",
+		description: "Worth 6 Victory Point",
 		set : "treasures",
 		cost : 8,
 		money : 0,

@@ -557,11 +557,13 @@ public class Game
 			for (int a = 0; a < 3; a++)
 			{
 				players[i].addCardDecktop(estate.copyOf());
+				players[i].gain(players[i].getDeck().peekFirst());
 			}
 				
 			for (int a = 0; a < 7; a++)
 			{
 				players[i].addCardDecktop(copper.copyOf());
+				players[i].gain(players[i].getDeck().peekFirst());
 			}
 			players[i].setName(playerNames[i]);
 			players[i].shuffleDeck();

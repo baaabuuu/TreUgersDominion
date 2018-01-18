@@ -125,7 +125,7 @@ public class EffectHandler
 		case 21: //Market - +1 card\n +1 action\n +1 buy\n +1 money
 			playMarket(player);
 			break;
-		case 22://Mine - You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it.
+		case 22: //Mine - You may trash a Treasure from your hand. Gain a treasure to your hand costing up to 3 more than it.
 			playMine(player, board);
 			break; //Sentry - +1 Card\n +1 Action\nLook at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
 		case 23:
@@ -271,14 +271,15 @@ public class EffectHandler
 			}
 			drawnToString.substring(0, drawnToString.length() - 2);
 
-			game.sendMessageAll(p.getName() + " has revealed " + drawnToString.toString());
+			game.sendMessageAll(p.getName() + " reveals " + drawnToString.toString());
 			//Remove cards from hand
 			ArrayList<Card> tempCards = new ArrayList<Card>();
 			//1 due to inherent size of list objects
-			for(int i = 1; i <= drawn.length; i++)
+			for(int i = 0; i < drawn.length; i++)
 			{
-				tempCards.add(p.getHand().get(p.getHandSize() - i));
-				p.removeFromHand(p.getHand().get(p.getHandSize() - i));
+				int id = p.getFirstIndexOf(drawn[i]);
+				tempCards.add(p.getHand().get(id));
+				p.removeFromHand(p.getHand().get(id));
 			}
 
 			//See if any cards in hand are treasures - but not coppers
@@ -288,8 +289,13 @@ public class EffectHandler
 			for (Card temp : tempCards)
 			{
 				if (!treasures.contains(temp))
+				{
 					p.discardCard(temp);
+					game.sendMessageAll(p.getName() + " discared " + temp.getName());
+				}
+					
 			}
+			Log.important("Size: " + treasures.size());
 			if(treasures.size() == 2)
 			{
 				//If requirements met, trash one, discard the other (if there is another)
@@ -303,6 +309,7 @@ public class EffectHandler
 				{
 					player.trash(treasures.get(0));
 					board.trashCard(treasures.get(0));
+					game.sendMessageAll(p.getName() + " trashed " + treasures.get(0).getName());
 				}
 			}
 		}
@@ -327,6 +334,7 @@ public class EffectHandler
 							Card selection = selectedCards.get(cardIndex).get(response.get(0));
 							board.trashCard(selection);
 							rPlayer.trash(selection);
+							game.sendMessageAll(rPlayer.getName() + " trashed " + selection.getName());
 							selectedCards.get(cardIndex).remove(selection);
 							game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + selection.getName() + "!");
 							Card nullCheck = selectedCards.get(cardIndex).get(0);
@@ -541,7 +549,7 @@ public class EffectHandler
 					ArrayList<Card> choice = new ArrayList<Card>();
 					ArrayList<Integer> response = new ArrayList<Integer>();
 					choice.add(currentDraw);
-					game.sendCardOption(player.getID(), "Do you wish to keep "+currentDraw.getName()+" ?", 1, choice, true);
+					game.sendCardOption(player.getID(), "Do you wish to keep " + currentDraw.getName() +" ?", 1, choice, true);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter = 0; // timeout
 					Object[] tempResponse = null;
@@ -964,7 +972,7 @@ public class EffectHandler
 		player.addBuys(1);		
 		for(Player other: players)
 		{
-			if(other.equals(player))
+			if(other.equals(player) || !other.isConnected())
 			{
 				continue;
 			}
