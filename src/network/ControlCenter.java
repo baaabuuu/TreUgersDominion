@@ -29,10 +29,11 @@ public class ControlCenter extends Thread {
 		while(true){
 			
 			try {
-				Object[] firstInput = clientSpace.get(new FormalField(ClientCommands.class), new FormalField(Integer.class));
+				Object[] firstInput = clientSpace.get(new FormalField(Integer.class), new FormalField(ClientCommands.class));
 				
-				cmd = (ClientCommands) firstInput[0];
-				id = (Integer) firstInput[1];
+				id = (Integer) firstInput[0];
+				cmd = (ClientCommands) firstInput[1];
+				
 				
 				Log.log("Found command: " + cmd.toString() + " from ID: " + id);
 				
