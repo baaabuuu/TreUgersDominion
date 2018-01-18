@@ -254,7 +254,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblBuys.setBounds(620, 176, 85, 14);
 			add(lblBuys);
 			
-			lblMoney = new JLabel("Money in play: ");
+			lblMoney = new JLabel("Money: ");
 			lblMoney.setForeground(Color.white);
 			lblMoney.setBounds(620, 196, 85, 14);
 			add(lblMoney);
