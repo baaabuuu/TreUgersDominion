@@ -36,6 +36,7 @@ public class Game
 	private EffectHandler effects = new EffectHandler(this);
 	private Space space;
 	private Writer writer;
+	private int turnCount = 0;
 	
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
@@ -489,7 +490,14 @@ public class Game
 				Log.important("No players left in the game - GAME OVER");
 				return true;
 			}
-			sendPlayerHand(turn, turn);
+			if (turnCount > 0)
+			{
+				sendPlayerHand(turn, turn);
+			}
+			else
+			{
+				turnCount++;
+			}
 			
 		}
 		return false;
