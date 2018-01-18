@@ -134,7 +134,6 @@ public class Game
 		this.space = space;
 		initialTurn = turn;
 		effects = new EffectHandler(this);
-		
 	}
 	
 	
