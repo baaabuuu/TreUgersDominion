@@ -293,7 +293,7 @@ public class ClientActions {
 			}
 		}
 		hostSpace.put(playerID, ClientCommands.selectCard);
-		hostSpace.put(playerID, selected);
+		hostSpace.put(playerID, (new ArrayListObject(selected)));
 	}
 	public void setNames(String[] names) {
 		userInterface.newPlayers(names);
