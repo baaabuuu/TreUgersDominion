@@ -988,6 +988,15 @@ public class EffectHandlerTest
 	@Test
 	public void playCouncilroom() throws InterruptedException
 	{
+		String[] draw = {"ActionCard"};
+		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
+		handler.triggerEffect(17, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playCouncilroomDisconnect() throws InterruptedException
+	{
+		when(playerMock2.isConnected()).thenReturn(false);
 		handler.triggerEffect(17, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -1009,30 +1018,150 @@ public class EffectHandlerTest
 		ArrayList<Integer> selection = new ArrayList<Integer>();
 		selection.add(0);
 		
+		
 		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
 		deck.add(cardMock2);
-		
 		String[] displayTypes = {"Action"};
-		String[] draw = {"ActionCard"};
 		
 		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
-		when(playerMock2.getID()).thenReturn(1);
+		when(playerMock1.getDeckSize()).thenReturn(1);
+		when(playerMock1.getHandSize()).thenAnswer( new Answer<Object>()
+		{
+			private int count = 0;
+			
+			@Override
+			public Object answer(InvocationOnMock arg0) throws Throwable
+			{
+				count++;
+				return count;
+			}
+		});
 		
-		Object[] responseMock = {playerMock2.getID(), ClientCommands.selectCard, arrayListObjectMock};
-
-		when(boardMock.canGain(anyString())).thenReturn(cardMock);
-		when(playerMock2.getDeck()).thenReturn(deck);
-		when(cardMock2.getName()).thenReturn("Silver");
-		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
-		when(playerMock2.getHandSize()).thenReturn(2);
-		when(playerMock2.getHand()).thenReturn(playerHand);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock2);
+		when(playerMock1.getHand()).thenReturn(hand);
 		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
-		when(spaceMock.getp(
-					new FormalField(Integer.class),
-					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
-		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
+		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
+		
+		handler.triggerEffect(20, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playLibraryNonAction() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+
+		
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		String[] displayTypes = {"Treasure"};
+		
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		when(playerMock1.getDeckSize()).thenReturn(1);
+		when(playerMock1.getHandSize()).thenAnswer( new Answer<Object>()
+		{
+			private int count = 0;
+			
+			@Override
+			public Object answer(InvocationOnMock arg0) throws Throwable
+			{
+				count++;
+				return count;
+			}
+		});
+		
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock2);
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		
+		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
+		
+		handler.triggerEffect(20, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playLibraryKeepAll() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(-1);
+		
+		
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		String[] displayTypes = {"Action"};
+		
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		when(playerMock1.getDeckSize()).thenReturn(1);
+		when(playerMock1.getHandSize()).thenAnswer( new Answer<Object>()
+		{
+			private int count = 0;
+			
+			@Override
+			public Object answer(InvocationOnMock arg0) throws Throwable
+			{
+				count++;
+				return count;
+			}
+		});
+		
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock2);
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		
+		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
+		
+		handler.triggerEffect(20, playerMock1, cardMock, boardMock, players);
+	}
+	@Test
+	public void playLibraryTimeout() throws InterruptedException
+	{
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		String[] displayTypes = {"Action"};
+		
+		when(playerMock1.getDeckSize()).thenReturn(1);
+		when(playerMock1.getHandSize()).thenReturn(0);
+		when(playerMock1.isConnected()).thenAnswer(new Answer<Object>()
+		{
+			int count = 0;
+			@Override
+			public Object answer(InvocationOnMock arg0) throws Throwable
+			{
+				count++;
+				return count < 2;
+			}
+		});
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock2);
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		
+		
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(20, playerMock1, cardMock, boardMock, players);
 	}
 	
 	@Test
@@ -1041,7 +1170,119 @@ public class EffectHandlerTest
 		handler.triggerEffect(21, playerMock1, cardMock, boardMock, players);
 	}
 	
+	@Test
+	public void playMine() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		
+		ArrayList<Card> list = new ArrayList<Card>();
+		list.add(cardMock);
+		
+		String[] cardTypes = {"Treasure"};
+		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		
+		when(cardMock.getDisplayTypes()).thenReturn(cardTypes);
+		when(cardMock.getCost()).thenReturn(4);
+		when(cardMock.getName()).thenReturn("TreasureDummy");
 
+		when(boardMock.getCardStream()).thenReturn(list.stream());
+		when(playerMock1.getHand()).thenReturn(list);
+		
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);	
+		handler.triggerEffect(22, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playMineNoTreasure() throws InterruptedException
+	{
+		ArrayList<Card> list = new ArrayList<Card>();
+		list.add(cardMock);
+		
+		String[] cardTypes = {"ACTION"};
+		
+		when(cardMock.getDisplayTypes()).thenReturn(cardTypes);
+		when(cardMock.getCost()).thenReturn(4);
+		when(cardMock.getName()).thenReturn("TreasureDummy");
+
+		when(boardMock.getCardStream()).thenReturn(list.stream());
+		when(playerMock1.getHand()).thenReturn(list);
+		
+		handler.triggerEffect(22, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playMineTimeOut() throws InterruptedException
+	{
+		
+		ArrayList<Card> list = new ArrayList<Card>();
+		list.add(cardMock);
+		
+		String[] cardTypes = {"Treasure"};
+		
+		
+		when(cardMock.getDisplayTypes()).thenReturn(cardTypes);
+		when(cardMock.getCost()).thenReturn(4);
+		when(cardMock.getName()).thenReturn("TreasureDummy");
+
+		when(boardMock.getCardStream()).thenReturn(list.stream());
+		when(playerMock1.getHand()).thenReturn(list);
+		
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(null);	
+		handler.triggerEffect(22, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playMineTimeout2() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		
+		ArrayList<Card> list = new ArrayList<Card>();
+		list.add(cardMock);
+		
+		String[] cardTypes = {"Treasure"};
+		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		
+		when(cardMock.getDisplayTypes()).thenReturn(cardTypes);
+		when(cardMock.getCost()).thenReturn(4);
+		when(cardMock.getName()).thenReturn("TreasureDummy");
+
+		when(boardMock.getCardStream()).thenReturn(list.stream());
+		when(playerMock1.getHand()).thenReturn(list);
+		
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenAnswer(new Answer<Object>()
+				{
+					int count = 0;
+					@Override
+					public Object answer(InvocationOnMock arg0) throws Throwable
+					{
+						if (count++ == 1)
+							return responseMock;
+						return null;
+					}
+				});
+		handler.triggerEffect(22, playerMock1, cardMock, boardMock, players);
+	}
+	//TODO BELOW
+	@Test
+	public void playSentry() throws InterruptedException 
+	{
+		handler.triggerEffect(23, playerMock1, cardMock, boardMock, players);
+	}
 	
 	@Test
 	public void playWitch() throws InterruptedException
@@ -1062,5 +1303,28 @@ public class EffectHandlerTest
 	{
 		when(boardMock.canGain(anyString())).thenReturn(null);
 		handler.triggerEffect(24, playerMock1, cardMock, boardMock, players);
+	}
+	
+	//TODO the special cases with multiple selections
+	//Add a new (if Connected) case for the player to skip additional waiting.
+	
+	//TODO BELOW
+	@Test
+	public void playArtisan() throws InterruptedException 
+	{
+		handler.triggerEffect(25, playerMock1, cardMock, boardMock, players);
+	}
+	
+	//TODO BELOW
+	@Test
+	public void playChapel() throws InterruptedException 
+	{
+		handler.triggerEffect(26, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playSmithy() throws InterruptedException
+	{
+		handler.triggerEffect(27, playerMock1, cardMock, boardMock, players);
 	}
 }
