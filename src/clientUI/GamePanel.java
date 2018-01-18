@@ -378,7 +378,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public void updBuyList(Card[] cards, Integer[] integers){
 		listModel.clear();
 		for(int i = 0; i < cards.length; i++) {
-			listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + integers[i] + "  ");
+			try {
+				listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + integers[i] + "  ");
+			}catch(NullPointerException e0){
+				Log.important("addElement made a NullPointerException");
+			}
 		}
 	}
 	private String eventAreaInfo;
