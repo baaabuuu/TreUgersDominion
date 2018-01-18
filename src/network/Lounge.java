@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.QueueSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
@@ -55,7 +56,7 @@ public class Lounge {
 		repository.addGate(uri);
 		
 		//Setup the lobby
-		Space lounge	 = new SequentialSpace();
+		Space lounge	 = new QueueSpace();
 		repository.add("lounge", lounge);
 		
 		//Setting up value holders
@@ -139,7 +140,7 @@ public class Lounge {
 						tempURI = "tcp://"+ host + ":" + port + "/" + i +"?keep";
 						Log.log("URI: " + tempURI);
 						//Setup game
-						Space gameSpace = new SequentialSpace();
+						Space gameSpace = new QueueSpace();
 						repository.add(Integer.toString(i), gameSpace);
 						Lobby tempInit = new Lobby(tempURI, cardReader, gameSpace);
 						gamesRunning[i] = tempInit;
