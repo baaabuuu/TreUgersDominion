@@ -669,10 +669,15 @@ public class EffectHandlerTest
 	{
 		ArrayList<Integer> selection = new ArrayList<Integer>();
 		selection.add(0);
+		
 		ArrayList<Card> hand = new ArrayList<Card>();
-		hand.add(cardMock2);
 		hand.add(cardMock);
 		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, selection};
+		String[] names = {"testCard"};
+		
+		when(boardMock.getBoardNamesArray()).thenReturn(names);
+		when(boardMock.canGain(anyString())).thenReturn(null);
+		
 		when(cardMock2.getName()).thenReturn("NotCopper");
 		when(cardMock.getName()).thenReturn("Copper");
 		when(playerMock1.getHand()).thenReturn(hand);
@@ -680,7 +685,49 @@ public class EffectHandlerTest
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
 				new FormalField(ArrayList.class))).thenReturn(responseMock);
-		handler.triggerEffect(12, playerMock1, cardMock, boardMock, players);
+		handler.triggerEffect(13, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playPoacherTimeout() throws InterruptedException
+	{
+		
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		String[] names = {"testCard"};
+		
+		when(boardMock.getBoardNamesArray()).thenReturn(names);
+		when(boardMock.canGain(anyString())).thenReturn(null);
+		
+		when(cardMock2.getName()).thenReturn("NotCopper");
+		when(cardMock.getName()).thenReturn("Copper");
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayList.class))).thenReturn(null);
+		handler.triggerEffect(13, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test //See if possible to discard.
+	public void playPoacherTimeout() throws InterruptedException
+	{
+		
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		String[] names = {"testCard"};
+		
+		when(boardMock.getBoardNamesArray()).thenReturn(names);
+		when(boardMock.canGain(anyString())).thenReturn(null);
+		
+		when(cardMock2.getName()).thenReturn("NotCopper");
+		when(cardMock.getName()).thenReturn("Copper");
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(spaceMock.getp(
+				new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayList.class))).thenReturn(null);
+		handler.triggerEffect(13, playerMock1, cardMock, boardMock, players);
 	}
 	
 	@Test

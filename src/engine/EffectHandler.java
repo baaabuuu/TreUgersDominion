@@ -1244,6 +1244,7 @@ public class EffectHandler
 			}
 			Thread.sleep(10);
 		}
+		Log.important("are we out yet boys");
 		//---[END TIMEOUT BLOCK]---
 	}
 	/**
