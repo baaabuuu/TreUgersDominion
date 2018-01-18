@@ -99,7 +99,6 @@ public class ClientActions {
 						setPlayerHand((PlayerHand)input[2]);
 						setTurnValues((TurnValues)input[3]);
 						
-						userInterface.eventInput("Your hand contains: ");
 						userInterface.newPlayerHand(playerHand);
 						lock = false;
 						break;
