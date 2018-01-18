@@ -173,17 +173,21 @@ public class ClientController {
 	}
 	/**
 	 * Abuses a method to kill jSpace servers.
+	 * The killServer function is not working anymore due to a jSpace update.
 	 */
 	public void killServer() {
 		try {
+			//Connct to a non-exsistant space on the server
 			hostSpace = new RemoteSpace("tcp://" + host + ":" + port + "/ripServer?conn");
 			Log.log("Connected to a non-exsistant space!");
 			try {
+				//Inside a non-exsistant remote-space, the get function is non-blocking.
 				Log.log((String)(hostSpace.get(new ActualField("Hello from the non-existant space!"))[0]));
 			}catch(NullPointerException e) {
 				Log.log("I just skipped a get!");
 			}
 			Log.log("Killed the server!");
+			//Upon System.exit(0) the server would, before the update to jSpace, die.
 			System.exit(0);
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block

@@ -183,6 +183,7 @@ public class UIController implements client.UIControllerInter {
 		gameBG.add(gamePanel, BorderLayout.CENTER);
 		mainFrame.setContentPane(gameBG);
 	}
+	//The killServer function is not working anymore due to a jSpace update.
 	public void killServer() {
 		client.killServer();
 	}

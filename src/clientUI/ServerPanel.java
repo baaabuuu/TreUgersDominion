@@ -97,13 +97,18 @@ public class ServerPanel extends JPanel implements ActionListener{
 		// On enter press, do the same as connect button.
 		socketField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	
+            	attemptConnection();
             }
         });
 		add(socketField);
 		
 		nameField = new JTextField(20);
 		nameField.setBounds(610, 269, 130, 20);
+		nameField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	serverField.requestFocus();
+            }
+        });
 		add(nameField);
 		
 		lblUsername = new JLabel("Name");
