@@ -268,6 +268,7 @@ public class ClientActions {
 				// Test if integer.
 				try {
 					value = Integer.parseInt((String)input[2]);
+					Log.log(value + " is alegedly an integer");
 					//If getMay is true and if integer is not either a value representing a card or 0.
 					if(option.getMay() && (value < 0 || value > option.getCards().size())) {
 						userInterface.eventInput("Input is not a valid card.");
