@@ -282,7 +282,7 @@ public class ClientActions {
 							if(value == 0) {
 								i = option.getAmount();
 							} else {
-								selected.add(value);
+								selected.add(value-1);
 							}
 							locked = false;
 						}

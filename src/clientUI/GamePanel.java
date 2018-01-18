@@ -86,7 +86,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 				public void removeUpdate(DocumentEvent e) {updateCount(2);}
 	        });
 			
-			eventArea = new MyTextArea("Welcome to Dominion: The blatent ripoff!");
+			eventArea = new JTextArea("Welcome to Dominion: The blatent ripoff!");
 			eventArea.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
 			eventArea.setForeground(Color.white);
 			eventArea.setOpaque(false);
@@ -152,7 +152,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			
 			itemList = new JList<String>(listModel);
 			itemList.setForeground(Color.white);
-			itemList.setBackground(Color.darkGray);
+			itemList.setOpaque(false);
+			//itemList.setBackground(Color.darkGray);
 			itemList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			itemList.setVisibleRowCount(-1);
 			itemList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -164,8 +165,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			listScroll.setOpaque(false);
 			listScroll.getViewport().setOpaque(false);
-			listScroll.setBounds(620, 395, 250, 180);
-			listScroll.setBackground(new Color(219, 142, 27));
+			listScroll.setBounds(620, 400, 250, 180);
+			//listScroll.setBackground(new Color(219, 142, 27));
 			sbList = listScroll.getVerticalScrollBar();
 			sbList.setUI(new MyScrollbarUI());
 			add(listScroll);
@@ -322,6 +323,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			myTextArea.setEditable(false);
 			myTextArea.setBounds(620, 376, 250, 14);
 			add(myTextArea);
+			
+			clientUI.MyTextArea myTextArea_1 = new clientUI.MyTextArea("");
+			myTextArea_1.setOpaque(false);
+			myTextArea_1.setForeground(Color.WHITE);
+			myTextArea_1.setEditable(false);
+			myTextArea_1.setBounds(10, 50, 600, 440);
+			add(myTextArea_1);
+			
+			clientUI.MyTextArea myTextArea_2 = new clientUI.MyTextArea("");
+			myTextArea_2.setOpaque(false);
+			myTextArea_2.setForeground(Color.WHITE);
+			myTextArea_2.setEditable(false);
+			myTextArea_2.setBounds(620, 400, 250, 180);
+			add(myTextArea_2);
 			
 			//The kill server button got out-dated by an update to jSpace
 			JButton btnKillServer = new JButton("KILL SERVER!");
