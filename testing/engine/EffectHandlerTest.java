@@ -786,7 +786,6 @@ public class EffectHandlerTest
 		when(cardMock.getName()).thenReturn("Card Name");
 		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
 		when(playerMock1.getHand()).thenReturn(hand);
-		
 		when(spaceMock.getp(
 					new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
@@ -794,6 +793,69 @@ public class EffectHandlerTest
 		
 		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
 	}
+	
+	@Test
+	public void playThroneroomnoAction() throws InterruptedException
+	{
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		
+		int[] effectCodes = {0};
+		String[] displayTypes = {"notanAction"};
+		when(cardMock.getEffectCode()).thenReturn(effectCodes);
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock.getName()).thenReturn("Card Name");
+		when(playerMock1.getHand()).thenReturn(hand);
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playThroneroomTimeOut() throws InterruptedException
+	{
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		
+		int[] effectCodes = {0};
+		String[] displayTypes = {"Action"};		
+		
+		when(cardMock.getEffectCode()).thenReturn(effectCodes);
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock.getName()).thenReturn("Card Name");
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(spaceMock.getp(
+					new ActualField(playerMock1.getID()),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playBandit() throws InterruptedException
+	{
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock);
+		deck.add(cardMock2);
+		
+		when(boardMock.canGain(anyString())).thenReturn(cardMock);
+		when(playerMock2.getDeck()).thenReturn(deck);
+		when(cardMock.getName()).thenReturn("Copper");
+		when(cardMock2.getName()).thenReturn("Silver");
+		
+		
+		
+		
+		String[] displayTypes = {"Treasure"};		
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		when(spaceMock.getp(
+					new ActualField(playerMock1.getID()),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
 	@Test
 	public void playWitch() throws InterruptedException
 	{

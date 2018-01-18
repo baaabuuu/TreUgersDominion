@@ -373,7 +373,7 @@ public class Game
 						int typeCount = card.getTypeCount();
 						for (int i = 0; i < typeCount; i++)
 						{
-							if (types[i].equals("action"))
+							if (types[i].equals("action") || types[i].equals("attack"))
 							{
 								int code = card.getEffectCode()[i];
 								effects.triggerEffect(code, currPlayer, card, board, players);

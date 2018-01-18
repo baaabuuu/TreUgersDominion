@@ -252,12 +252,12 @@ public class EffectHandler
 			player.discardCard(gold);
 			board.cardRemove("Gold");
 			player.gain(gold);
-			game.sendMessageAll(player.getName() + "#" + player.getID() + " gained a Gold!!");
-
+			game.sendMessageAll(player.getName() + "#" + player.getID() + " gained a Gold!");
 		}
+		
 		for(Player p : players)
 		{
-			if(p.equals(player))
+			if(p.equals(player) || !p.isConnected())
 			{
 				continue;
 			}
@@ -274,6 +274,7 @@ public class EffectHandler
 			game.sendMessageAll(p.getName() + " has revealed " + drawnToString.toString());
 			//Remove cards from hand
 			ArrayList<Card> tempCards = new ArrayList<Card>();
+			//1 due to inherent size of list objects
 			for(int i = 1; i <= drawn.length; i++)
 			{
 				tempCards.add(p.getHand().get(p.getHandSize() - i));
@@ -281,8 +282,15 @@ public class EffectHandler
 			}
 
 			//See if any cards in hand are treasures - but not coppers
-			boolean hasTreasure = tempCards.stream().anyMatch(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) && !c.getName().equals("Copper"));
-			if(hasTreasure)
+			ArrayList<Card> treasures = (ArrayList<Card>) tempCards.stream().filter(c ->
+			Arrays.stream(c.getDisplayTypes()).anyMatch(i ->
+			i.equals("Treasure")) && !c.getName().equals("Copper")).collect(Collectors.toList());
+			for (Card temp : tempCards)
+			{
+				if (!treasures.contains(temp))
+					p.discardCard(temp);
+			}
+			if(treasures.size() == 2)
 			{
 				//If requirements met, trash one, discard the other (if there is another)
 				game.sendCardOption(p.getID(), "Choose a card to trash, other will be discarded", 1, tempCards, false);
@@ -291,20 +299,20 @@ public class EffectHandler
 			}
 			else
 			{
-				for(int i = tempCards.size() - 1;i >= 0 ; i--)
+				if (treasures.size() == 1)
 				{
-					p.addCardDecktop(tempCards.get(i));
+					player.trash(treasures.get(0));
+					board.trashCard(treasures.get(0));
 				}
 			}
 		}
 		//---[BEGIN TIMEOUT BLOCK]---
 		int counter = 0; // timeout
-		Object[] tempResponse = null;
 		while(expectedResponses.size() > 0)
 		{	
 			while(true)
 			{
-				tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+				Object[] tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					int pID = (int) tempResponse[0];
@@ -318,8 +326,8 @@ public class EffectHandler
 							//---[BEGIN CODE BLOCK]---
 							Card selection = selectedCards.get(cardIndex).get(response.get(0));
 							board.trashCard(selection);
-							selectedCards.get(cardIndex).remove(selection);
 							rPlayer.trash(selection);
+							selectedCards.get(cardIndex).remove(selection);
 							game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + selection.getName() + "!");
 							Card nullCheck = selectedCards.get(cardIndex).get(0);
 							if (nullCheck != null)
@@ -338,11 +346,13 @@ public class EffectHandler
 				counter++;
 				if (counter > game.getWaitTime())
 				{
-					for(Player dPlayer : expectedResponses)
+					@SuppressWarnings("unchecked")
+					ArrayList<Player> list = (ArrayList<Player>) expectedResponses.clone();
+					for(Player dPlayer : list)
 					{
+						expectedResponses.remove(dPlayer);
 						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
 						game.sendDisconnect(dPlayer.getID());
-
 					}
 					break;
 				}
