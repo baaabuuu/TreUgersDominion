@@ -678,6 +678,8 @@ public class EffectHandler
 		while(true)
 		{
 			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+			Log.important("WHAT" + (tempResponse == null));
+
 			if(tempResponse != null)
 			{
 				Log.important("did this reach lmao");
@@ -969,10 +971,12 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-
 	private void playThroneRoom(Player player, Board board, Player[] players) throws InterruptedException
 	{
-		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card -> Arrays.stream(card.getDisplayTypes()).filter(s -> s.equals("Action")).findAny().isPresent()).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card ->
+			Arrays.stream(card.getDisplayTypes()).filter(s ->
+				s.equals("Action")).findAny().isPresent())
+					.collect(Collectors.toCollection(ArrayList::new));
 		if(actionInHand.size() != 0)
 		{
 			game.sendCardOption(player.getID(), "Select an action to be played twice", 1, actionInHand, true);
@@ -981,29 +985,27 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
+				
+				tempResponse = rSpace.getp(new ActualField(player.getID()),
+						new ActualField(ClientCommands.selectCard),
+						new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
-					//Response form networking goes here.
 					int selected = response.get(0);
-					if(selected == -1)
+					if (selected >= 0)
 					{
-						game.sendMessage("No card has been played", player.getID());
-					}
-					else 
-					{
-						Card cardSelected = player.getHand().get(selected);
-						//Do the twice
-						for(int o =0; o < 2; o++)
+						Card card = player.getHand().get(selected);
+						game.sendMessageAll(player.getName() + "'s Throneroom plays " + card + " twice!");
+						for(int o = 0; o < 2; o++)
 						{
-							for(int i:cardSelected.getEffectCode())
+							for(int i : card.getEffectCode())
 							{
-								triggerEffect(i,player, cardSelected, board, players);					
+								triggerEffect(i, player, card, board, players);					
 							}
 						}
-						player.putIntoPlay(cardSelected);
+						player.putIntoPlay(card);
 					}
 					//---[END CODE BLOCK]---
 					break;

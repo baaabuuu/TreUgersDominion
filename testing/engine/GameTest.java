@@ -335,7 +335,6 @@ public class GameTest
 			private int count = 0;
 			private Object[] ob1 = null;
 			private Object[] ob2 = {0, 0, game.getPlayer(0).getFirstIndexOf("Copper")};
-			
 			@Override
 			public Object answer(InvocationOnMock arg0) throws Throwable
 			{
