@@ -40,6 +40,11 @@ public class ClientActions {
 	 */
 	public void takeTurn(Space hostSpace) throws InterruptedException {
 		
+		hostSpace.get(new ActualField(playerID), 
+				new FormalField(BoardState.class), 
+				new FormalField(PlayerHand.class), 
+				new FormalField(TurnValues.class));
+		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
 		userInterface.eventInput("YOUR TURN HAS BEGUN!");
@@ -50,21 +55,16 @@ public class ClientActions {
 		actionPhase(hostSpace);
 		
 		hostSpace.get(new ActualField(ServerCommands.takeTurn), new ActualField(playerID));
+		hostSpace.get(new ActualField(playerID), 
+				new FormalField(BoardState.class), 
+				new FormalField(PlayerHand.class), 
+				new FormalField(TurnValues.class));
 		
 		userInterface.eventInput("BUY PHASE");
 		buyPhase(hostSpace);
 		
 		userInterface.eventInput("CLEANUP PHASE");
 		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
-		
-		hostSpace.get(new ActualField(ServerCommands.setPlayerHand), new ActualField(playerID));
-		Object[] objs = hostSpace.get(new ActualField(playerID), 
-				new FormalField(PlayerHand.class));
-		
-		setPlayerHand((PlayerHand)objs[1]);
-		
-		userInterface.eventInput("Your hand contains: ");
-		userInterface.newPlayerHand(playerHand);
 	}
 	/**
 	 * Resolves a card being played.
@@ -96,7 +96,9 @@ public class ClientActions {
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
 						input = hostSpace.get(new ActualField(playerID), 
-								new FormalField(BoardState.class), new FormalField(PlayerHand.class), new FormalField(TurnValues.class));
+								new FormalField(BoardState.class), 
+								new FormalField(PlayerHand.class), 
+								new FormalField(TurnValues.class));
 						
 						userInterface.newBoardState((BoardState)input[1]);
 						setPlayerHand((PlayerHand)input[2]);
