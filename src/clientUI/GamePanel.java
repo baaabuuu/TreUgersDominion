@@ -152,8 +152,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			
 			itemList = new JList<String>(listModel);
 			itemList.setForeground(Color.white);
-			itemList.setOpaque(false);
-			//itemList.setBackground(Color.darkGray);
+			itemList.setBackground(Color.darkGray);
 			itemList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 			itemList.setVisibleRowCount(-1);
 			itemList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
@@ -165,8 +164,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			listScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			listScroll.setOpaque(false);
 			listScroll.getViewport().setOpaque(false);
-			listScroll.setBounds(620, 400, 250, 180);
-			//listScroll.setBackground(new Color(219, 142, 27));
+			listScroll.setBounds(620, 395, 250, 180);
+			listScroll.setBackground(new Color(219, 142, 27));
 			sbList = listScroll.getVerticalScrollBar();
 			sbList.setUI(new MyScrollbarUI());
 			add(listScroll);
@@ -335,7 +334,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			myTextArea_2.setOpaque(false);
 			myTextArea_2.setForeground(Color.WHITE);
 			myTextArea_2.setEditable(false);
-			myTextArea_2.setBounds(620, 400, 250, 180);
+			myTextArea_2.setBounds(620, 401, 250, 174);
 			add(myTextArea_2);
 			
 			//The kill server button got out-dated by an update to jSpace
