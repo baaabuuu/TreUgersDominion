@@ -39,7 +39,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		
 		// Buttons.
 		btnConnect = new JButton("Connect");				// Connect button.
-		btnConnect.setBounds(540, 370, 90, 25);				// Placement and size.
+		btnConnect.setBounds(330, 370, 90, 25);				// Placement and size.
 		btnConnect.setForeground(Color.white);				// Text is white.
         btnConnect.setFocusPainted(false);					// Removes the painted box when in focus.
         btnConnect.setBackground(new Color(219, 142, 27));	// Set background color to an orange.
@@ -52,7 +52,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		add(btnConnect); // Add to JPanel.
 		
 		btnExit = new JButton("Exit");
-		btnExit.setBounds(650, 370, 90, 25);
+		btnExit.setBounds(460, 370, 90, 25);
 		btnExit.setForeground(Color.white);
         btnExit.setFocusPainted(false);
         btnExit.setBackground(new Color(219, 142, 27));
@@ -68,22 +68,22 @@ public class ServerPanel extends JPanel implements ActionListener{
 		// Labels.
 		lblServer = new JLabel("IP-Address");
 		lblServer.setForeground(Color.white);
-		lblServer.setBounds(540, 300, 65, 14);
+		lblServer.setBounds(330, 300, 65, 14);
 		add(lblServer);
 		
 		lblSocket = new JLabel("Socket");
 		lblSocket.setForeground(Color.white);
-		lblSocket.setBounds(540, 335, 65, 14);
+		lblSocket.setBounds(330, 335, 65, 14);
 		add(lblSocket);
 		
 		lblError = new JLabel(" ");
 		lblError.setForeground(Color.RED);
-		lblError.setBounds(540, 244, 257, 14);
+		lblError.setBounds(330, 244, 257, 14);
 		add(lblError);
 		
 		// Text fields.
 		serverField = new JTextField(20);
-		serverField.setBounds(610, 300, 130, 20);
+		serverField.setBounds(420, 300, 130, 20);
 		serverField.setText(host);
 		// On enter press, sets focus to socket field.
 		serverField.addActionListener(new ActionListener() {
@@ -94,7 +94,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		add(serverField);
 		
 		socketField = new JTextField(20);
-		socketField.setBounds(610, 335, 130, 20);
+		socketField.setBounds(420, 335, 130, 20);
 		socketField.setText(""+port);
 		// On enter press, do the same as connect button.
 		socketField.addActionListener(new ActionListener() {
@@ -105,7 +105,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		add(socketField);
 		
 		nameField = new JTextField(20);
-		nameField.setBounds(610, 269, 130, 20);
+		nameField.setBounds(420, 269, 130, 20);
 		nameField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	serverField.requestFocus();
@@ -115,7 +115,7 @@ public class ServerPanel extends JPanel implements ActionListener{
 		
 		lblUsername = new JLabel("Name");
 		lblUsername.setForeground(Color.WHITE);
-		lblUsername.setBounds(540, 269, 65, 14);
+		lblUsername.setBounds(330, 269, 65, 14);
 		add(lblUsername);
 	}
 	// Required to be there by ActionListener implement.

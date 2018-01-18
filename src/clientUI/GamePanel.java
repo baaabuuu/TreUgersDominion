@@ -51,7 +51,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 	public JLabel lblUsername, lblP1VP, lblP2VP, lblP3VP, lblP4VP;
 	public JLabel lblActions, lblBuys, lblMoney, lblList;
 	public JLabel lblP1Hand, lblP2Hand, lblP3Hand, lblP4Hand;
-	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea;
+	public JTextArea eventArea, actionArea, chatArea, chatTypArea, itemArea, backBlack;
 	public JList<String> itemList;
 	public DefaultListModel<String> listModel;
 	private DefaultStyledDocument docAction, docChat;
@@ -127,7 +127,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			chatAreaScroll.setBackground(new Color(219, 142, 27));
 			sbChat = chatAreaScroll.getVerticalScrollBar();
 	        sbChat.setUI(new MyScrollbarUI());
-			add(chatAreaScroll);
+			//add(chatAreaScroll);
 			
 			itemArea = new MyTextArea("Card discription area.");
 			itemArea.setFont(new Font("Bookman Old Style", Font.PLAIN, 11));
@@ -191,7 +191,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			chatTypArea.addKeyListener(this);
 			chatTypArea.setBounds(880, 500, 285, 75);
 			chatTypArea.setDocument(docChat);
-			add(chatTypArea);
+			//add(chatTypArea);
 			
 			// Buttons.
 			actionSend = new JButton("Send");
@@ -210,7 +210,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			chatSend.setBackground(new Color(219, 142, 27));
 			chatSend.setFont(new Font("Tahoma", Font.BOLD, 12));
 			chatSend.setBounds(1164, 500, 100, 75);
-			add(chatSend);
+			//add(chatSend);
 			
 			// label counters.
 			lblRemainingWordsAction = new JLabel("Action");
@@ -221,7 +221,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblRemainingWordsChat = new JLabel("Chat");
 			lblRemainingWordsChat.setForeground(Color.white);
 			lblRemainingWordsChat.setBounds(800, 585, 200, 14);
-			add(lblRemainingWordsChat);
+			//add(lblRemainingWordsChat);
 			
 			// Middle Area Labels.
 			lblP1 = new JLabel("P1: ");
@@ -281,7 +281,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			
 			lblList = new JLabel("Select card to get description.");
 			lblList.setForeground(Color.WHITE);
-			lblList.setBounds(620, 376, 170, 14);
+			lblList.setBounds(620, 376, 230, 14);
 			add(lblList);
 			
 			lblUsername = new JLabel("Username: ");
@@ -309,6 +309,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			lblP4Hand.setBounds(730, 136, 85, 14);
 			add(lblP4Hand);
 			
+			backBlack = new MyTextArea("");
+			backBlack.setEditable(false);
+			backBlack.setForeground(Color.white);
+			backBlack.setOpaque(false);
+			backBlack.setBounds(620, 51, 250, 159);
+			add(backBlack);
+			
+			clientUI.MyTextArea myTextArea = new clientUI.MyTextArea("");
+			myTextArea.setOpaque(false);
+			myTextArea.setForeground(Color.WHITE);
+			myTextArea.setEditable(false);
+			myTextArea.setBounds(620, 376, 250, 14);
+			add(myTextArea);
+			
 			//The kill server button got out-dated by an update to jSpace
 			JButton btnKillServer = new JButton("KILL SERVER!");
 			btnKillServer.setBackground(Color.RED);
@@ -323,13 +337,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			
 			// Update remainingWords labels.
 			updateCount(1);
-			updateCount(2);
+			//updateCount(2);
 	}
 	private void updateCount(int i) {
 		if(i == 1){
 			lblRemainingWordsAction.setText((255 -docAction.getLength()) + " characters remaining");
 		}else if(i == 2){
-			lblRemainingWordsChat.setText((255 -docChat.getLength()) + " characters remaining");
+			//lblRemainingWordsChat.setText((255 -docChat.getLength()) + " characters remaining");
 		}
     }
 	public void updBuyList(Card[] cards, Integer[] integers){
