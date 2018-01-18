@@ -307,8 +307,8 @@ public class Game
 	 */
 	private void startGameActions() throws InterruptedException
 	{
-		sendBoardState();
 		Card[] buyArea = board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray(Card[]::new);
+		sendBoardState();
 		for (int i = 0; i < playerCount; i++)
 		{
 			sendPlayerHand(i, i);
