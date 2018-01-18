@@ -184,7 +184,7 @@ public class Player {
 	}
 	
 	/**
-	 * Checks if actions are left
+	 * Checks if actions are left 
 	 * @return
 	 */
 	public boolean canPlayAction() 
@@ -220,8 +220,9 @@ public class Player {
 			{
 				if (types.contains("Treasure") && phase == 1)
 				{
-					removeFromHand(card);
+					boolean result = removeFromHand(card);
 					putIntoPlay(card);
+					Log.important("result" + result + " play area size: " + secretStack.size());
 					addMoney(card.getMoney());
 					Log.log(getName() + " played the treasure card " + card.getName());
 					return true;

@@ -64,6 +64,11 @@ public class EffectHandlerTest
 		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
 	}
 	
-	
-	
+	@Test
+	public void playCellarCardsinHand() throws InterruptedException
+	{
+		when(playerMock1.getHandSize()).thenReturn(0);
+		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
+	}
+
 }
