@@ -286,16 +286,19 @@ public class EffectHandlerTest
 	@Test
 	public void playVassal() throws InterruptedException
 	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
 		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
 		deck.add(cardMock);
 		String[] cardsDrawn = {"dummy"};
 		String[] types = {"Action"};
-		playerMock1.setDeck(deck);
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, selection};
+
 		
 		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
 		when(playerMock1.getDeck()).thenReturn(deck);
+		when(cardMock.getTypes()).thenReturn(types);
 		
-
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
 	}
 
