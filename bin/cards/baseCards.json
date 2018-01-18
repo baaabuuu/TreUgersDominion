@@ -208,11 +208,12 @@
 		minCost : 0,
 		types :
 		[
-			"action"
+			"attack"
 		],
 		dispTypes : 
 		[
-			"Action"
+			"Action",
+			"Attack,"
 		],
 		"typeCount": 1,
 		"dispTypeCount": 1,

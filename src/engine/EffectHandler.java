@@ -203,18 +203,20 @@ public class EffectHandler
 				{
 					game.sendMessage("No cards trashed", player.getID());
 				}
-				else {
+				else
+				{
 					ArrayList<Card> tempHand = player.getHand();
 					ArrayList<Card> toTrash = new ArrayList<Card>();
-					for(int index:response)
+					for(int index : response)
 					{
 						toTrash.add(tempHand.get(index));
 					}
-					for(Card c: toTrash)
+					for(Card card : toTrash)
 					{
-						player.removeFromHand(c);
-						board.trashCard(c);
-						player.trash(c);
+						game.sendMessageAll(player.getName() + "#" + player.getID() + " trashed " + card.getName() + "!");
+						player.removeFromHand(card);
+						board.trashCard(card);
+						player.trash(card);
 					}
 				}
 				//---[END CODE BLOCK]---
@@ -233,7 +235,7 @@ public class EffectHandler
 
 	}
 	/**
-	 * ain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
+	 * Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
 	 * @param player
 	 * @param board
 	 * @param players
@@ -250,6 +252,8 @@ public class EffectHandler
 			player.discardCard(gold);
 			board.cardRemove("Gold");
 			player.gain(gold);
+			game.sendMessageAll(player.getName() + "#" + player.getID() + " gained a Gold!!");
+
 		}
 		for(Player p : players)
 		{
@@ -316,6 +320,7 @@ public class EffectHandler
 							board.trashCard(selection);
 							selectedCards.get(cardIndex).remove(selection);
 							rPlayer.trash(selection);
+							game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + selection.getName() + "!");
 							Card nullCheck = selectedCards.get(cardIndex).get(0);
 							if (nullCheck != null)
 							{
@@ -376,6 +381,7 @@ public class EffectHandler
 					c = choice.get(response.get(0));
 					board.cardRemove(c.getName());
 					tempHand.add(c);
+					game.sendMessageAll(player.getName() + "#" + player.getID() + " addeded " + c.getName() + " to their hand!");
 					player.setHand(tempHand);
 					player.gain(c);
 
@@ -393,6 +399,7 @@ public class EffectHandler
 							c = tempHand.get(response.get(0));
 							player.removeFromHand(c);
 							player.addCardDecktop(c);
+							game.sendMessageAll(player.getName() + "#" + player.getID() + " put " + c.getName() + " ontop of their deck!");
 							//---[END CODE BLOCK]---
 							break;
 						}
@@ -421,6 +428,7 @@ public class EffectHandler
 		}	
 
 	}
+
 	/**
 	 * Allows a player to trash a card costing up to 3 or more.
 	 * @param player
@@ -430,7 +438,7 @@ public class EffectHandler
 	@SuppressWarnings("unchecked")
 	private void playMine(Player player, Board board) throws InterruptedException
 	{
-		ArrayList<Card> choice =  player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toCollection(ArrayList::new));
+		ArrayList<Card> choice = player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toCollection(ArrayList::new));
 		if(choice.size() > 0)
 		{
 			game.sendCardOption(player.getID(), "Trash treasure card from your hand to gain a treasure costing upto 3 more.", 1, choice, true);
@@ -683,9 +691,10 @@ public class EffectHandler
 				{
 					toDiscard.add(tempHand.get(i));
 				}
-				for(Card c: toDiscard)
+				for(Card card: toDiscard)
 				{
-					tempHand.remove(c);
+					game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + card.getName() + "!");
+					tempHand.remove(card);
 				}
 				player.setHand(tempHand);
 				//---[END CODE BLOCK]---
@@ -707,98 +716,46 @@ public class EffectHandler
 	 * You may trash a copper to gain a card costing up to 2 more.
 	 * @param player
 	 * @param board
-	 * @throws InterruptedException
+	 * @throws InterruptedException 
 	 */
-	@SuppressWarnings("unchecked")
-	private void playMoneylender(Player player,Board board) throws InterruptedException
+	private void playMoneylender(Player player, Board board) throws InterruptedException
 	{
-		for(Card copper: player.getHand())
+		int index = player.getFirstIndexOf("Copper");
+		if (index == 0)
 		{
-			if(copper.getName().equals("Copper"))
+			Card card = player.getHand().get(index);
+			ArrayList<Card> copperList = new ArrayList<Card>();
+			copperList.add(card);
+			game.sendCardOption(player.getID(), "Trash a copper to gain +3 money.", 1, copperList, true);
+			int counter = 0; // timeout
+			while(true)
 			{
-				ArrayList<Card> copperList = new ArrayList<Card>();
-				copperList.add(copper);
-				game.sendCardOption(player.getID(), "Trash copper to gain card costing upto 2 more.", 1, copperList, true);
-
-				//---[BEGIN TIMEOUT BLOCK]---
-				ArrayList<Integer> response = new ArrayList<Integer>();
-				int counter = 0; // timeout
-				Object[] tempResponse = null;
-				while(true)
+				Object[] tempResponse = rSpace.getp(
+						new ActualField(player.getID()), 
+						new ActualField(ClientCommands.selectCard),
+						new FormalField(ArrayList.class));
+				if (tempResponse != null)
 				{
-					tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
-					if(tempResponse != null)
+					@SuppressWarnings("unchecked")
+					ArrayList<Integer> choices = (ArrayList<Integer>) tempResponse[2];
+					if (choices.get(0) == 0)
 					{
-						//---[BEGIN CODE BLOCK]---
-						response = (ArrayList<Integer>) tempResponse[2];				
-						//---[END CODE BLOCK]---
-						break;
+						player.addMoney(3);
+						player.trash(card);
+						board.trashCard(card);
+						game.sendMessageAll(player.getName() + "#" + player.getID() + " trashed " + card.getName() + " and gained 3 money!");
 					}
-					counter++;
-					if (counter > game.getWaitTime())
-					{
-						response.set(0, -1);//Break out of functionality once we time out
-						Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-						game.sendDisconnect(player.getID());
-						break;
-					}
-					Thread.sleep(10);
-				}
-				//---[END TIMEOUT BLOCK]---
-				if(response.get(0) == -1)
-				{
-					//break if we choose not to or timeout
 					break;
 				}
-				else
+				counter++;
+				if (counter > game.getWaitTime())
 				{
-					ArrayList<Card> choice = getChoice(bcard-> bcard.getCost() <= copper.getCost() + 2,board);
-					if(choice.size() == 0)
-					{
-						game.sendMessage("No cards meeting requirements available", player.getID());
-						break;
-					}
-					else 
-					{
-						game.sendCardOption(player.getID(), "Select the card you would like to gain", 1, choice, false);
-						//---[BEGIN TIMEOUT BLOCK]---
-						int counter2 = 0; // timeout
-						tempResponse = null;
-						while(true)
-						{
-							tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
-							if(tempResponse != null)
-							{
-								//---[BEGIN CODE BLOCK]---
-								response=(ArrayList<Integer>) tempResponse[2];
-								//We already checked that atleast one copy is available in the deck
-								Card cardToGain = board.canGain(choice.get(response.get(0)).getName());
-								player.discardCard(cardToGain);
-								board.cardRemove(cardToGain.getName());
-								player.gain(cardToGain);
-								ArrayList<Card> tempHand = player.getHand();
-								tempHand.remove(copper);
-								board.trashCard(copper);
-								player.trash(copper);
-								player.setHand(tempHand);
-								game.sendPlayerHand(player.getID(), player.getID());
-								//---[END CODE BLOCK]---
-								break;
-							}
-							counter2++;
-							if (counter2 > game.getWaitTime())
-							{
-								Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
-								game.sendDisconnect(player.getID());
-								break;
-							}
-							Thread.sleep(10);
-						}
-						//---[END TIMEOUT BLOCK]---
-						break;
-					}
+					Log.important(player.getName() + "#" + player.getID() + " has been timed out!");
+					game.sendDisconnect(player.getID());
+					break;
 				}
-			}
+				Thread.sleep(10);
+			}			
 		}
 	}
 	
@@ -809,16 +766,16 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	private void playWitch(Player player, Player[] players,Board board) throws InterruptedException
+	private void playWitch(Player player, Player[] players, Board board) throws InterruptedException
 	{
 		player.drawCard(2);
 		for(Player other: players)
 		{
-			if(other.equals(player))
+			if(other.equals(player) || !other.isConnected())
 			{
 				continue;
 			}
-			game.sendMessage("Gained a Curse from "+player.getName()+"'s card", other.getID());
+			game.sendMessageAll(other.getName() + " got a curse from " + player.getName());
 			Card curse = board.canGain("Curse");
 			if(curse != null)
 			{
@@ -828,6 +785,7 @@ public class EffectHandler
 			}
 		}
 	}
+	
 	/**
 	 * +1 Card +1 Action. 
 	 * <p>Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order.
@@ -1269,6 +1227,7 @@ public class EffectHandler
 				//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
 				Card selection = choice.get(response.get(0));
+				game.sendMessageAll(player.getName() + " gained a " + selection.getName());
 				board.cardRemove(selection.getName());
 				player.discardCard(selection);
 				player.gain(selection);
