@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.jspace.*;
 import cards.Card;
 import log.Log;
+import objects.ArrayListObject;
 import objects.ClientCommands;
 import objects.PlayerEffects;
 public class EffectHandler
@@ -186,7 +187,6 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private void playChapel(Player player, Board board) throws InterruptedException
 	{
 		game.sendCardOption(player.getID(), "Select up to 4 cards you would like to trash", 4, player.getHand(), true);
@@ -194,11 +194,12 @@ public class EffectHandler
 		int counter = 0; // timeout
 		Object[] tempResponse = null;
 		while(true) {
-			tempResponse=rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 			if(tempResponse != null)
 			{
 				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
+				
 				if(response.get(0) == -1)
 				{
 					game.sendMessage("No cards trashed", player.getID());
@@ -241,7 +242,6 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private void playBandit(Player player, Board board, Player[] players) throws InterruptedException
 	{
 		Card gold = board.canGain("Gold");
@@ -304,11 +304,11 @@ public class EffectHandler
 		{	
 			while(true)
 			{
-				tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					int pID = (int) tempResponse[0];
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					//Find out what player responded
 					for(Player rPlayer : expectedResponses)
 					{
@@ -359,7 +359,6 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private void playArtisan(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = getChoice(bcard -> bcard.getCost() <= 5 && board.canGain(bcard.getName()) != null, board);
@@ -373,11 +372,11 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true) 
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					c = choice.get(response.get(0));
 					board.cardRemove(c.getName());
 					tempHand.add(c);
@@ -391,11 +390,11 @@ public class EffectHandler
 					tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null) 
 						{
 							//---[BEGIN CODE BLOCK]---
-							response =(ArrayList<Integer>) tempResponse[2];
+							 response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							c = tempHand.get(response.get(0));
 							player.removeFromHand(c);
 							player.addCardDecktop(c);
@@ -435,7 +434,6 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private void playMine(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toCollection(ArrayList::new));
@@ -447,11 +445,11 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					if(response.get(0) != -1) {
 						Card c = choice.get(response.get(0));
 						choice = getChoice(bcard -> bcard.getCost() <= c.getCost() + 3 && Arrays.stream(bcard.getDisplayTypes()).anyMatch(type -> type.equals("Treasure")), board);
@@ -463,11 +461,11 @@ public class EffectHandler
 							tempResponse = null;
 							while(true)
 							{
-								tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+								tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 								if(tempResponse != null)
 								{
 									//---[BEGIN CODE BLOCK]---
-									response = (ArrayList<Integer>) tempResponse[2];
+									response = ((ArrayListObject) tempResponse[2]).getArrayList();
 									Card c2 = choice.get(response.get(0));
 									player.discardCard(c2);
 									board.cardRemove(c2.getName());
@@ -519,7 +517,6 @@ public class EffectHandler
 	 * @param player
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private void playLibrary(Player player) throws InterruptedException
 	{
 		ArrayList<Card> toBeDiscarded = new ArrayList<Card>();
@@ -540,11 +537,11 @@ public class EffectHandler
 					Object[] tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null)
 						{
 							//---[BEGIN CODE BLOCK]---
-							response = (ArrayList<Integer>) tempResponse[2];
+							response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							//---[END CODE BLOCK]---
 							break;
 						}
@@ -585,7 +582,7 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playRemodel(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> tempHand = player.getHand();
@@ -597,11 +594,11 @@ public class EffectHandler
 			int counter = 0; // timeout
 			while(true)
 			{
-				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					Card trashCard = tempHand.get(response.get(0));
 					board.trashCard(trashCard);
 					player.trash(trashCard);
@@ -612,11 +609,11 @@ public class EffectHandler
 					tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null)
 						{
 							//---[BEGIN CODE BLOCK]---
-							response = (ArrayList<Integer>) tempResponse[2];
+							response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							//Since we only ask for one choice, we always know where it is.
 							int reply = response.get(0);
 							Card c = choice.get(reply);
@@ -660,7 +657,7 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playPoacher(Player player, Board board) throws InterruptedException
 	{
 		player.drawCard(1);
@@ -680,11 +677,11 @@ public class EffectHandler
 		Object[] tempResponse = null;
 		while(true)
 		{
-			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 			if(tempResponse != null)
 			{
 				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // Response here
+				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 				ArrayList<Card> toDiscard = new ArrayList<Card>();
 				ArrayList<Card> tempHand = player.getHand();
 				for(int i: response)
@@ -733,11 +730,11 @@ public class EffectHandler
 				Object[] tempResponse = rSpace.getp(
 						new ActualField(player.getID()), 
 						new ActualField(ClientCommands.selectCard),
-						new FormalField(ArrayList.class));
+						new FormalField(ArrayListObject.class));
 				if (tempResponse != null)
 				{
-					@SuppressWarnings("unchecked")
-					ArrayList<Integer> choices = (ArrayList<Integer>) tempResponse[2];
+				
+					ArrayList<Integer> choices = ((ArrayListObject) tempResponse[2]).getArrayList();
 					if (choices.get(0) == 0)
 					{
 						player.addMoney(3);
@@ -792,7 +789,7 @@ public class EffectHandler
 	 * @param player
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playSentry(Player player) throws InterruptedException //This method is bound to have errors, remember this for testing
 	{ 
 		LinkedBlockingDeque<Card> tempDeck = player.getDeck();
@@ -810,11 +807,11 @@ public class EffectHandler
 		Object[] tempResponse = null;
 		while(true)
 		{
-			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 			if(tempResponse != null)
 			{
 				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2]; // response here
+				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 				List<Card> choice2 = choice;
 				if(response.get(0) != -1)
 				{
@@ -832,11 +829,11 @@ public class EffectHandler
 					tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null)
 						{
 							//---[BEGIN CODE BLOCK]---
-							response = (ArrayList<Integer>) tempResponse[2]; //response here
+							response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							List<Card> choice3 = choice2;
 							if(response.get(0)!=-1)
 							{
@@ -854,11 +851,11 @@ public class EffectHandler
 								tempResponse = null;
 								while(true)
 								{
-									tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+									tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 									if(tempResponse != null)
 									{
 										//---[BEGIN CODE BLOCK]---
-										response = (ArrayList<Integer>) tempResponse[2]; //response here		
+										response = ((ArrayListObject) tempResponse[2]).getArrayList();	
 										for(int i: response)
 										{
 											tempDeck.addFirst(choice3.get(i));
@@ -971,7 +968,7 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playThroneRoom(Player player, Board board, Player[] players) throws InterruptedException
 	{
 		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card -> Arrays.stream(card.getDisplayTypes()).filter(s -> s.equals("Action")).findAny().isPresent()).collect(Collectors.toCollection(ArrayList::new));
@@ -983,11 +980,11 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					//Response form networking goes here.
 					int selected = response.get(0);
 					if(selected == -1)
@@ -1029,7 +1026,7 @@ public class EffectHandler
 	 * @param player
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playCellar(Player player) throws InterruptedException
 	{
 		player.addActions(1);
@@ -1041,11 +1038,11 @@ public class EffectHandler
 			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					ArrayList<Card> responseToCard = new ArrayList<Card>();
 					ArrayList<Card> tempHand = player.getHand();
 					int i = response.get(0);
@@ -1091,7 +1088,7 @@ public class EffectHandler
 	 * @param player
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playHarbinger(Player player) throws InterruptedException
 	{
 		player.drawCard(1);
@@ -1104,11 +1101,11 @@ public class EffectHandler
 			int counter = 0; // timeout
 			while(true)
 			{
-				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 				if(tempResponse != null) 
 				{
 					//---[BEGIN CODE BLOCK]---
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					int count = response.get(0);
 					if (count >= 0)
 					{
@@ -1137,7 +1134,7 @@ public class EffectHandler
 	 * @param player
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playVassal(Player player) throws InterruptedException
 	{
 		boolean discard = true;
@@ -1158,11 +1155,11 @@ public class EffectHandler
 					Object[] tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null) 
 						{
 							//---[BEGIN CODE BLOCK]---
-							ArrayList<Integer>response = (ArrayList<Integer>) tempResponse[2];
+							ArrayList<Integer>response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							if(response.get(0) != -1)
 							{
 								player.playCard(topCard, 0);
@@ -1211,7 +1208,7 @@ public class EffectHandler
 	 * @param board
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playWorkshop(Player player, Board board) throws InterruptedException
 	{
 		ArrayList<Card> choice = getChoice(c-> c.getCost() <= 4,board);
@@ -1221,11 +1218,11 @@ public class EffectHandler
 		Object[] tempResponse = null;
 		while(true)
 		{
-			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+			tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 			if(tempResponse != null)
 			{
 				//---[BEGIN CODE BLOCK]---
-				ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 				Card selection = choice.get(response.get(0));
 				game.sendMessageAll(player.getName() + " gained a " + selection.getName());
 				board.cardRemove(selection.getName());
@@ -1255,7 +1252,7 @@ public class EffectHandler
 	 * @param players
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
+
 	private void playBureaucrat(Player player,Board board, Player[] players) throws InterruptedException
 	{
 		ArrayList<Player> expectedResponses = new ArrayList<Player>();
@@ -1310,12 +1307,12 @@ public class EffectHandler
 				tempResponse = rSpace.getp(
 						new FormalField(Integer.class), 
 						new ActualField(ClientCommands.selectCard),
-						new FormalField(ArrayList.class));
+						new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					Log.important("No time out");
 					int pID = (int) tempResponse[0];
-					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					//Find out what player responded
 					for(Player rPlayer : expectedResponses)
 					{
@@ -1340,6 +1337,7 @@ public class EffectHandler
 				counter++;
 				if (counter > game.getWaitTime())
 				{
+					@SuppressWarnings("unchecked")
 					ArrayList<Player> expec = (ArrayList<Player>) expectedResponses.clone();
 					for(Player dPlayer : expec)  
 					{
@@ -1355,7 +1353,7 @@ public class EffectHandler
 		//---[END TIMEOUT BLOCK]---
 
 	}
-	@SuppressWarnings("unchecked")
+
 	private void playMilitia(Player player, Player[] players) throws InterruptedException
 	{
 		ArrayList<Player> expectedResponses			= new ArrayList<Player>();
@@ -1388,11 +1386,11 @@ public class EffectHandler
 			{
 				tempResponse = rSpace.getp(new FormalField(Integer.class),
 						new ActualField(ClientCommands.selectCard),
-						new FormalField(ArrayList.class));
+						new FormalField(ArrayListObject.class));
 				if(tempResponse != null)
 				{
 					int pID = (int) tempResponse[0];
-					ArrayList<Integer> response =(ArrayList<Integer>) tempResponse[2];
+					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 					//Find out what player responded
 					for(Player rPlayer : expectedResponses)
 					{
@@ -1420,7 +1418,8 @@ public class EffectHandler
 				Log.important("" + game.getWaitTime());
 				if (counter > game.getWaitTime())
 				{
-					ArrayList<Player> playerList = (ArrayList<Player>) expectedResponses.clone();
+					@SuppressWarnings("unchecked")
+					ArrayList<Player> playerList = (ArrayList<Player>) (expectedResponses.clone());
 					for(Player dPlayer : playerList) {
 						expectedResponses.remove(dPlayer);
 						Log.important(dPlayer.getName() + "#" + dPlayer.getID() + " has been timed out!");
@@ -1452,7 +1451,6 @@ public class EffectHandler
 	 * @return
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("unchecked")
 	private ArrayList<Player> findCounterPlays(Player player, Card card, Board board, Player[] players) throws InterruptedException
 	{
 		boolean counterPlay;
@@ -1476,11 +1474,11 @@ public class EffectHandler
 					Object[] tempResponse = null;
 					while(true)
 					{
-						tempResponse = rSpace.getp(new ActualField(p.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						tempResponse = rSpace.getp(new ActualField(p.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayListObject.class));
 						if(tempResponse != null)
 						{
 							//---[BEGIN CODE BLOCK]---
-							ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
+							ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
 							if(response.get(0) != -1)
 							{
 								counterPlay = true;

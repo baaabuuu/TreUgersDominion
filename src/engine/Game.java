@@ -427,7 +427,7 @@ public class Game
 								{
 									board.cardRemove(cardName);
 									sendMessageAll(currPlayer.getName() + " bought " + cardName + " copies left: " + board.getCopiesLeft(cardName));
-									break;
+									return false;
 								}
 								else
 								{
