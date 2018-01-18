@@ -51,7 +51,7 @@ public class ControlCenter extends Thread {
 						Log.log("Finding string for the bought card");
 						secondInput = clientSpace.get(new ActualField(id), new FormalField(String.class));
 						
-						Log.log("Found string: " + (String) secondInput[1] + " sending to server Space");
+						Log.log("Found string: \"" + (String) secondInput[1] + "\". Sending to server Space");
 						
 						safeSpace.put(id, cmd, (String) secondInput[1]);
 						break;
@@ -60,7 +60,7 @@ public class ControlCenter extends Thread {
 					Log.log("Finding int for the played card.");
 					secondInput = clientSpace.get(new ActualField(id), new FormalField(Integer.class));
 					
-					Log.log("Found int: " + (Integer) secondInput[1] + " sending to server Space");
+					Log.log("Found int: \"" + (Integer) secondInput[1] + "\". Sending to server Space");
 					
 					safeSpace.put(id, cmd, (Integer) secondInput[1]);
 					break;
@@ -70,7 +70,7 @@ public class ControlCenter extends Thread {
 						Log.log("Finding arraylist for the played card.");
 						secondInput = clientSpace.get(new ActualField(id), new FormalField(ArrayList.class));
 					
-						Log.log("Found int: " + ((ArrayList<Integer>) secondInput[1]).toString() + " sending to server Space");
+						Log.log("Found int: \"" + ((ArrayList<Integer>) secondInput[1]).toString() + "\" sending to server Space");
 						
 						safeSpace.put(id, cmd, (ArrayList<Integer>) secondInput[1]);
 						break;
@@ -80,7 +80,7 @@ public class ControlCenter extends Thread {
 					safeSpace.put(id, cmd);
 					break;
 				default:
-						Log.log("Unknown command. Ignoring");
+						Log.important("Unknown command. Ignoring");
 						break;
 				}
 			} catch (InterruptedException e) {
