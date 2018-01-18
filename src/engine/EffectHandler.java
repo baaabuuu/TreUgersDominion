@@ -271,14 +271,15 @@ public class EffectHandler
 			}
 			drawnToString.substring(0, drawnToString.length() - 2);
 
-			game.sendMessageAll(p.getName() + " has revealed " + drawnToString.toString());
+			game.sendMessageAll(p.getName() + " reveals " + drawnToString.toString());
 			//Remove cards from hand
 			ArrayList<Card> tempCards = new ArrayList<Card>();
 			//1 due to inherent size of list objects
-			for(int i = 1; i <= drawn.length; i++)
+			for(int i = 0; i < drawn.length; i++)
 			{
-				tempCards.add(p.getHand().get(p.getHandSize() - i));
-				p.removeFromHand(p.getHand().get(p.getHandSize() - i));
+				int id = p.getFirstIndexOf(drawn[i]);
+				tempCards.add(p.getHand().get(id));
+				p.removeFromHand(p.getHand().get(id));
 			}
 
 			//See if any cards in hand are treasures - but not coppers
@@ -288,8 +289,13 @@ public class EffectHandler
 			for (Card temp : tempCards)
 			{
 				if (!treasures.contains(temp))
+				{
 					p.discardCard(temp);
+					game.sendMessageAll(p.getName() + " discared " + temp.getName());
+				}
+					
 			}
+			Log.important("Size: " + treasures.size());
 			if(treasures.size() == 2)
 			{
 				//If requirements met, trash one, discard the other (if there is another)
@@ -303,6 +309,7 @@ public class EffectHandler
 				{
 					player.trash(treasures.get(0));
 					board.trashCard(treasures.get(0));
+					game.sendMessageAll(p.getName() + " trashed " + treasures.get(0).getName());
 				}
 			}
 		}
@@ -327,6 +334,7 @@ public class EffectHandler
 							Card selection = selectedCards.get(cardIndex).get(response.get(0));
 							board.trashCard(selection);
 							rPlayer.trash(selection);
+							game.sendMessageAll(rPlayer.getName() + " trashed " + selection.getName());
 							selectedCards.get(cardIndex).remove(selection);
 							game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + selection.getName() + "!");
 							Card nullCheck = selectedCards.get(cardIndex).get(0);
@@ -964,7 +972,7 @@ public class EffectHandler
 		player.addBuys(1);		
 		for(Player other: players)
 		{
-			if(other.equals(player))
+			if(other.equals(player) || !other.isConnected())
 			{
 				continue;
 			}

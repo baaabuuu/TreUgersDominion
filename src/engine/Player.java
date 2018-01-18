@@ -390,6 +390,12 @@ public class Player
 			{
 				if (card.getTypes()[i].equals("victory"))
 				{
+					Log.important("");
+					Log.important("");
+					Log.important("");
+					Log.important(card.getName());
+					Log.important("");
+					Log.important("");
 					victoryPoints += card.getVP();
 				}
 				else if (card.getTypes()[i].equals("victoryEffect"))

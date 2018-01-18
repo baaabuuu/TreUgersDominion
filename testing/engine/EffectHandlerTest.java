@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import cards.Card;
 import objects.ArrayListObject;
@@ -833,28 +835,184 @@ public class EffectHandlerTest
 	@Test
 	public void playBandit() throws InterruptedException
 	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		
 		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
-		deck.add(cardMock);
+		deck.add(cardMock2);
 		deck.add(cardMock2);
 		
+		String[] displayTypes = {"Treasure"};
+		String[] draw = {"Siver", "Silver"};
+		
+		ArrayList<Card> playerHand = new ArrayList<Card>();
+		playerHand.add(cardMock2);
+		playerHand.add(cardMock2);
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		when(playerMock2.getID()).thenReturn(1);
+		
+		Object[] responseMock = {playerMock2.getID(), ClientCommands.selectCard, arrayListObjectMock};
+
 		when(boardMock.canGain(anyString())).thenReturn(cardMock);
 		when(playerMock2.getDeck()).thenReturn(deck);
-		when(cardMock.getName()).thenReturn("Copper");
 		when(cardMock2.getName()).thenReturn("Silver");
-		
-		
-		
-		
-		String[] displayTypes = {"Treasure"};		
-		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
+		when(playerMock2.getHandSize()).thenReturn(2);
+		when(playerMock2.getHand()).thenReturn(playerHand);
 		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
 		when(spaceMock.getp(
-					new ActualField(playerMock1.getID()),
+					new FormalField(Integer.class),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayListObject.class))).thenReturn(null);
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
-		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
 	}
+	
+	@Test
+	public void playBanditDisconnect() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		when(playerMock2.isConnected()).thenReturn(false);
+		
+		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playBanditTimeout() throws InterruptedException
+	{
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		deck.add(cardMock2);
+		
+		String[] displayTypes = {"Treasure"};
+		String[] draw = {"Siver", "Silver"};
+		
+		ArrayList<Card> playerHand = new ArrayList<Card>();
+		playerHand.add(cardMock2);
+		playerHand.add(cardMock2);
+
+		when(boardMock.canGain(anyString())).thenReturn(cardMock);
+		when(playerMock2.getDeck()).thenReturn(deck);
+		when(cardMock2.getName()).thenReturn("Silver");
+		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
+		when(playerMock2.getHandSize()).thenReturn(2);
+		when(playerMock2.getHand()).thenReturn(playerHand);
+		
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		when(spaceMock.getp(
+				new FormalField(Integer.class),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playBanditNone() throws InterruptedException
+	{
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		deck.add(cardMock2);
+		
+		String[] displayTypes = {"NOPE"};
+		String[] draw = {"Siver", "Silver"};
+		
+		ArrayList<Card> playerHand = new ArrayList<Card>();
+		playerHand.add(cardMock2);
+		playerHand.add(cardMock2);
+
+		when(boardMock.canGain(anyString())).thenReturn(cardMock);
+		when(playerMock2.getDeck()).thenReturn(deck);
+		when(cardMock2.getName()).thenReturn("Silver");
+		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
+		when(playerMock2.getHandSize()).thenReturn(2);
+		when(playerMock2.getHand()).thenReturn(playerHand);
+		
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		
+		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playBanditSilverCopper() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock2);
+		deck.add(cardMock);
+		
+		String[] displayTypes = {"Treasure"};
+		String[] draw = {"Silver", "Copper"};
+		
+		
+		
+		Object[] responseMock = {playerMock2.getID(), ClientCommands.selectCard, arrayListObjectMock};
+
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		when(boardMock.canGain(anyString())).thenReturn(cardMock);
+		when(playerMock2.getDeck()).thenReturn(deck);
+		when(cardMock2.getName()).thenReturn("Silver");
+		when(cardMock.getName()).thenReturn("Copper");
+		when(playerMock2.drawCard(anyInt())).thenReturn(draw);
+		when(playerMock2.getHandSize()).thenReturn(2);
+		when(playerMock2.getHand()).thenAnswer( new Answer<Object>()
+		{
+			private int count = 0;
+			ArrayList<Card> playerHand = new ArrayList<Card>();
+			
+			@Override
+			public Object answer(InvocationOnMock arg0) throws Throwable
+			{
+				count++;
+				if (count == 1)
+				{
+					playerHand.add(cardMock2);
+					playerHand.add(cardMock);
+					return playerHand;
+				}
+				playerHand.add(cardMock);
+				playerHand.add(cardMock2);
+				return playerHand;
+			}
+		});
+		
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		when(spaceMock.getp(
+					new FormalField(Integer.class),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
+		
+		handler.triggerEffect(16, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playCouncilroom() throws InterruptedException
+	{
+		handler.triggerEffect(17, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playFestival() throws InterruptedException
+	{
+		handler.triggerEffect(18, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playLaboratory() throws InterruptedException
+	{
+		handler.triggerEffect(19, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playMarket() throws InterruptedException
+	{
+		handler.triggerEffect(21, playerMock1, cardMock, boardMock, players);
+	}
+	
+
 	
 	@Test
 	public void playWitch() throws InterruptedException
