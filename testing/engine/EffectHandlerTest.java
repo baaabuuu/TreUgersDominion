@@ -40,7 +40,7 @@ public class EffectHandlerTest
 	Board boardMock;
 	@Mock
 	Space spaceMock;
-	@Mock
+
 	ArrayListObject arrayListObjectMock;
 	
 	Player[] players = new Player[2];
@@ -111,7 +111,7 @@ public class EffectHandlerTest
 		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(responseMock);
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
 		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
 	}
@@ -133,7 +133,7 @@ public class EffectHandlerTest
 		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(responseMock);
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
 		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
 	}
@@ -148,7 +148,7 @@ public class EffectHandlerTest
 		when(playerMock1.getID()).thenReturn(1);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(null);
+					new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -189,7 +189,7 @@ public class EffectHandlerTest
 		when(playerMock2.isConnected()).thenReturn(true);
 		when(spaceMock.getp(new ActualField(playerMock2.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(0, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -213,7 +213,7 @@ public class EffectHandlerTest
 		when(playerMock2.isConnected()).thenReturn(true);
 		when(spaceMock.getp(new ActualField(playerMock2.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(response);
+				new FormalField(ArrayListObject.class))).thenReturn(response);
 		handler.triggerEffect(0, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -237,7 +237,7 @@ public class EffectHandlerTest
 		when(playerMock2.isConnected()).thenReturn(true);
 		when(spaceMock.getp(new ActualField(playerMock2.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(response);
+				new FormalField(ArrayListObject.class))).thenReturn(response);
 		handler.triggerEffect(0, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -262,7 +262,7 @@ public class EffectHandlerTest
 		when(playerMock1.getDiscard()).thenReturn(discardPile);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(responseMock);		
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);		
 		handler.triggerEffect(2, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -279,7 +279,7 @@ public class EffectHandlerTest
 		when(playerMock1.getDiscard()).thenReturn(discardPile);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(responseMock);		
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);		
 		handler.triggerEffect(4, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -318,7 +318,7 @@ public class EffectHandlerTest
 		when(cardMock.getDisplayTypes()).thenReturn(types);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -343,7 +343,7 @@ public class EffectHandlerTest
 		when(cardMock.getDisplayTypes()).thenReturn(types);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -364,7 +364,7 @@ public class EffectHandlerTest
 		when(cardMock.getDisplayTypes()).thenReturn(types);
 		when(spaceMock.getp(new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -421,7 +421,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);	
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);	
 		handler.triggerEffect(8, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -440,7 +440,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(8, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -466,7 +466,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new FormalField(Integer.class),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 				
 		handler.triggerEffect(9, playerMock1, cardMock, boardMock, players);
 	}
@@ -488,7 +488,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new FormalField(Integer.class),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 				
 		handler.triggerEffect(9, playerMock1, cardMock, boardMock, players);
 	}
@@ -528,7 +528,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new FormalField(Integer.class),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 				
 		handler.triggerEffect(9, playerMock1, cardMock, boardMock, players);
 	}
@@ -566,7 +566,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new FormalField(Integer.class),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
 		handler.triggerEffect(11, playerMock1, cardMock, boardMock, players);
 	}
@@ -584,7 +584,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new FormalField(Integer.class),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		
 		handler.triggerEffect(11, playerMock1, cardMock, boardMock, players);
 	}
@@ -625,7 +625,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		handler.triggerEffect(12, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -645,7 +645,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		handler.triggerEffect(12, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -674,7 +674,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(12, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -698,7 +698,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(responseMock);
+				new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		handler.triggerEffect(13, playerMock1, cardMock, boardMock, players);
 	}
 	
@@ -718,31 +718,8 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 				new ActualField(playerMock1.getID()),
 				new ActualField(ClientCommands.selectCard),
-				new FormalField(ArrayList.class))).thenReturn(null);
+				new FormalField(ArrayListObject.class))).thenReturn(null);
 		handler.triggerEffect(13, playerMock1, cardMock, boardMock, players);
-	}
-	
-	
-	
-	@Test
-	public void playWitch() throws InterruptedException
-	{
-		when(boardMock.canGain(anyString())).thenReturn(cardMock2);
-		handler.triggerEffect(14, playerMock1, cardMock, boardMock, players);
-	}
-	
-	@Test
-	public void playWitchDisconnected() throws InterruptedException
-	{
-		when(playerMock2.isConnected()).thenReturn(false);
-		handler.triggerEffect(14, playerMock1, cardMock, boardMock, players);
-	}
-	
-	@Test
-	public void playWitchNoMore() throws InterruptedException
-	{
-		when(boardMock.canGain(anyString())).thenReturn(null);
-		handler.triggerEffect(14, playerMock1, cardMock, boardMock, players);
 	}
 	
 	@Test
@@ -766,7 +743,7 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 					new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(responseMock);
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
 		
 		handler.triggerEffect(14, playerMock1, cardMock, boardMock, players);
 	}
@@ -787,9 +764,116 @@ public class EffectHandlerTest
 		when(spaceMock.getp(
 					new ActualField(playerMock1.getID()),
 					new ActualField(ClientCommands.selectCard),
-					new FormalField(ArrayList.class))).thenReturn(null);
+					new FormalField(ArrayListObject.class))).thenReturn(null);
 		
 		handler.triggerEffect(14, playerMock1, cardMock, boardMock, players);
 	}
-
+	
+	@Test
+	public void playThroneroom() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(0);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		
+		int[] effectCodes = {0};
+		String[] displayTypes = {"Action"};		
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, arrayListObjectMock};
+		
+		when(cardMock.getEffectCode()).thenReturn(effectCodes);
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock.getName()).thenReturn("Card Name");
+		when(arrayListObjectMock.getArrayList()).thenReturn(selection);
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(spaceMock.getp(
+					new ActualField(playerMock1.getID()),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(responseMock);
+		
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playThroneroomnoAction() throws InterruptedException
+	{
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		
+		int[] effectCodes = {0};
+		String[] displayTypes = {"notanAction"};
+		when(cardMock.getEffectCode()).thenReturn(effectCodes);
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock.getName()).thenReturn("Card Name");
+		when(playerMock1.getHand()).thenReturn(hand);
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playThroneroomTimeOut() throws InterruptedException
+	{
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		
+		int[] effectCodes = {0};
+		String[] displayTypes = {"Action"};		
+		
+		when(cardMock.getEffectCode()).thenReturn(effectCodes);
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock.getName()).thenReturn("Card Name");
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(spaceMock.getp(
+					new ActualField(playerMock1.getID()),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playBandit() throws InterruptedException
+	{
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock);
+		deck.add(cardMock2);
+		
+		when(boardMock.canGain(anyString())).thenReturn(cardMock);
+		when(playerMock2.getDeck()).thenReturn(deck);
+		when(cardMock.getName()).thenReturn("Copper");
+		when(cardMock2.getName()).thenReturn("Silver");
+		
+		
+		
+		
+		String[] displayTypes = {"Treasure"};		
+		when(cardMock.getDisplayTypes()).thenReturn(displayTypes);
+		when(cardMock2.getDisplayTypes()).thenReturn(displayTypes);
+		when(spaceMock.getp(
+					new ActualField(playerMock1.getID()),
+					new ActualField(ClientCommands.selectCard),
+					new FormalField(ArrayListObject.class))).thenReturn(null);
+		
+		handler.triggerEffect(15, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playWitch() throws InterruptedException
+	{
+		when(boardMock.canGain(anyString())).thenReturn(cardMock2);
+		handler.triggerEffect(24, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playWitchDisconnected() throws InterruptedException
+	{
+		when(playerMock2.isConnected()).thenReturn(false);
+		handler.triggerEffect(24, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playWitchNoMore() throws InterruptedException
+	{
+		when(boardMock.canGain(anyString())).thenReturn(null);
+		handler.triggerEffect(24, playerMock1, cardMock, boardMock, players);
+	}
 }
