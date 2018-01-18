@@ -1181,7 +1181,7 @@ public class EffectHandler
 		//Draw card
 		player.drawCard(1);
 		//Find card in hand
-		Card topCard = player.getHand().get(player.getHandSize()-1);
+		Card topCard = player.getHand().get(player.getHandSize() - 1);
 		//Check if it is an action card
 		for(String type: topCard.getDisplayTypes())
 		{

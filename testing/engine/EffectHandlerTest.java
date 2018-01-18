@@ -288,11 +288,14 @@ public class EffectHandlerTest
 	{
 		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
 		deck.add(cardMock);
-		when(playerMock1.getDeck()).thenReturn(deck);
 		String[] cardsDrawn = {"dummy"};
+		String[] types = {"Action"};
 		playerMock1.setDeck(deck);
-		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
 		
+		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
+		when(playerMock1.getDeck()).thenReturn(deck);
+		
+
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
 	}
 
