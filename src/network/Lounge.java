@@ -103,8 +103,8 @@ public class Lounge {
 			Log.log("Waiting for new Message");
 			//Reads command
 			Object[] firstInput = lounge.get(new FormalField(Integer.class), new FormalField(ClientCommands.class));
-			cmd = (ClientCommands) firstInput[1];
 			playerID = (int) firstInput[0];
+			cmd = (ClientCommands) firstInput[1];
 			
 			Log.log("Message recived: \"" + cmd.toString() + "\", from: " + playerID);
 			
