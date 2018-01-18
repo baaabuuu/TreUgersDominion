@@ -1,5 +1,8 @@
 package network;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.jspace.Space;
 import org.jspace.Tuple;
 
@@ -22,7 +25,12 @@ public class Writer {
 	
 	
 	public Writer(Space clientSpace, String[] players){
-	
+		try {
+			this.host = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.clientSpace = clientSpace;
 		this.players = players;
 	}

@@ -2,6 +2,8 @@ package network;
 
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -51,7 +53,13 @@ public class Lounge {
 	
 	public void Start() throws InterruptedException{
 		Log.log("Starting server");
-		
+		try {
+			this.host = InetAddress.getLocalHost().getHostAddress();
+			this.uri = "tcp://"+ host + ":" + port + "/?keep";
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//Setup the Repository
 		SpaceRepository repository = new SpaceRepository();
 		repository.addGate(uri);

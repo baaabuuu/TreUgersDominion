@@ -1142,10 +1142,9 @@ public class EffectHandler
 			game.sendCardOption(player.getID(), "You may select a card to put on top of your deck.", 1, choice, true);
 			//---[BEGIN TIMEOUT BLOCK]---
 			int counter = 0; // timeout
-			Object[] tempResponse = null;
 			while(true)
 			{
-				tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+				Object[] tempResponse = rSpace.getp(new ActualField(player.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
 				if(tempResponse != null) 
 				{
 					//---[BEGIN CODE BLOCK]---
