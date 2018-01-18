@@ -40,7 +40,7 @@ public class Game
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 4;
+	private final int waitTime = 4000000;
 	
 	/**
 	 * Returns how long time a time is allowed.
@@ -335,6 +335,7 @@ public class Game
 			Player player = players[playerID];
 			PlayerHand hand = new PlayerHand(players[playerID].getHand());
 			TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
+			Log.important("PLAYER MONEY" + player.getMoney());
 			Log.log("Transmitting takeTurn to " + player.getName() + "#" + playerID);
 			writer.sendMessage(new Tuple(playerID, ServerCommands.takeTurn, boardState, hand, values));
 		}
