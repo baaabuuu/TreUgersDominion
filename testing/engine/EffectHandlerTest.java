@@ -62,6 +62,8 @@ public class EffectHandlerTest
 	{
 		when(playerMock1.getHandSize()).thenReturn(0);
 		handler.triggerEffect(1, playerMock1, cardMock, boardMock, players);
+		int actionCount = playerMock1.getActions();
+		assertEquals("Action count is now 1", 1, actionCount);
 	}
 	
 	

@@ -412,8 +412,7 @@ public class Game
 					{
 						Integer playerNum = (Integer) command[0];
 						String cardName = (String) command[2];
-						Log.log("Recieved buy command from " + players[playerNum] + " for the card " + cardName);
-
+						Log.log("Recieved buy command from " + players[playerNum].getName() + " for the card " + cardName);
 						if (playerNum == turn)
 						{
 							Card buying = board.canGain(cardName);
