@@ -346,7 +346,7 @@ public class ClientActions {
 		
 	}
 	public void serverMessage(String message) throws InterruptedException {
-		userInterface.eventInput("Server says: " + message);
+		userInterface.eventInput(message);
 	}
 	private void setTurnValues(TurnValues values) {
 		userInterface.newTurnValues(values);
