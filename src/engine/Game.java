@@ -40,7 +40,7 @@ public class Game
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
 	 */
-	private final int waitTime = 600000;
+	private final int waitTime = 4;
 	
 	/**
 	 * Returns how long time a time is allowed.

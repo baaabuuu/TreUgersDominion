@@ -15,7 +15,8 @@ import objects.PlayerEffects;
  * A simple player object, used to handle the players in the game.
  * @author s164166
  */
-public class Player {
+public class Player 
+{
 	private int money, actions, buys, victoryPoints;
 	//Insertion in the back and in the front in O(1) time due to linkedBlockingQueue
 	private LinkedBlockingDeque <Card> deck = new LinkedBlockingDeque<Card>();
@@ -219,9 +220,8 @@ public class Player {
 			{
 				if (types.contains("Treasure") && phase == 1)
 				{
-					boolean result = removeFromHand(card);
+					removeFromHand(card);
 					putIntoPlay(card);
-					Log.important("result" + result + " play area size: " + secretStack.size());
 					addMoney(card.getMoney());
 					Log.log(getName() + " played the treasure card " + card.getName());
 					return true;
@@ -243,6 +243,7 @@ public class Player {
 			actions--;
 			removeFromHand(card);
 			putIntoPlay(card);
+			addMoney(card.getMoney());
 			Log.log(getName() + " played the action card " + card.getName());
 			return true;
 		}
@@ -251,6 +252,8 @@ public class Player {
 			if (types.contains("Treasure") && phase == 1)
 			{
 				addMoney(card.getMoney());
+				removeFromHand(card);
+				putIntoPlay(card);
 				Log.log(getName() + " played the treasure card " + card.getName());
 				return true;
 			}
@@ -525,6 +528,7 @@ public class Player {
 	 */
 	public int getHandSize()
 	{
+		Log.important("hand size: " + hand.size());
 		return hand.size();
 	}
 	

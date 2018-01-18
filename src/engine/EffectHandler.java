@@ -16,8 +16,8 @@ public class EffectHandler
 	private Game game;
 	private Space rSpace;
 	public EffectHandler(Game game) {
-		this.game=game;
-		this.rSpace=game.getSpace();
+		this.game = game;
+		this.rSpace = game.getSpace();
 	}
 
 
@@ -44,25 +44,24 @@ public class EffectHandler
 			}
 		}
 		//If it is an attack, can someone use a reaction card?
-		Player[] affectedPlayers=null;
+		Player[] affectedPlayers = players;
 		for(String type: card.getTypes())
 		{
 			if(type.equals("attack"))
 			{
-				affectedPlayers = (Player[]) findCounterPlays(player, card, board, players).toArray();
-			}
-			else 
-			{
-				affectedPlayers = players;
+				ArrayList<Player> target = findCounterPlays(player, card, board, players);
+				affectedPlayers = target.toArray(new Player[target.size()]);
+				break;
 			}
 		}
 
-		Log.important("Effect code: "+ effectCode +" was called by "+ card.getName() +" played by "+ player.getName() +".");
+		Log.important("Effect code: " + effectCode + " was called by " + card.getName() +
+				" played by " + player.getName() + ".");
 		switch(effectCode)
 		{
 		case 0: //Do nothing
 			break;
-		case 1: //Cellar - +1 Action\n Discard any number of Cards, then draw that many.
+		case 1: //Cellar - +1 Action Discard any number of Cards, then draw that many.
 			playCellar(player); 
 			break;
 			//Draw 2 cards
@@ -74,7 +73,7 @@ public class EffectHandler
 		case 4: //Harbinger Look through your discard pile. You may put a card from it onto your deck.
 			playHarbinger(player);
 			break;
-		case 5: //Merchant -Next time a silver is played, gain +1 temp monies
+		case 5: //Merchant - Next time a silver is played, gain +1 temp monies
 			playMerchant(player);
 			break;
 		case 6: //Vassal - +2 coin\nDiscard the top card of your deck. If it's an Action card, you may play it.
@@ -143,7 +142,7 @@ public class EffectHandler
 			playSmithy(player);
 			break;
 		default:
-			Log.important("Invalid effect code: "+effectCode);
+			Log.important("Invalid effect code: " + effectCode);
 			break;//Invalid effect error here;
 
 		}
@@ -1082,9 +1081,9 @@ public class EffectHandler
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
 					ArrayList<Card> responseToCard = new ArrayList<Card>();
-					ArrayList<Card> tempHand =player.getHand();
-					int i = response.size();
-					if(i > 0)
+					ArrayList<Card> tempHand = player.getHand();
+					int i = response.get(0);
+					if(i >= 0)
 					{
 						for(int index : response)
 						{
@@ -1134,7 +1133,7 @@ public class EffectHandler
 		if(player.getDiscardSize() != 0)
 		{
 			ArrayList<Card> choice	=	new ArrayList<Card>(player.getDiscard());
-			game.sendCardOption(player.getID(), "Select a card to put on top of your deck. (if any)", 1, choice, true);
+			game.sendCardOption(player.getID(), "You may select a card to put on top of your deck.", 1, choice, true);
 			//---[BEGIN TIMEOUT BLOCK]---
 			int counter = 0; // timeout
 			Object[] tempResponse = null;
@@ -1145,10 +1144,13 @@ public class EffectHandler
 				{
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-					Card selection = choice.get(response.get(0));
-					choice.remove(selection);
-					player.addCardDecktop(selection);
-					player.setDiscard(new LinkedBlockingDeque<Card>(choice));
+					int count = response.get(0);
+					if (count >= 0)
+					{
+						Card selection = choice.get(response.get(0));
+						player.addCardDecktop(selection);
+						player.getDiscard().remove(selection);
+					}
 					//---[END CODE BLOCK]---
 					break;
 				}
@@ -1166,13 +1168,14 @@ public class EffectHandler
 	}
 
 	/**
-	 * Discard the top card of your deck, if its an action card play it.
+	 * +2 money, Discard the top card of your deck, if its an action card play it.
 	 * @param player
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
 	private void playVassal(Player player) throws InterruptedException
 	{
+		player.addMoney(2);
 		//Assume card drawn is not action card
 		boolean discard = true;
 		//Draw card
@@ -1472,26 +1475,31 @@ public class EffectHandler
 		for(Player p: players)
 		{
 			counterPlay = false;
-			if(!player.isConnected())
-				break;
+			if(!p.isConnected())
+				continue;
 			for(Card c : p.getHand())
 			{
 				//Reaction card handling
 				switch(c.getName())
 				{
-				case "Moat": 
-					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by"+ card.getName()+"?", 1, (List<Card>) c, true);
+				case "Moat":
+					ArrayList<Card> list = new ArrayList<Card>();
+					list.add(c);
+					game.sendCardOption(p.getID(), "Do you wish to reveal your Moat to be unaffected by" + card.getName() + "?", 1, list, true);
 					//---[BEGIN TIMEOUT BLOCK]---
 					int counter = 0; // timeout
 					Object[] tempResponse = null;
-					while(true) {
-						tempResponse=rSpace.getp(new ActualField(p.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
-						if(tempResponse != null) {
+					while(true)
+					{
+						tempResponse = rSpace.getp(new ActualField(p.getID()), new ActualField(ClientCommands.selectCard), new FormalField(ArrayList.class));
+						if(tempResponse != null)
+						{
 							//---[BEGIN CODE BLOCK]---
 							ArrayList<Integer> response = (ArrayList<Integer>) tempResponse[2];
-							if(response.get(0) != -1) {
+							if(response.get(0) != -1)
+							{
 								counterPlay = true;
-								game.sendMessageAll(p.getName()+" has revealed a Moat");
+								game.sendMessageAll(p.getName() + " has revealed a Moat");
 							}
 							//---[END CODE BLOCK]---
 							break;

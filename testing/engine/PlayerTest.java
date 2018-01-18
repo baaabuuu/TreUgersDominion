@@ -258,9 +258,12 @@ public class PlayerTest
 	    when(actionMock.getDisplayTypes()).thenReturn(bc);
 		Player player = new Player(0);
 		player.addActions(1);
+		player.getHand().add(actionMock);
+		assertEquals("Hand size = 1", 1, player.getHandSize());
 		assertEquals("Action size = 1", 1, player.getActions());
 		player.playCard(actionMock, 0);
 		assertEquals("Action size = 0", 0, player.getActions());
+		assertEquals("Hand size = 0", 0, player.getHandSize());
 	}
 	
 	@Test
@@ -286,9 +289,12 @@ public class PlayerTest
 		when(treasureMock.getDisplayTypes()).thenReturn(bc);
 		when(treasureMock.getMoney()).thenReturn(1);
 		Player player = new Player(0);
+		player.getHand().add(treasureMock);
 		assertEquals("Money = 0", 0, player.getMoney());
+		assertEquals("Hand size = 1", 1, player.getHandSize());
 		player.playCard(treasureMock, 1);
 		assertEquals("Money = 1", 1, player.getMoney());
+		assertEquals("Hand size = 0", 0, player.getHandSize());
 	}
 	
 	@Test
@@ -327,9 +333,11 @@ public class PlayerTest
 	    when(actionMock.getDisplayTypes()).thenReturn(bc);
 		Player player = new Player(0);
 		player.addActions(1);
-		assertEquals("Action size = 1", 1, player.getActions());
 		player.getHand().add(actionMock);
+		assertEquals("Hand size = 1", 1, player.getHandSize());
+		assertEquals("Action size = 1", 1, player.getActions());
 		player.playCard(0, 0);
+		assertEquals("Hand size = 0", 0, player.getHandSize());
 		assertEquals("Action size = 0", 0, player.getActions());
 	}
 	
