@@ -424,6 +424,7 @@ public class Game
 								{
 									board.cardRemove(cardName);
 									sendMessageAll(currPlayer.getName() + " bought " + cardName + " copies left: " + board.getCopiesLeft(cardName));
+									break;
 								}
 								else
 								{
@@ -456,8 +457,9 @@ public class Game
 	
 	/**
 	 * A new turn, used at the end of the turn - also checks if game is over.
+	 * @throws InterruptedException 
 	 */
-	private boolean newTurn()
+	private boolean newTurn() throws InterruptedException
 	{
 		if (checkGameEnd())
 		{
@@ -486,8 +488,9 @@ public class Game
 				}
 				Log.important("No players left in the game - GAME OVER");
 				return true;
-
 			}
+			sendPlayerHand(turn, turn);
+			
 		}
 		return false;
 	}
@@ -556,8 +559,9 @@ public class Game
 
 	/**
 	 * Go to next phase
+	 * @throws InterruptedException 
 	 */
-	private boolean nextPhase()
+	private boolean nextPhase() throws InterruptedException
 	{
 		phase++;
 		Log.log("Switching to phase " + phase);

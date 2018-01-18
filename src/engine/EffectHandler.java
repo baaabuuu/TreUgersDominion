@@ -1189,7 +1189,7 @@ public class EffectHandler
 			{
 				ArrayList<Card> tempChoice = new ArrayList<Card>();
 				tempChoice.add(topCard);
-				game.sendCardOption(player.getID(), "You drew a " + topCard.getName() +" do you wish to play it?", 1,tempChoice , true);
+				game.sendCardOption(player.getID(), "You drew a " + topCard.getName() +" do you wish to play it?", 1, tempChoice, true);
 				//---[BEGIN TIMEOUT BLOCK]---
 				int counter = 0; // timeout
 				Object[] tempResponse = null;
