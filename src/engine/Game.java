@@ -1,7 +1,6 @@
 package engine;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -265,8 +264,6 @@ public class Game
 	
 	private void calcVictory() throws InterruptedException
 	{
-		Player[] victor = new Player[playerCount];
-		Collections.reverse(Arrays.asList(players));
 		Arrays.sort(players, Comparator.comparingInt(Player::getVictoryPoints));
 		String[] places = {"1st ", "2nd", "3rd", "4th"};
 		int count = 0;
@@ -274,12 +271,15 @@ public class Game
 		{
 			sendMessage("Congratulations, you placed " + places[i], players[i].getID());
 		}
-		for (Player player : victor)
+		for (Player player : players)
 		{
 			StringBuilder builder = new StringBuilder();
 			builder.append("In ");
 			builder.append(places[count]);
 			builder.append(" we have ");
+			
+			Log.log("player: " + (player == null));
+			
 			builder.append(player.getName());
 			builder.append("#");
 			builder.append(player.getID());
@@ -309,12 +309,12 @@ public class Game
 	private void startGameActions() throws InterruptedException
 	{
 		Card[] buyArea = board.getCardStream().filter(i -> i.getName().equals(i.getName())).toArray(Card[]::new);
-		sendBoardState();
 		for (int i = 0; i < playerCount; i++)
 		{
 			sendPlayerHand(i, i);
 			writer.sendMessage(new Tuple(i, ServerCommands.setBuyArea, buyArea));
 		}
+		sendBoardState();
 	}
 	
 	/**
@@ -414,7 +414,7 @@ public class Game
 					{
 						Integer playerNum = (Integer) command[0];
 						String cardName = (String) command[2];
-						Log.log("Recieved buy command from " + players[playerNum] + " for the card " + cardName);
+						Log.log("Recieved buy command from " + players[playerNum].getName() + " for the card " + cardName);
 
 						if (playerNum == turn)
 						{
@@ -424,11 +424,24 @@ public class Game
 								if (currPlayer.buy(buying, phase))
 								{
 									board.cardRemove(cardName);
+									Log.important("");
+									Log.important("");
+									Log.important("");
+									Log.important("");
 									sendMessageAll(currPlayer.getName() + " bought " + cardName + " copies left: " + board.getCopiesLeft(cardName));
+									Log.important("");
+									Log.important("");
+									Log.important("");
+									Log.important("");
 									break;
 								}
 								else
 								{
+									Log.important("");
+									Log.important("");
+									Log.important("No buys?");
+									Log.important("");
+									Log.important("");
 									sendInvalid("You can't buy this card.", playerNum);
 								}
 							}

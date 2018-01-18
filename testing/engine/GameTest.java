@@ -404,7 +404,7 @@ public class GameTest
 			public Object answer(InvocationOnMock arg0) throws Throwable
 			{
 				count++;
-				if (count == 1 || count == 2 || count == 4 || count == 5)
+				if (count == 1)
 				{
 					return ob2;
 				}
@@ -421,7 +421,7 @@ public class GameTest
 			@Override
 			public Object answer(InvocationOnMock arg0) throws Throwable {
 				count++;
-				if (count == 2 || count == 4 || count == 6 || count == 8)
+				if (count == 1)
 				{
 					return ob1;
 				}

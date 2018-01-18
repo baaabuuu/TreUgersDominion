@@ -278,14 +278,17 @@ public class Player
 	 */
 	public boolean buy(Card card, int phase)
 	{
+		Log.important("Phase is: " + phase);
 		if (phase == 1 && getBuys() > 0 && canPay(card.getCost()))
 		{
 			Log.log(getName() + " bought " + card.getName());
 			money -= card.getCost();
 			buys--;
 			buyEffects(card);
+			gain(card);
 			return true;
 		}
+		
 		return false;
 		
 	}
@@ -298,7 +301,9 @@ public class Player
 	 */
 	private void buyEffects(Card card)
 	{
-		//Used to mark whether the buy action was affected by the placement.
+		Boolean deckPlacementEffect = false;
+
+		//if a card has a buyEffect
 		for (int i = 0; i < card.getTypeCount(); i++)
 		{
 			if (card.getTypes()[i].equals("buyEffect"))
@@ -310,8 +315,6 @@ public class Player
 				}
 			}
 		}
-		
-		Boolean deckPlacementEffect = false;
 		for (PlayerEffects effect : effects)
 		{
 			switch (effect)
@@ -323,8 +326,8 @@ public class Player
 				default :
 					break;
 			}
-			
 		}
+		Log.important("hello "+ deckPlacementEffect);
 		if (!deckPlacementEffect)
 		{
 			//Whenever a card is bought - and there is no card buying effects affected placements - its added to the top of the discard pile.

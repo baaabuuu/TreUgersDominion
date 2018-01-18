@@ -1,7 +1,5 @@
 package engine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.anyInt;
@@ -18,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import cards.Card;
-import log.Log;
 import objects.ClientCommands;
 import objects.PlayerEffects;
 /**
@@ -290,16 +287,108 @@ public class EffectHandlerTest
 		selection.add(0);
 		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
 		deck.add(cardMock);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
 		String[] cardsDrawn = {"dummy"};
 		String[] types = {"Action"};
 		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, selection};
-
 		
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(playerMock1.getHandSize()).thenReturn(1);
 		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
 		when(playerMock1.getDeck()).thenReturn(deck);
-		when(cardMock.getTypes()).thenReturn(types);
-		
+		when(cardMock.getDisplayTypes()).thenReturn(types);
+		when(spaceMock.getp(new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayList.class))).thenReturn(responseMock);
 		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playVassalMay() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(-1);
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		String[] cardsDrawn = {"dummy"};
+		String[] types = {"Action"};
+		Object[] responseMock = {playerMock1.getID(), ClientCommands.selectCard, selection};
+		
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(playerMock1.getHandSize()).thenReturn(1);
+		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
+		when(playerMock1.getDeck()).thenReturn(deck);
+		when(cardMock.getDisplayTypes()).thenReturn(types);
+		when(spaceMock.getp(new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayList.class))).thenReturn(responseMock);
+		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playVassalTimeout() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(-1);
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		String[] cardsDrawn = {"dummy"};
+		String[] types = {"Action"};
+		
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(playerMock1.getHandSize()).thenReturn(1);
+		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
+		when(playerMock1.getDeck()).thenReturn(deck);
+		when(cardMock.getDisplayTypes()).thenReturn(types);
+		when(spaceMock.getp(new ActualField(playerMock1.getID()),
+				new ActualField(ClientCommands.selectCard),
+				new FormalField(ArrayList.class))).thenReturn(null);
+		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playVassalWrongType() throws InterruptedException
+	{
+		ArrayList<Integer> selection = new ArrayList<Integer>();
+		selection.add(-1);
+		LinkedBlockingDeque<Card> deck = new LinkedBlockingDeque<Card>();
+		deck.add(cardMock);
+		ArrayList<Card> hand = new ArrayList<Card>();
+		hand.add(cardMock);
+		String[] cardsDrawn = {"dummy"};
+		String[] types = {"WrongType"};
+		
+		when(playerMock1.getHand()).thenReturn(hand);
+		when(playerMock1.getHandSize()).thenReturn(1);
+		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
+		when(playerMock1.getDeck()).thenReturn(deck);
+		when(cardMock.getDisplayTypes()).thenReturn(types);
+		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playVassalNoCards() throws InterruptedException
+	{
+		String[] cardsDrawn = {null};
+		when(playerMock1.drawCard(anyInt())).thenReturn(cardsDrawn);
+		handler.triggerEffect(6, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playVillage() throws InterruptedException
+	{
+		handler.triggerEffect(7, playerMock1, cardMock, boardMock, players);
+	}
+	
+	@Test
+	public void playWorkshop() throws InterruptedException
+	{
+		handler.triggerEffect(7, playerMock1, cardMock, boardMock, players);
 	}
 
 }
