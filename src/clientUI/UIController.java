@@ -124,8 +124,8 @@ public class UIController implements client.UIControllerInter {
 	}
 	public void newTurnValues(TurnValues values){
 		gamePanel.lblActions.setText("Actions: " + values.getAction());
-		gamePanel.lblActions.setText("buys: " + values.getBuy());
-		gamePanel.lblActions.setText("Money in play: " + values.getMoney());
+		gamePanel.lblBuys.setText("buys: " + values.getBuy());
+		gamePanel.lblMoney.setText("Money: " + values.getMoney());
 	}
 	public void newBoardState(BoardState input){
 		gamePanel.lblP1Hand.setText("Card Count: " + input.getHandCount()[0]);
@@ -134,7 +134,15 @@ public class UIController implements client.UIControllerInter {
 			gamePanel.lblP3Hand.setText("Card Count: " + input.getHandCount()[2]);
 		if (input.getHandCount().length > 3)
 			gamePanel.lblP4Hand.setText("Card Count: " + input.getHandCount()[3]);
-
+		
+		gamePanel.lblP1VP.setText("VP: " + input.getVpCount()[0]);
+		gamePanel.lblP2VP.setText("VP: " + input.getVpCount()[1]);
+		if (input.getVpCount().length > 2)
+			gamePanel.lblP3VP.setText("VP: " + input.getVpCount()[2]);
+		if (input.getVpCount().length > 3)
+			gamePanel.lblP4VP.setText("VP: " + input.getVpCount()[3]);
+		
+		
 		gamePanel.updBuyList(buyArea,input.getShopArea());
 	}
 	public void newPlayerHand(List<Card> playerHand){
@@ -156,6 +164,7 @@ public class UIController implements client.UIControllerInter {
 		gamePanel.actionArea.setEditable(true);
 	}
 	public void eventInput(String input){
+		Log.log("Adding to eventArea: " + input);
 		gamePanel.updEventArea(input);
 	}
 	public void eventOutput(String input){

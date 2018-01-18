@@ -29,50 +29,50 @@ public class Writer {
 	
 	public void sendMessage(Tuple tuple) throws InterruptedException{
 
-		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
 		int playerID = tuple.getElementAt(Integer.class, 0);
+		ServerCommands cmd = tuple.getElementAt(ServerCommands.class, 1);
 		
-		Log.log("Sending message: " + cmd.toString());
+		Log.log("Sending message: \"" + cmd.toString() + "\" to \"" + playerID + "\"");
 		
 		switch(cmd){
 
 		case setBoardState: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2));
 			break;
 		
-		case takeTurn: 
-			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
+		case newConnection:	
+			sendStandardHeader(clientSpace, playerID, cmd);
+			clientSpace.put(playerID, uri);
 			break;
 		
 			
 		case playerSelect: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(CardOption.class, 2));
 			break;
 		
 			
 		case setPlayerHand: 
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(PlayerHand.class, 2));
+			break;
+		
+		case takeTurn: 
+			sendStandardHeader(clientSpace, playerID, cmd);
+			clientSpace.put(playerID, tuple.getElementAt(BoardState.class, 2), tuple.getElementAt(PlayerHand.class,3), tuple.getElementAt(TurnValues.class, 4));
 			break;
 			
 		case invalid:
-		case message: 
-			clientSpace.put(cmd, playerID);
+		case message:
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(String.class, 2));
 			break;
-					
+
 		case setBuyArea:
-			clientSpace.put(cmd, playerID);
+			sendStandardHeader(clientSpace, playerID, cmd);
 			clientSpace.put(playerID, tuple.getElementAt(Card[].class, 2));
 			break;
-		
-		case newConnection:
-			clientSpace.put(cmd, playerID);
-			clientSpace.put(playerID, uri);
-			break;	
 			
 		default:	
 			Log.important("Unkown command sent to writer.");
@@ -80,6 +80,18 @@ public class Writer {
 	}
 	
 	
+	/**
+	 * Sends the standard header for communication with the client.
+	 * 
+	 * Sends the ServerCommand to the player on the jSpace
+	 * @param jSpace
+	 * @param playerID
+	 * @param server cmd	
+	 * @throws InterruptedException
+	 */
+	private void sendStandardHeader(Space jSpace, int playerID, ServerCommands cmd) throws InterruptedException {
+		jSpace.put(cmd, playerID);
+	}
 	
 	
 	

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
+import org.jspace.Space;
 
 import cards.Card;
 import clientUI.UIController;
@@ -39,7 +40,7 @@ public class ClientActions {
 	 */
 	public void takeTurn(Space hostSpace) throws InterruptedException {
 		
-		userInterface.eventInput("\\n----------------------");
+		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
 		userInterface.eventInput("YOUR TURN HAS BEGUN!");
 		userInterface.eventInput("Your hand contains: ");
@@ -48,13 +49,15 @@ public class ClientActions {
 		userInterface.eventInput("ACTION PHASE");
 		actionPhase(hostSpace);
 		
+		hostSpace.get(new ActualField(ServerCommands.takeTurn), new ActualField(playerID));
+		
 		userInterface.eventInput("BUY PHASE");
 		buyPhase(hostSpace);
 		
 		userInterface.eventInput("CLEANUP PHASE");
 		userInterface.eventInput("Your board is being cleared of used cards, you gain a new hand and your turn ends.");
 		
-		hostSpace.get(new ActualField(playerID), new ActualField(ServerCommands.setPlayerHand));
+		hostSpace.get(new ActualField(ServerCommands.setPlayerHand), new ActualField(playerID));
 		Object[] objs = hostSpace.get(new ActualField(playerID), 
 				new FormalField(PlayerHand.class));
 		
@@ -70,15 +73,15 @@ public class ClientActions {
 	 * @throws InterruptedException 
 	 */
 	private void resolvePlay(Space hostSpace) throws InterruptedException {
+		Log.log("Resolving a play.");
 		Object[] objs;
 		Object[] input;
 		boolean lock = true;
 		while(lock) {
 			//Wait for a server command
-			objs = hostSpace.get(new ActualField(playerID), 
-					new FormalField(ServerCommands.class));
-			//Reacy dependent on which command was received.
-			switch ((ServerCommands)objs[1]) {
+			objs = hostSpace.get(new FormalField(ServerCommands.class), new ActualField(playerID));
+			//React dependent on which command was received.
+			switch ((ServerCommands)objs[0]) {
 				// Display the received message.
 				case message: Log.log("Recieved message command");
 						input = hostSpace.get(new ActualField(playerID), 
@@ -93,14 +96,12 @@ public class ClientActions {
 						break;
 				case takeTurn: Log.log("Recieved takeTurn command");
 						input = hostSpace.get(new ActualField(playerID), 
-								new FormalField(Object[].class));
+								new FormalField(BoardState.class), new FormalField(PlayerHand.class), new FormalField(TurnValues.class));
 						
-						userInterface.newBoardState((BoardState)(((Object[])input[1])[0]));
-						setPlayerHand((PlayerHand)(((Object[])input[1])[1]));
-						setTurnValues((TurnValues)(((Object[])input[1])[2]));
+						userInterface.newBoardState((BoardState)input[1]);
+						setPlayerHand((PlayerHand)input[2]);
+						setTurnValues((TurnValues)input[3]);
 						
-						userInterface.eventInput("Your hand contains: ");
-						userInterface.newPlayerHand(playerHand);
 						lock = false;
 						break;
 				case playerSelect: Log.log("Recieved playerSelect command");
@@ -125,8 +126,8 @@ public class ClientActions {
 		boolean lock = true;
 		while(lock) {
 			userInterface.eventInput("Play an Action Card, or skip the action phase by typing '0'.");
+			userInterface.awaitingUserInput();
 			input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
-			
 			try {
 				value = Integer.parseInt((String)input[2]);
 				
@@ -135,12 +136,13 @@ public class ClientActions {
 				
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
+					Log.important("Sending ChangePhase");
 					userInterface.eventInput("Action phase has ended.");
 					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
 				}else {
 					hostSpace.put(playerID, ClientCommands.playCard);
-					hostSpace.put(playerID, value);
+					hostSpace.put(playerID, value-1);
 					resolvePlay(hostSpace);
 				}
 			}catch(NumberFormatException e) {
@@ -173,6 +175,7 @@ public class ClientActions {
 					userInterface.newPlayerHand(playerHand);
 					while(lock2) {
 						userInterface.eventInput("Play a non-action card from your hand, type '0' when done playing cards: ");
+						userInterface.awaitingUserInput();
 						input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 						try {
 							value = Integer.parseInt((String)input[2]);
@@ -186,7 +189,7 @@ public class ClientActions {
 								lock2 = false;
 							}else {
 								hostSpace.put(playerID, ClientCommands.playCard);
-								hostSpace.put(playerID, value);
+								hostSpace.put(playerID, value-1);
 								resolvePlay(hostSpace);
 							}
 						}catch(NumberFormatException e) {
@@ -198,6 +201,7 @@ public class ClientActions {
 					while(lock2) {
 						userInterface.eventInput("Select a card to buy, type '0' when done playing cards: ");
 						try {
+							userInterface.awaitingUserInput();
 							input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 							value = Integer.parseInt((String)input[2]);
 							if(value < 0 || value > buyArea.length) {
@@ -205,9 +209,10 @@ public class ClientActions {
 							
 							//If player wants to get out of Action phase
 							} else if(value == 0) {
-								userInterface.eventInput("");
+								userInterface.eventInput("You ended the Buy Phase\n");
 								lock2 = false;
 							}else {
+								Log.important("Sending buyCard command for: " + buyArea[value-1].getName());
 								hostSpace.put(playerID, ClientCommands.buyCard);
 								hostSpace.put(playerID, buyArea[value-1].getName());
 								resolvePlay(hostSpace);
@@ -343,7 +348,7 @@ public class ClientActions {
 		
 	}
 	public void serverMessage(String message) throws InterruptedException {
-		userInterface.eventInput("Server says: " + message);
+		userInterface.eventInput(message);
 	}
 	private void setTurnValues(TurnValues values) {
 		userInterface.newTurnValues(values);

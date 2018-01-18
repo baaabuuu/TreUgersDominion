@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.QueueSpace;
+import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.Tuple;
 
@@ -13,23 +16,19 @@ import log.Log;
 import objects.*;
 
 public class Consumer implements Runnable {
-	private Space hostSpace;
-	private Space clientSpace;
+	private RemoteSpace hostSpace;
 	private int playerID;
 	private ClientActions action;
 	private UIController userInterface;
-	private ClientController clientController;
 	
 	/**
 	 * Consumes relevant data from the servers space and places it into the clients space.
 	 * @param clientController 
 	 */
-	public Consumer(Space space, int playerID, Space hostSpace, Space userSpace, UIController userInterface, ClientController clientController) {
-		this.clientSpace = space;
+	public Consumer(int playerID, RemoteSpace hostSpace, Space userSpace, UIController userInterface) {
 		this.playerID = playerID;
 		this.hostSpace = hostSpace;
 		this.userInterface = userInterface;
-		this.clientController = clientController;
 		this.action = new ClientActions(playerID, userSpace, userInterface);
 	}
 	/**

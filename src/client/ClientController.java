@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import org.jspace.ActualField;
+import org.jspace.FIFOSpace;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
@@ -23,7 +24,6 @@ public class ClientController {
 	private int playerID;
 	private int port;
 	private String uri;
-	private Space clientSpace;
 	private RemoteSpace hostSpace;
 	private Space userSpace;
 	
@@ -34,7 +34,6 @@ public class ClientController {
 	*/
 	
 	private Thread consumer;
-	private Thread receiver;
 	private Thread connecterDetector;
 	
 	private ClientController clientController = this;
@@ -72,7 +71,6 @@ public class ClientController {
 	public void run() {
 		
 		userSpace = new SequentialSpace();
-		clientSpace = new SequentialSpace();
 		userInterface = new UIController(port, host, clientController, userSpace);
 		
 	}
@@ -161,7 +159,7 @@ public class ClientController {
 		hostSpace.put(playerID,userName);
 		
 		//receiver = new Thread(new Receiver(clientSpace, playerID, hostSpace));
-		consumer = new Thread(new Consumer(clientSpace, playerID, hostSpace, userSpace, userInterface, clientController));
+		consumer = new Thread(new Consumer(playerID, hostSpace, userSpace, userInterface));
 		connecterDetector = new Thread(new ConnectionDetector(new RemoteSpace(this.uri), playerID, clientController));
 		
 		consumer.start();
