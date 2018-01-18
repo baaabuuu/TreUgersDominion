@@ -335,7 +335,6 @@ public class Game
 			Player player = players[playerID];
 			PlayerHand hand = new PlayerHand(players[playerID].getHand());
 			TurnValues values = new TurnValues(player.getActions(), player.getBuys(), player.getMoney());
-			Log.important("PLAYER MONEY" + player.getMoney());
 			Log.log("Transmitting takeTurn to " + player.getName() + "#" + playerID);
 			writer.sendMessage(new Tuple(playerID, ServerCommands.takeTurn, boardState, hand, values));
 		}
@@ -364,7 +363,6 @@ public class Game
 				if (playerNum == turn)
 				{
 					boolean result = currPlayer.playCard(card, phase);
-					Log.important("money: " + currPlayer.getMoney());
 					if (result == Boolean.TRUE)
 					{
 						String[] types = card.getTypes();
