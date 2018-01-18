@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import cards.Card;
 import log.Log;
+import objects.PlayerEffects;
 
 /**
  * A simple player object, used to handle the players in the game.
@@ -20,7 +21,7 @@ public class Player {
 	private LinkedBlockingDeque <Card> deck = new LinkedBlockingDeque<Card>();
 	private LinkedBlockingDeque <Card> discard = new LinkedBlockingDeque<Card>();
 	private ArrayList<Card> hand = new ArrayList<Card>();
-	private ArrayList<String> effects = new ArrayList<String>();
+	private ArrayList<PlayerEffects> effects = new ArrayList<PlayerEffects>();
 	private ArrayList<Card> playArea = new ArrayList<Card>();
 	private ArrayList<Card> secretStack = new ArrayList<Card>();
 	
@@ -72,19 +73,32 @@ public class Player {
 		}
 		return draw;
 	}
-	
-	public void addEffect(String effect)
+	/**
+	 * Adds a PlayerEffects effect to the player
+	 * @param effect
+	 */
+	public void addEffect(PlayerEffects effect)
 	{
 		Log.log(getName() + " added the effect " + effect);
 		effects.add(effect);
 	}
-	public ArrayList<String> getEffects() {
-		
+	/**
+	 * Returns the list of effects
+	 * @return
+	 */
+	public ArrayList<PlayerEffects> getEffects()
+	{
 		return effects;
 	}
-	public void removeEffect(String effectName){
-		effects.remove(effectName);
+	/**
+	 * Remove a specific player Effect
+	 * @param effectName
+	 */
+	public void removeEffect(PlayerEffects effect)
+	{
+		effects.remove(effect);
 	}
+	
 	/**
 	 * Removes a card from the hand with the selected index.
 	 * @param index
@@ -173,7 +187,7 @@ public class Player {
 	 * Checks if actions are left
 	 * @return
 	 */
-	public boolean canPlayAction()
+	public boolean canPlayAction() 
 	{
 		Log.log(getName() + " action count " + actions);
 		return actions > 0;
@@ -206,6 +220,8 @@ public class Player {
 			{
 				if (types.contains("Treasure") && phase == 1)
 				{
+					removeFromHand(card);
+					putIntoPlay(card);
 					addMoney(card.getMoney());
 					Log.log(getName() + " played the treasure card " + card.getName());
 					return true;
@@ -292,12 +308,13 @@ public class Player {
 		}
 		
 		Boolean deckPlacementEffect = false;
-		for (String effect : effects)
+		for (PlayerEffects effect : effects)
 		{
 			switch (effect)
 			{
-				case "BuyOnTopDeck":
+				case ontoDeck:
 					deckPlacementEffect = true;
+					deck.addFirst(card);
 					break;
 				default :
 					break;

@@ -9,6 +9,7 @@ import org.jspace.*;
 import cards.Card;
 import log.Log;
 import objects.ClientCommands;
+import objects.PlayerEffects;
 public class EffectHandler
 {	
 
@@ -22,23 +23,24 @@ public class EffectHandler
 
 	/**
 	 * Coordinator of effects - calls the effect of cards.
-	 * @param n - Specifies the effect code
+	 * @param effectCode - Specifies the effect code
 	 * @param player - PLayer that the effect should a apply toString[] players
 	 * @param card - The card that was played.
 	 * @param board - current board state
 	 * @param players - List of playerObjects
 	 * @throws InterruptedException 
 	 */
-	public void triggerEffect(int n, Player player, Card card, Board board, Player[] players) throws InterruptedException{
+	public void triggerEffect(int effectCode, Player player, Card card, Board board, Player[] players) throws InterruptedException{
 		//First check if playing this card would trigger any other effect
-		for(Player p: players) {
-			if(p.getEffects().size()== 0) {
+		for(Player p: players)
+		{
+			if(p.getEffects().size() == 0)
+			{
 				continue;
 			}
-			else {
-				for(String s: p.getEffects()) {
-					playerEffects(s,p,card);
-				}
+			else 
+			{
+				playerEffects(p, card);
 			}
 		}
 		//If it is an attack, can someone use a reaction card?
@@ -55,8 +57,8 @@ public class EffectHandler
 			}
 		}
 
-		Log.important("Effect code: "+ n +" was called by "+ card.getName() +" played by "+ player.getName() +".");
-		switch(n)
+		Log.important("Effect code: "+ effectCode +" was called by "+ card.getName() +" played by "+ player.getName() +".");
+		switch(effectCode)
 		{
 		case 0: //Do nothing
 			break;
@@ -141,7 +143,7 @@ public class EffectHandler
 			playSmithy(player);
 			break;
 		default:
-			Log.important("Invalid effect code: "+n);
+			Log.important("Invalid effect code: "+effectCode);
 			break;//Invalid effect error here;
 
 		}
@@ -158,11 +160,16 @@ public class EffectHandler
 	}
 
 
+	/**
+	 * Draw a card, gain an action.
+	 * The first silver you play this turn gives +1 money - stacks
+	 * @param player
+	 */
 	private void playMerchant(Player player)
 	{
 		player.drawCard(1);
 		player.addActions(1);
-		player.addEffect("Merchant");		
+		player.addEffect(PlayerEffects.Merchant);		
 	}
 
 
@@ -417,7 +424,7 @@ public class EffectHandler
 	@SuppressWarnings("unchecked")
 	private void playMine(Player player, Board board) throws InterruptedException
 	{
-		ArrayList<Card> choice = (ArrayList<Card>) player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toList());
+		ArrayList<Card> choice =  player.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Treasure"))).collect(Collectors.toCollection(ArrayList::new));
 		if(choice.size() > 0)
 		{
 			game.sendCardOption(player.getID(), "Trash treasure card from your hand to gain a treasure costing upto 3 more.", 1, choice, true);
@@ -1002,7 +1009,7 @@ public class EffectHandler
 	@SuppressWarnings("unchecked")
 	private void playThroneRoom(Player player, Board board, Player[] players) throws InterruptedException
 	{
-		ArrayList<Card> actionInHand = (ArrayList<Card>) player.getHand().stream().filter(card -> Arrays.stream(card.getDisplayTypes()).filter(s -> s.equals("Action")).findAny().isPresent()).collect(Collectors.toList());
+		ArrayList<Card> actionInHand =  player.getHand().stream().filter(card -> Arrays.stream(card.getDisplayTypes()).filter(s -> s.equals("Action")).findAny().isPresent()).collect(Collectors.toCollection(ArrayList::new));
 		if(actionInHand.size() != 0)
 		{
 			game.sendCardOption(player.getID(), "Select an action to be played twice", 1, actionInHand, true);
@@ -1061,7 +1068,7 @@ public class EffectHandler
 	private void playCellar(Player player) throws InterruptedException
 	{
 		player.addActions(1);
-		if(player.getHandSize()!=0)
+		if(player.getHandSize() != 0)
 		{
 			game.sendCardOption(player.getID(), "Selecy any number of Cards, then discard them.", player.getHandSize(), player.getHand(), true);
 			//---[BEGIN TIMEOUT BLOCK]---
@@ -1113,18 +1120,21 @@ public class EffectHandler
 			//---[END TIMEOUT BLOCK]---
 		}
 	}
+	
 	/**
-	 * Idk.
+	 * 
 	 * @param player
 	 * @throws InterruptedException
 	 */
 	@SuppressWarnings("unchecked")
 	private void playHarbinger(Player player) throws InterruptedException
 	{
+		player.drawCard(1);
+		player.addActions(1);
 		if(player.getDiscardSize() != 0)
 		{
 			ArrayList<Card> choice	=	new ArrayList<Card>(player.getDiscard());
-			game.sendCardOption(player.getID(), "Select a card to put on top of your deck(if any)", 1, choice, true);
+			game.sendCardOption(player.getID(), "Select a card to put on top of your deck. (if any)", 1, choice, true);
 			//---[BEGIN TIMEOUT BLOCK]---
 			int counter = 0; // timeout
 			Object[] tempResponse = null;
@@ -1292,7 +1302,7 @@ public class EffectHandler
 				continue;
 			}
 			//Find out if has any victory cards in hand
-			ArrayList<Card> choice = (ArrayList<Card>) other.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) ).collect(Collectors.toList());
+			ArrayList<Card> choice =  other.getHand().stream().filter(c -> Arrays.stream(c.getDisplayTypes()).anyMatch(type -> type.equals("Victory") ) ).collect(Collectors.toCollection(ArrayList::new));
 			if (choice.size() == 0) 
 			{
 				StringBuilder hand = new StringBuilder();
@@ -1441,7 +1451,7 @@ public class EffectHandler
 	 */
 	private ArrayList<Card> getChoice(Predicate<Card> p, Board board)
 	{
-		ArrayList<Card> choice =(ArrayList<Card>) board.getCardStream().filter(p).collect(Collectors.toList());
+		ArrayList<Card> choice =  board.getCardStream().filter(p).collect(Collectors.toCollection(ArrayList::new));
 		return choice;
 	}
 
@@ -1519,20 +1529,23 @@ public class EffectHandler
 	/**
 	 * Expandable "on play" card handler. Currently only needs three params but will
 	 * expand with future implementation
-	 * @param effect String with the c
 	 * @param player
 	 * @param card
 	 */
-	private void playerEffects(String effect, Player player, Card card)
+	private void playerEffects(Player player, Card card)
 	{
-		switch(effect)
+		for (PlayerEffects effect : player.getEffects())
 		{
-		case "Merchant": //The first time you play a silver this turn, +1 money.
-			merchantEffect(player, card);
-			break;
-		default :
-			break;
+			switch(effect)
+			{
+			case Merchant: //The first time you play a silver this turn, +1 money.
+				merchantEffect(player, card);
+				break;
+			default :
+				break;
+			}
 		}
+		
 	}
 	
 	/**
@@ -1542,10 +1555,10 @@ public class EffectHandler
 	 */
 	private void merchantEffect(Player player, Card card)
 	{
-		if (card.getName().equals("Silver"))
+		if (card.getName().equals("Silver") && player.equals(game.getCurrentPlayer()))
 		{
 			player.addMoney(1);
-			player.removeEffect("Merchant");
+			player.removeEffect(PlayerEffects.Merchant);
 		}		
 	}
 

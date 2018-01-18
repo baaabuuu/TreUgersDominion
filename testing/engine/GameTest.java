@@ -2,7 +2,6 @@ package engine;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -16,14 +15,12 @@ import org.jspace.Space;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import cards.Card;
 import cards.CardReader;
-import log.Log;
 import network.Writer;
 import objects.ClientCommands;
 import objects.ServerCommands;

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -179,7 +178,7 @@ public class Game
 	
 	/**
 	 * Sends the playerHand to the player
-	 * @throws InterruptedException 
+	 * @throws InterruptedException  
 	 */
 	public void sendPlayerHand(int playerID, int targetID) throws InterruptedException
 	{
@@ -266,12 +265,13 @@ public class Game
 	private void calcVictory() throws InterruptedException
 	{
 		Player[] victor = new Player[playerCount];
+		Collections.reverse(Arrays.asList(players));
 		Arrays.sort(players, Comparator.comparingInt(Player::getVictoryPoints));
 		String[] places = {"1st ", "2nd", "3rd", "4th"};
 		int count = 0;
 		for (int i = 0; i < players.length; i++)
 		{
-			sendMessage("Congratulations, you placed " + places[i], i);
+			sendMessage("Congratulations, you placed " + places[i], players[i].getID());
 		}
 		for (Player player : victor)
 		{
