@@ -363,6 +363,7 @@ public class Game
 				if (playerNum == turn)
 				{
 					boolean result = currPlayer.playCard(card, phase);
+					Log.important("money: " + currPlayer.getMoney());
 					if (result == Boolean.TRUE)
 					{
 						String[] types = card.getTypes();
@@ -378,7 +379,7 @@ public class Game
 						sendMessageAll(currPlayer.getName() + " played " + card.getName());
 						return false;
 					}
-					else 
+					else
 					{
 						sendInvalid("You cannot play this card right now.", playerNum);
 					}

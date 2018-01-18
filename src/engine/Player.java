@@ -58,16 +58,16 @@ public class Player
 		String[] draw = new String[n];
 		for (int i = 0; i < n; i++)
 		{
-			if (deck.isEmpty())
+			if (getDeck().isEmpty())
 			{
-				if (discard.isEmpty())
+				if (getDiscard().isEmpty())
 				{
 					draw[i] = null;
 					break;
 				}
 				reshuffleDeck();
 			}
-			Card drawn = deck.poll();
+			Card drawn = getDeck().poll();
 			draw[i] = drawn.getName();
 			hand.add(drawn);
 			Log.log(getName() + " has drawn " + drawn.getName());
@@ -152,7 +152,7 @@ public class Player
 	public void discardCard(Card card)
 	{
 		Log.log(getName() + " added to their discard pile: " + card.getName());
-		discard.addFirst(card);
+		getDiscard().addFirst(card);
 	}
 	
 	/**
@@ -318,7 +318,7 @@ public class Player
 			{
 				case ontoDeck:
 					deckPlacementEffect = true;
-					deck.addFirst(card);
+					getDeck().addFirst(card);
 					break;
 				default :
 					break;
@@ -512,7 +512,7 @@ public class Player
 	 */
 	public void addCardDeckBottom(Card card)
 	{
-		deck.offerLast(card);
+		getDeck().offerLast(card);
 	}
 	
 	/**
@@ -520,7 +520,7 @@ public class Player
 	 */
 	public void addCardDecktop(Card card)
 	{
-		deck.offerFirst(card);
+		getDeck().offerFirst(card);
 	}
 	
 	/**
@@ -539,7 +539,7 @@ public class Player
 	 */
 	public int getDiscardSize()
 	{
-		return discard.size();
+		return getDiscard().size();
 	}
 	
 	/**
@@ -548,7 +548,7 @@ public class Player
 	 */
 	public int getDeckSize()
 	{
-		return deck.size();
+		return getDeck().size();
 	}
 	
 	public void putIntoPlay(Card card)
