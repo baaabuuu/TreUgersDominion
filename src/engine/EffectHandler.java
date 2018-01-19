@@ -225,7 +225,7 @@ public class EffectHandler
 				game.sendDisconnect(player.getID());
 				break;
 			}
-			Thread.sleep(10);
+			Thread.sleep(1);
 		}
 		//---[END TIMEOUT BLOCK]---
 	}
@@ -358,7 +358,7 @@ public class EffectHandler
 					}
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 		}
 		//---[END TIMEOUT BLOCK]---
@@ -419,7 +419,7 @@ public class EffectHandler
 							game.sendDisconnect(player.getID());
 							break;
 						}
-						Thread.sleep(10);
+						Thread.sleep(1);
 					}
 					//---[END TIMEOUT BLOCK]---		
 					break;
@@ -431,7 +431,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---	
 		}	
@@ -496,7 +496,7 @@ public class EffectHandler
 									game.sendDisconnect(player.getID());
 									break;
 								}
-								Thread.sleep(10);
+								Thread.sleep(1);
 							}
 							//---[END TIMEOUT BLOCK]--
 						}
@@ -517,7 +517,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]--
 		}
@@ -571,7 +571,7 @@ public class EffectHandler
 							game.sendDisconnect(player.getID());
 							break;
 						}
-						Thread.sleep(10);
+						Thread.sleep(1);
 					}
 					
 					break;
@@ -641,7 +641,7 @@ public class EffectHandler
 							game.sendDisconnect(player.getID());
 							break;
 						}
-						Thread.sleep(10);
+						Thread.sleep(1);
 					}
 					//---[END TIMEOUT BLOCK]---
 
@@ -657,7 +657,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---
 		}
@@ -724,7 +724,7 @@ public class EffectHandler
 				game.sendDisconnect(player.getID());
 				break;
 			}
-			Thread.sleep(10);
+			Thread.sleep(1);
 		}
 		//---[END TIMEOUT BLOCK]---
 	}
@@ -771,7 +771,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}			
 		}
 	}
@@ -903,7 +903,7 @@ public class EffectHandler
 											game.sendDisconnect(player.getID());
 											break;
 										}
-										Thread.sleep(10);
+										Thread.sleep(1);
 									}
 									//---[END TIMEOUT BLOCK]---
 								}
@@ -919,7 +919,7 @@ public class EffectHandler
 								game.sendDisconnect(player.getID());
 								break;
 							}
-							Thread.sleep(10);
+							Thread.sleep(1);
 						}
 						//---[END TIMEOUT BLOCK]---
 					}
@@ -935,7 +935,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---
 		}
@@ -1051,7 +1051,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---
 		}
@@ -1114,7 +1114,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---
 		}
@@ -1160,7 +1160,7 @@ public class EffectHandler
 					game.sendDisconnect(player.getID());
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 			//---[END TIMEOUT BLOCK]---
 		}
@@ -1213,7 +1213,7 @@ public class EffectHandler
 							game.sendDisconnect(player.getID());
 							break;
 						}
-						Thread.sleep(10);
+						Thread.sleep(1);
 					}
 					//---[END TIMEOUT BLOCK]---
 					//If action card, play it
@@ -1275,7 +1275,7 @@ public class EffectHandler
 				game.sendDisconnect(player.getID());
 				break;
 			}
-			Thread.sleep(10);
+			Thread.sleep(1);
 		}
 		//---[END TIMEOUT BLOCK]---
 	}
@@ -1384,7 +1384,7 @@ public class EffectHandler
 
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}}
 		//---[END TIMEOUT BLOCK]---
 
@@ -1461,7 +1461,7 @@ public class EffectHandler
 					}
 					break;
 				}
-				Thread.sleep(10);
+				Thread.sleep(1);
 			}
 		}
 		//---[END TIMEOUT BLOCK]---
@@ -1529,7 +1529,7 @@ public class EffectHandler
 							game.sendDisconnect(player.getID());
 							break;
 						}
-						Thread.sleep(10);
+						Thread.sleep(1);
 					}
 					//---[END TIMEOUT BLOCK]---
 

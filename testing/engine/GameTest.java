@@ -21,6 +21,7 @@ import org.mockito.stubbing.Answer;
 
 import cards.Card;
 import cards.CardReader;
+import log.Log;
 import network.Writer;
 import objects.ClientCommands;
 import objects.ServerCommands;
@@ -221,6 +222,7 @@ public class GameTest
 		Writer writer = new Writer(jSpace, names);
 		board = new Board(2, cards, treasures);
 		game = new Game(board, names, names.length, 0, writer, safeSpace);
+		game.setWaitTime(0);
 		game.start();
 	}
 	
@@ -303,69 +305,6 @@ public class GameTest
 	}
 	
 	@Test
-	public void gameStartPlayCopper() throws InterruptedException, IOException
-	{
-		MockitoAnnotations.initMocks(this);
-		cards = new ArrayList<Card>();
-		ArrayList<Card> setup = new CardReader().getBase();
-		for (int i = 0; i < 10; i++)
-		{
-			cards.add(setup.get(i));
-		}
-		setup = new CardReader().getSetup();
-		treasures = new ArrayList<Card>();
-		for (int i = 0; i < 7; i++)
-		{
-			treasures.add(setup.get(i));
-		}
-		String[] names = {"Test Person1", "Test Person2"};
-		Space jSpace = new SequentialSpace();
-		safeSpace = mock(SequentialSpace.class);
-		Object[] newObject = new Object[1];
-		
-		Writer writer = new Writer(jSpace, names);
-		board = new Board(2, cards, treasures);
-		game = new Game(board, names, names.length, 0, writer, safeSpace);
-		
-		when(safeSpace.get(new ActualField(ServerCommands.gameStart))).thenReturn(newObject);
-		when(safeSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.playCard),
-				new FormalField(Integer.class)))
-		.thenAnswer( new Answer<Object>()
-		{
-			private int count = 0;
-			private Object[] ob1 = null;
-			private Object[] ob2 = {0, 0, game.getPlayer(0).getFirstIndexOf("Copper")};
-			@Override
-			public Object answer(InvocationOnMock arg0) throws Throwable
-			{
-				if (count++ == 2)
-				{
-					return ob2;
-				}
-				return ob1;
-			}
-		});
-		when(safeSpace.getp(new FormalField(Integer.class), new ActualField(ClientCommands.changePhase)))
-		.thenAnswer( new Answer<Object>()
-		{
-			private int count = 0;
-			private Object[] ob1 = {0, 0};
-			private Object[] ob2 = null;
-			
-			@Override
-			public Object answer(InvocationOnMock arg0) throws Throwable {
-				count++;
-				if (count < 2 || count == 4 || count == 5)
-				{
-					return ob1;
-				}
-				return ob2; 
-			}
-		});
-		game.start();
-	}
-	
-	@Test
 	public void gameStartBuyCurse() throws InterruptedException, IOException
 	{
 		MockitoAnnotations.initMocks(this);
@@ -427,6 +366,7 @@ public class GameTest
 				return ob2; 
 			}
 		});
+		game.setWaitTime(10);
 		game.start();
 	}
 	

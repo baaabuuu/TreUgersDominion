@@ -38,8 +38,9 @@ public class Game
 	
 	/**
 	 * In miliseconds this is how much time each player has for their turns.
+	 * We recommend it being set at 10
 	 */
-	private final int waitTime = 400000;
+	private int waitTime = 60000;
 	
 	/**
 	 * Returns how long time a time is allowed.
@@ -254,6 +255,8 @@ public class Game
 		startGameActions();
 		while(Boolean.TRUE)
 		{
+			if (checkGameEnd())
+				break;
 			if (takeTurn())
 				break;
 		}
@@ -364,7 +367,6 @@ public class Game
 				if (playerNum == turn)
 				{
 					boolean result = currPlayer.playCard(card, phase);
-					Log.important("money: " + currPlayer.getMoney());
 					if (result == Boolean.TRUE)
 					{
 						String[] types = card.getTypes();
@@ -382,7 +384,7 @@ public class Game
 					}
 					else
 					{
-						sendInvalid("You cannot play this card right now.", playerNum);
+						Log.important("HELLO WORLDname: " + currPlayer.getName());
 					}
 				}
 				else
@@ -584,6 +586,11 @@ public class Game
 		if (phase > 1)
 			return newTurn();
 		return false;
+	}
+	
+	public void setWaitTime(int n)
+	{
+		waitTime = 0;
 	}
 	
 

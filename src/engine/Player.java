@@ -59,16 +59,6 @@ public class Player
 		String[] draw = new String[n];
 		for (int i = 0; i < n; i++)
 		{
-			Log.important("");
-			Log.important("");
-			Log.important("");
-			Log.important("DECK SIZE " + getDeckSize());
-			Log.important("DISCARD SIZE " + getDiscardSize());
-			Log.important("PLAY SIZE " + playArea.size());
-			Log.important("HAND SIZE " + getHandSize());
-			Log.important("");
-			Log.important("");
-			Log.important("");
 			if (getDeck().isEmpty())
 			{
 				if (getDiscard().isEmpty())
@@ -390,12 +380,6 @@ public class Player
 			{
 				if (card.getTypes()[i].equals("victory"))
 				{
-					Log.important("");
-					Log.important("");
-					Log.important("");
-					Log.important(card.getName());
-					Log.important("");
-					Log.important("");
 					victoryPoints += card.getVP();
 				}
 				else if (card.getTypes()[i].equals("victoryEffect"))
@@ -560,7 +544,6 @@ public class Player
 	 */
 	public int getHandSize()
 	{
-		Log.important("hand size: " + hand.size());
 		return hand.size();
 	}
 	
@@ -590,8 +573,14 @@ public class Player
 	public int getFirstIndexOf(String cardName)
 	{
 		for (int i = 0; i < hand.size(); i++)
+		{
 			if (hand.get(i).getName().equals(cardName))
+			{
+				Log.log("found " + cardName + " equals " + hand.get(i).getName() + " at " + i);
 				return i;
+			}
+		}
+			
 		return -1;
 	}
 	
