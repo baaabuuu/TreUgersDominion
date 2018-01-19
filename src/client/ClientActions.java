@@ -50,11 +50,11 @@ public class ClientActions {
 		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
-		userInterface.eventInput("YOUR TURN HAS BEGUN!");
+		userInterface.eventInput("YOUR TURN HAS BEGUN!\n");
 		userInterface.eventInput("Your hand contains: ");
 		userInterface.newPlayerHand(playerHand);
 		setTurnValues(new TurnValues(1,1,0));
-		userInterface.eventInput("ACTION PHASE");
+		userInterface.eventInput("ACTION PHASE\n");
 		actionPhase(hostSpace);
 		
 		hostSpace.get(new ActualField(ServerCommands.takeTurn), new ActualField(playerID));
@@ -63,7 +63,7 @@ public class ClientActions {
 				new FormalField(PlayerHand.class), 
 				new FormalField(TurnValues.class));
 		
-		userInterface.eventInput("BUY PHASE");
+		userInterface.eventInput("BUY PHASE\n");
 		buyPhase(hostSpace);
 		
 		userInterface.eventInput("CLEANUP PHASE");
@@ -104,6 +104,7 @@ public class ClientActions {
 								new FormalField(TurnValues.class));
 						
 						userInterface.newBoardState((BoardState)input[1]);
+						userInterface.eventInput("\nYour hand contains: ");
 						setPlayerHand((PlayerHand)input[2]);
 						setTurnValues((TurnValues)input[3]);
 						
@@ -142,7 +143,7 @@ public class ClientActions {
 				//If player wants to get out of Action phase
 				} else if(value == 0) {
 					Log.important("Sending ChangePhase");
-					userInterface.eventInput("Action phase has ended.");
+					userInterface.eventInput("Action phase has ended.\n");
 					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
 				}else {
@@ -171,7 +172,7 @@ public class ClientActions {
 		while(lock) {
 			lock2 = true;
 			userInterface.eventInput("Either play non-action cards or buy cards, or skip the Buy phase by typing '0'.");
-			userInterface.eventInput("To play cards type 'p', to buy cards type 'b'.");
+			userInterface.eventInput("To play cards type 'p', to buy cards type 'b'.\n");
 			//promt
 			userInterface.awaitingUserInput();
 			input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
@@ -179,7 +180,7 @@ public class ClientActions {
 				case "p":
 					userInterface.newPlayerHand(playerHand);
 					while(lock2) {
-						userInterface.eventInput("Play a non-action card from your hand, type '0' when done playing cards: ");
+						userInterface.eventInput("Play a non-action card from your hand, type '0' when done playing cards.\n");
 						userInterface.awaitingUserInput();
 						input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 						try {
@@ -204,7 +205,7 @@ public class ClientActions {
 					break;
 				case "b":
 					while(lock2) {
-						userInterface.eventInput("Select a card to buy, type '0' when done playing cards: ");
+						userInterface.eventInput("Select a card to buy, type '0' when done playing cards.\n");
 						try {
 							userInterface.awaitingUserInput();
 							input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
@@ -214,7 +215,7 @@ public class ClientActions {
 							
 							//If player wants to get out of Action phase
 							} else if(value == 0) {
-								userInterface.eventInput("You ended the Buy Phase\n");
+								userInterface.eventInput("You ended the Buy Phase.\n");
 								lock2 = false;
 							}else {
 								Log.important("Sending buyCard command for: " + buyArea[value-1].getName());
@@ -228,10 +229,10 @@ public class ClientActions {
 					}
 					break;
 				case "0":
-					userInterface.eventInput("Buy phase has ended.");
+					userInterface.eventInput("Buy phase has ended.\n");
 					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
-				default: userInterface.eventInput("Not a valid input!");
+				default:
 					break;
 			}
 		}
@@ -248,7 +249,7 @@ public class ClientActions {
 		userInterface.newPlayerHand(option.getCards());
 		
 		if(option.getMay()) {
-			userInterface.eventInput("You can choose to stop selecting cards by typing '0'.");
+			userInterface.eventInput("You can choose to stop selecting cards by typing '0'.\n");
 		}
 		
 		ArrayList<Integer> selected = new ArrayList<Integer>();
@@ -260,7 +261,7 @@ public class ClientActions {
 			// Until a valid input is given, this code will run.
 			locked = true;
 			while(locked) {
-				userInterface.eventInput("Select card " + (i+1) + ": ");
+				userInterface.eventInput("Select card " + (i+1) + ".");
 				userInterface.awaitingUserInput();
 				input = userSpace.get(new ActualField("client"),new ActualField("eventOutput"),new FormalField(String.class));
 				
@@ -283,6 +284,7 @@ public class ClientActions {
 								userInterface.eventInput("That card has already been selected.");
 							} else {
 								selected.add(value-1);
+								locked = false;
 							}
 						}
 					}
@@ -306,14 +308,14 @@ public class ClientActions {
 		userInterface.newBuyArea(input);
 	}
 	public void displayLaunge(HashMap<Integer, Integer> lobbies, Space hostSpace) throws InterruptedException {
-		userInterface.eventInput("Server sent a list of lobbies: ");
+		userInterface.eventInput("Server sent a list of lobbies.\n");
 		Set<Integer> p = lobbies.keySet();
 		for(int i : p) {
 			userInterface.eventInput("Lobby " + i + " - " + lobbies.get(i) + "/4 players.");
 		}
-		userInterface.eventInput("To connect to a lobby, type in 'c'.");
+		userInterface.eventInput("\nTo connect to a lobby, type in 'c'.");
 		userInterface.eventInput("To make a new lobby, type in 'm'.");
-		userInterface.eventInput("To update lobby list, type in 'u'.");
+		userInterface.eventInput("To update lobby list, type in 'u'.\n");
 		Object[] input;
 		userInterface.awaitingUserInput();
 		Log.log("Waiting for user input");

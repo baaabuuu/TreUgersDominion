@@ -158,7 +158,6 @@ public class UIController implements client.UIControllerInter {
 		gamePanel.updBuyList(buyArea,input.getShopArea());
 	}
 	public void newPlayerHand(List<Card> playerHand){
-		eventInput("Your new hand contains: ");
 		String output = "";
 		for(int i = 0; i < playerHand.size(); i++){
 			output += (i+1) + ". " + playerHand.get(i).getName() + " - ";
