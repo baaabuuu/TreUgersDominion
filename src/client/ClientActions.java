@@ -284,6 +284,7 @@ public class ClientActions {
 								userInterface.eventInput("That card has already been selected.");
 							} else {
 								selected.add(value-1);
+								locked = false;
 							}
 						}
 					}
