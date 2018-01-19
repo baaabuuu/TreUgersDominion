@@ -192,7 +192,8 @@ public class EffectHandler
 		//---[BEGIN TIMEOUT BLOCK]---   
 		int counter = 0; // timeout
 		Object[] tempResponse = null;
-		while(true) {
+		while(true)
+		{
 			tempResponse = rSpace.getp(new ActualField(player.getID()),
 					new ActualField(ClientCommands.selectCard),
 					new FormalField(ArrayListObject.class));
@@ -228,8 +229,8 @@ public class EffectHandler
 			Thread.sleep(10);
 		}
 		//---[END TIMEOUT BLOCK]---
-
 	}
+	
 	/**
 	 * Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest.
 	 * @param player
@@ -424,8 +425,6 @@ public class EffectHandler
 					//---[END TIMEOUT BLOCK]---		
 					break;
 				}
-				if (!player.isConnected())
-					break;
 				counter++;
 				if (counter > game.getWaitTime())
 				{
@@ -818,11 +817,17 @@ public class EffectHandler
 		player.drawCard(1);
 		player.addActions(1);
 		String[] drawn = player.drawCard(2);
-		for (int i = player.getHandSize(); i >= player.getHandSize() - drawn.length; i++)
+		int calc;
+		for (int i = 0; i < drawn.length; i++)
 		{
-			choice.add(player.getHand().get(i));
+			calc = player.getHandSize() - i - 1;
+			choice.add(player.getHand().get(calc));
 		}
-
+		for (int i = 0; i < choice.size(); i++)
+		{
+			Card card = choice.get(i);
+			player.getHand().remove(card);
+		}
 		//---[BEGIN TIMEOUT BLOCK]---
 		int counter = 0; // timeout
 		if (choice.size() > 0)
@@ -835,7 +840,8 @@ public class EffectHandler
 				{
 					//---[BEGIN CODE BLOCK]---
 					ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
-					List<Card> choice2 = choice;
+					@SuppressWarnings("unchecked")
+					ArrayList<Card> choice2 = (ArrayList<Card>) choice.clone();
 					if(response.get(0) != -1)
 					{
 						for(int i : response)
@@ -858,7 +864,8 @@ public class EffectHandler
 							{
 								//---[BEGIN CODE BLOCK]---
 								response = ((ArrayListObject) tempResponse[2]).getArrayList();
-								List<Card> choice3 = choice2;
+								@SuppressWarnings("unchecked")
+								ArrayList<Card> choice3 = (ArrayList<Card>) choice2.clone();
 								if(response.get(0) != -1)
 								{
 									for(int i : response)
@@ -881,12 +888,12 @@ public class EffectHandler
 										if(tempResponse != null)
 										{
 											//---[BEGIN CODE BLOCK]---
-											response = ((ArrayListObject) tempResponse[2]).getArrayList();	
+											response = ((ArrayListObject) tempResponse[2]).getArrayList();
 											for(int i: response)
 											{
 												player.getDeck().addFirst(choice3.get(i));
 												game.sendMessageAll(player.getName() + "#" + player.getID() + " added " + choice3.get(i).getName() + " to the top of their deck.");
-											}
+											}											
 											//---[END CODE BLOCK]---
 											break;
 										}
