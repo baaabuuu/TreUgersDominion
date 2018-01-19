@@ -288,7 +288,6 @@ public class EffectHandler
 					p.discardCard(temp);
 					game.sendMessageAll(p.getName() + " discared " + temp.getName());
 				}
-					
 			}
 			Log.important("Size: " + treasures.size());
 			if(treasures.size() == 2)
@@ -511,6 +510,8 @@ public class EffectHandler
 				{
 					break;
 				}
+				if (!player.isConnected())
+					break;
 				counter++;
 				if (counter > game.getWaitTime())
 				{
@@ -649,6 +650,8 @@ public class EffectHandler
 					//---[END CODE BLOCK]---
 					break;
 				}
+				if (!player.isConnected())
+					break;
 				counter++;
 				if (counter > game.getWaitTime())
 				{
@@ -682,6 +685,17 @@ public class EffectHandler
 				count++;
 			}
 		}
+		if (count >= player.getHandSize())
+		{
+
+			ArrayList<Card> hand = player.getHand();
+			for(Card card: hand)
+			{
+				game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + card.getName() + "!");
+				player.discardCard(card);
+				player.removeFromHand(card);
+			}
+		}
 		game.sendCardOption(player.getID(), "Choose " + count + " cards to discard", count, player.getHand(), false);
 
 		//---[BEGIN TIMEOUT BLOCK]---
@@ -694,21 +708,14 @@ public class EffectHandler
 
 			if(tempResponse != null)
 			{
-				Log.important("did this reach lmao");
 				//---[BEGIN CODE BLOCK]---
 				ArrayList<Integer> response = ((ArrayListObject) tempResponse[2]).getArrayList();
-				ArrayList<Card> toDiscard = new ArrayList<Card>();
-				ArrayList<Card> tempHand = player.getHand();
-				for(int i: response)
+				int counting = 0;
+				for(int i : response)
 				{
-					toDiscard.add(tempHand.get(i));
+					player.getHand().remove(i - counting);
+					counting++;
 				}
-				for(Card card: toDiscard)
-				{
-					game.sendMessageAll(player.getName() + "#" + player.getID() + " discarded " + card.getName() + "!");
-					tempHand.remove(card);
-				}
-				player.setHand(tempHand);
 				//---[END CODE BLOCK]---
 				break;
 			}
@@ -1530,10 +1537,7 @@ public class EffectHandler
 			{
 				continue;
 			}
-			else
-			{
-				affectedPlayers.add(p);
-			}
+			affectedPlayers.add(p);
 		}
 		return affectedPlayers;
 	}
