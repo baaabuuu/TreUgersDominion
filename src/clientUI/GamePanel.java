@@ -388,6 +388,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 				listModel.addElement((i+1) + ". " + cards[i].getName() + ": " + integers[i] + "  ");
 			}catch(NullPointerException e0){
 				Log.important("addElement made a NullPointerException");
+			}catch(ArrayIndexOutOfBoundsException e0){
+				Log.important("addElement made a ArrayIndexOutOfBoundsException");
 			}
 		}
 	}

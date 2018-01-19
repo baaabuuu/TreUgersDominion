@@ -50,7 +50,8 @@ public class ClientActions {
 		
 		userInterface.eventInput("\n----------------------");
 		userInterface.eventInput("");
-		userInterface.eventInput("YOUR TURN HAS BEGUN!");
+		userInterface.eventInput("YOUR TURN HAS BEGUN!\n");
+		userInterface.eventInput("Your hand contains: ");
 		userInterface.newPlayerHand(playerHand);
 		setTurnValues(new TurnValues(1,1,0));
 		userInterface.eventInput("ACTION PHASE\n");
@@ -103,6 +104,7 @@ public class ClientActions {
 								new FormalField(TurnValues.class));
 						
 						userInterface.newBoardState((BoardState)input[1]);
+						userInterface.eventInput("\nYour hand contains: ");
 						setPlayerHand((PlayerHand)input[2]);
 						setTurnValues((TurnValues)input[3]);
 						
@@ -305,14 +307,14 @@ public class ClientActions {
 		userInterface.newBuyArea(input);
 	}
 	public void displayLaunge(HashMap<Integer, Integer> lobbies, Space hostSpace) throws InterruptedException {
-		userInterface.eventInput("Server sent a list of lobbies: ");
+		userInterface.eventInput("Server sent a list of lobbies.\n");
 		Set<Integer> p = lobbies.keySet();
 		for(int i : p) {
 			userInterface.eventInput("Lobby " + i + " - " + lobbies.get(i) + "/4 players.");
 		}
-		userInterface.eventInput("To connect to a lobby, type in 'c'.");
+		userInterface.eventInput("\nTo connect to a lobby, type in 'c'.");
 		userInterface.eventInput("To make a new lobby, type in 'm'.");
-		userInterface.eventInput("To update lobby list, type in 'u'.");
+		userInterface.eventInput("To update lobby list, type in 'u'.\n");
 		Object[] input;
 		userInterface.awaitingUserInput();
 		Log.log("Waiting for user input");
