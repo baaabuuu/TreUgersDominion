@@ -1,14 +1,10 @@
 package client;
 
-import java.util.HashMap;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
-import org.jspace.QueueSpace;
 import org.jspace.RemoteSpace;
-import org.jspace.SequentialSpace;
 import org.jspace.Space;
-import org.jspace.Tuple;
 
 import cards.Card;
 import clientUI.UIController;

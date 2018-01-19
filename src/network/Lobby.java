@@ -5,10 +5,8 @@ import java.util.Random;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
-import org.jspace.QueueSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
-import org.jspace.SpaceRepository;
 
 import cards.CardReader;
 import log.Log;
@@ -83,8 +81,8 @@ public class Lobby extends Thread  {
 				
 				
 				activePlayers++;
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+			} catch (InterruptedException e)
+			{
 				e.printStackTrace();
 			}
 			
@@ -119,8 +117,8 @@ public class Lobby extends Thread  {
 			gameStarter.startGame();
 			safeSpace.put(ServerCommands.gameStart);
 			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e)
+		{
 			e.printStackTrace();
 		}
 		Log.log("Game start");

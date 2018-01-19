@@ -1,13 +1,10 @@
 package network;
 
-import java.util.ArrayList;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
-import org.jspace.QueueSpace;
 import org.jspace.Space;
 
-import cards.Card;
 import log.Log;
 import objects.ArrayListObject;
 import objects.ClientCommands;
@@ -43,7 +40,6 @@ public class ControlCenter extends Thread {
 				Log.log("Found command: " + cmd.toString() + " from ID: " + id);
 				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -89,7 +85,6 @@ public class ControlCenter extends Thread {
 						break;
 				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			

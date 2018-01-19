@@ -7,7 +7,6 @@ import java.util.List;
 import org.jspace.Space;
 
 import cards.Card;
-import cards.CardReader;
 import client.ClientController;
 import log.Log;
 import objects.BoardState;

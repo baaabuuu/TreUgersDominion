@@ -29,7 +29,6 @@ public class Game
 	private Player currPlayer;
 	private Board board;
 	private int turn;
-	private int initialTurn;
 	private int phase;
 	private int playerCount;
 	private EffectHandler effects;
@@ -132,7 +131,6 @@ public class Game
 		Log.important("Initial player is: " + currPlayer.getName() + "'s turn.");
 		this.writer = writer;
 		this.space = space;
-		initialTurn = turn;
 		effects = new EffectHandler(this);
 	}
 	

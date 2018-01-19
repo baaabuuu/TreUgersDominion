@@ -20,7 +20,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import cards.Card;
-import log.Log;
 import objects.ArrayListObject;
 import objects.ClientCommands;
 import objects.PlayerEffects;

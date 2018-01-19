@@ -3,7 +3,6 @@ package client;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
-import org.jspace.Space;
 
 import log.Log;
 import objects.ServerCommands;

@@ -26,7 +26,7 @@ public class Writer {
 	
 	public Writer(Space clientSpace, String[] players){
 		try {
-			this.host = InetAddress.getLocalHost().getHostAddress();
+			Writer.host = InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

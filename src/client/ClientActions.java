@@ -8,7 +8,6 @@ import java.util.Set;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
-import org.jspace.Space;
 
 import cards.Card;
 import clientUI.UIController;
