@@ -232,7 +232,7 @@ public class ClientActions {
 					userInterface.eventInput("Buy phase has ended.\n");
 					hostSpace.put(playerID, ClientCommands.changePhase);
 					lock = false;
-				default: userInterface.eventInput("Not a valid input!");
+				default:
 					break;
 			}
 		}
