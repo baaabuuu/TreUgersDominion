@@ -212,10 +212,15 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 			actionSend = new JButton("Send");
 			actionSend.setForeground(Color.white);
 			actionSend.setFocusPainted(false);
-			actionSend.addActionListener(this);
+			
 			actionSend.setBackground(new Color(219, 142, 27));
 			actionSend.setFont(new Font("Tahoma", Font.BOLD, 12));
 			actionSend.setBounds(510, 500, 100, 75);
+			actionSend.addActionListener(new ActionListener() {	// Adds actionListener containing the following...
+	            public void actionPerformed(ActionEvent e) {
+	            	sendFromActionArea();
+	            }
+	        });
 			add(actionSend);
 			
 			chatSend = new JButton("Send");
@@ -403,6 +408,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		
 		eventArea.setText(eventAreaInfo);
 	}
+	public void sendFromActionArea() {
+		//Message must be more than 0 and less than 4 characters.
+		if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
+			actionArea.setEditable(false);
+			Log.log("Sent to eventOutput: " + actionAreaTemp);
+			controller.eventOutput(actionAreaTemp);
+			
+			actionAreaTemp = "";
+		}
+		actionArea.setText("");
+	}
 	public void keyTyped(KeyEvent e) {}
 	private String actionAreaTemp;
 	private String chatTypAreaTemp;
@@ -422,15 +438,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		//On ENTER release from actionArea, update eventArea with temporary
 		//text and reset actionArea.
 		if(e.getSource() == actionArea && e.getKeyCode() == KeyEvent.VK_ENTER){
-			//Message must be more than 0 and less than 4 characters.
-			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
-				actionArea.setEditable(false);
-				Log.log("Sent to eventOutput: " + actionAreaTemp);
-				controller.eventOutput(actionAreaTemp);
-				
-				actionAreaTemp = "";
-			}
-			actionArea.setText("");
+			sendFromActionArea();
 		}else if(e.getSource() == chatTypArea && e.getKeyCode() == KeyEvent.VK_ENTER){
 			if(chatTypAreaTemp.length() > 0){
 				//Implement Chat
@@ -442,17 +450,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener, Li
 		}
 	}
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == actionSend){
-			//Message must be more than 0 and less than 4 characters.
-			if(actionAreaTemp != null && actionAreaTemp.length() > 0 && actionAreaTemp.length() < 4){
-				actionArea.setEditable(false);
-				Log.log("Sent to eventOutput: " + actionAreaTemp);
-				controller.eventOutput(actionAreaTemp);
-				
-				actionAreaTemp = "";
-			}
-			actionArea.setText("");
-		}else if(e.getSource() == chatSend){
+		if(e.getSource() == chatSend){
 			if(chatTypAreaTemp != null && chatTypAreaTemp.length() > 0){
 				//Implement Chat
 			}
